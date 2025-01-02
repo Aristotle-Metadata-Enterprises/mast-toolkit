@@ -1,0 +1,28 @@
+{% extends "mast/dashboard/base.html" %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Survey - {{ object.title }}</h1>
+
+<div class="alert alert-danger">
+    <div class="alert-heading">You are about to delete the team {{ object.name }}.</div>
+    <br>
+    This is irreversible. You will not be able to recover this team.
+    <br>
+    Any responses recorded at this team will only be recorded for the organisation.
+    <br>
+</div>
+
+<form method="POST" action="?delete_responses=yes">
+    {% csrf_token %}
+    <button class="btn btn-danger" action="submit">Delete the team and {{ object.responses.all.count }} responses</button>
+    <a class="btn btn-primary" href="{% url 'survey_manage' survey.pk %}">Cancel</a>
+</form>
+<form method="POST" action="">
+    {% csrf_token %}
+    <button class="btn btn-warning" action="submit">Delete the team only</button>
+</form>
+
+
+{% endblock %}

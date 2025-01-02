@@ -1,0 +1,26 @@
+{% extends "mast/dashboard/base.html" %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Survey - {{ object.title }}</h1>
+
+<div class="alert alert-danger">
+    <div class="alert-heading">You are about to delete your maturity assessment.</div>
+    <br>
+    This is irreversible and you will no longer be able to access your survey results.
+    <br>
+    You will not be able to recover this survey, and will not be able to do future comparisons with your results.
+    <br>
+    <!-- If you would prefer to close your survey to new results, you can do this below. -->
+
+</div>
+
+<form method="POST">
+    {% csrf_token %}
+    <button class="btn btn-danger" action="submit">Delete this survey and all responses</button>
+    <a class="btn btn-primary" href="{% url 'survey_dashboard' survey.pk %}">Cancel</a>
+</form>
+
+
+{% endblock %}

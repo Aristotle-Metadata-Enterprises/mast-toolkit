@@ -1,0 +1,103 @@
+<div class="row">
+    <label class="col-2" for="{{form.title.id_for_label}}">{{ form.title.label }}:</label>
+    <div class="col-5">
+        <input name="{{form.title.name}}" class="form-control" id="{{form.title.id_for_label}}" value="{% if form.title.value %}{{form.title.value}}{% endif %}"></input>
+        <p class="form-text text-muted">
+            {{form.title.help_text}}
+        </p>
+    </div>
+</div>
+<div class="row">
+    <label class="col-2" for="{{form.organisation.id_for_label}}">{{ form.organisation.label }}:</label>
+    <div class="col-5">
+        <input name="{{form.organisation.name}}" class="form-control" id="{{form.organisation.id_for_label}}" value="{% if form.organisation.value %}{{form.organisation.value}}{% endif %}"></input>
+        <p class="form-text text-muted">
+            {{form.organisation.help_text}}
+        </p>
+    </div>
+</div>
+<div class="row">
+    <label class="col-2" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
+    <div class="col-5">
+        <input type="email" name="{{form.email.name}}" class="form-control" id="{{form.email.id_for_label}}" value="{% if form.email.value %}{{form.email.value}}{% endif %}"></input>
+        <p class="form-text text-muted">
+            {{form.email.help_text}}
+            We use your email to send you your log-in links and send you updates on responses.
+            This is also how we send your generated report.
+        </p>
+    </div>
+</div>
+<div class="row">
+    <label class="col-2" for="{{form.industry.id_for_label}}">{{ form.industry.label }}:</label>
+    <div class="col-5">
+        {{form.industry}}
+        <p class="form-text text-muted">
+            {{form.industry.help_text}}
+            <br>
+        For more information on industry categories, please review the United Nations
+        <a href="https://unstats.un.org/unsd/classifications/Econ/isic">International Standard Industrial Classification of All Economic Activities (ISIC)</a>.
+        </p>
+    </div>
+    <div class="col-5">
+        To protect your privacy, we hide industry comparable results if fewer than 4 organisations in your industry have provided responses.
+        However, if you include your industry, you will still get access to global comparisons and as new results come in we can update your comparison.
+    </div>
+</div>
+<hr class="">
+<h2>Survey customisation</h2>
+<div class="row my-5">
+    <label class="col-2" for="{{form.qualitative.id_for_label}}">{{ form.qualitative.label }}:</label>
+    <div class="col-5">
+        {{ form.qualitative }}
+        <p class="form-text text-muted">
+            {{form.qualitative.help_text}}
+        </p>
+    </div>
+    <div class="col-5">
+            <details>
+                <summary>Click here to see the additional questions that will be included.</summary>
+                <div class="card card-body">
+                    <ul>
+                        {% for q in qualitative_questions %}
+                        <li>{{q}}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </details>
+        </p>
+    </div>
+</div>
+<div class="row  my-5">
+    <label class="col-2" for="{{form.preamble.id_for_label}}">{{ form.preamble.label }}:</label>
+    <div class="col-5">
+        <div>
+        <textarea rows=4 name="{{form.preamble.name}}" class="form-control" id="{{form.preamble.id_for_label}}">{% if form.preamble.value %}{{form.preamble.value}}{% endif %}</textarea>
+        <p class="form-text text-muted">
+            {{form.preamble.help_text}}
+        </p>
+        </div>
+    </div>
+    <div class="col-5">
+        If left blank, users will be shown:
+        <div class="card card-body">
+            {{ default_texts.preamble | safe }}
+        </div>
+    </div>
+</div>
+<div class="row  my-5">
+    <label class="col-2" for="{{form.confirmation_message.id_for_label}}">{{ form.confirmation_message.label }}:</label>
+    <div class="col-5">
+        <div>
+        <textarea rows=4 name="{{form.confirmation_message.name}}" class="form-control" id="{{form.confirmation_message.id_for_label}}">{% if form.confirmation_message.value %}{{form.confirmation_message.value}}{% endif %}</textarea>
+        <p class="form-text text-muted">
+            {{form.confirmation_message.help_text}}
+        </p>
+        </div>
+    </div>
+    <div class="col-5">
+        If left blank, users will be shown:
+        <div class="card card-body">
+            {{ default_texts.confirmation | safe }}
+        </div>
+    </div>
+</div>

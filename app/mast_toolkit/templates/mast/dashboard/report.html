@@ -1,0 +1,202 @@
+{% extends "mast/dashboard/base.html" %}
+
+{% block title %}Full report - {{ object.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Full report - {{ object.title }}</h1>
+
+{% if survey.response_count == 0 %}
+<div class="alert alert-primary">
+        <p>
+            You haven't recieved any responses yet.
+            Once you start recieving responses, your report will automatically show.
+        </p>
+        <p>
+            Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}">{{object.share_link}}</a>.
+            This link will allow users to respond to your survey.     
+        </p>
+        <hr>
+        <p>
+            Below is a preview of the report that will be available once you begin recieving repsonses to the assessment.
+        </p>
+</div>
+{% endif %}
+
+<h2 id="overview">Overview</h2>
+<hr>
+
+<div class="row">
+    <div class="col-6">
+        <h2>Beliefs</h2>
+        <p>
+            What does our organisation believe about the ease of use and understanding of our data?
+        </p>
+        <div class="card card-body">
+            {{ plot | safe }}
+        </div>
+    </div>
+    <div class="col-6">
+        <h2>Behaviours</h2>
+        <p>
+            How easy is it for our staff to manage our data documentation?
+            <br>&nbsp;
+        </p>
+        <div class="card card-body">
+            {{ radar | safe }}
+        </div>
+    </div>
+</div>
+
+<h2 id="organisation">Organisation results</h2>
+<hr>
+<h3>Beliefs</h3>
+<h4>Metadata</h4>
+<div class="row">
+    <div class="col-6 px-3">
+    </div>    
+    <div class="col-6 px-3">
+        {{ plot | safe }}
+    </div>    
+</div>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_metadata_1 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_metadata_1}} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question actively use  metadata to make it easier to find and interpret data.
+            This belief means that business users across the organisation are more likely to seek out and follow policies for data documentation.
+        </p>
+        <p>
+            This is seen in organisations that a clear data strategy where performance goals or indicators that link to existing data assets.
+            These organisations are more likely to have a well developed data inventory that supports asset discovery to faciliate access.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Developing policies that promote data documentation</li>
+                <li>Developing a central data inventory where users can document their assets</li>
+                <li>Developing data sharing policies that help users request access to data that is documented within the inventory.</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_metadata_1.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<h4>Analysis</h4>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_analysis_1 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_analysis_1}} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question strategically document business metadata that describes how and why data is collected.
+            This belief means that business users are more likely document fields within data assets to improve the ability to interpret and link data assets.
+        </p>
+        <p>
+            This is seen in organisations that provide business units with resources to document how data is collected and how it should be interpreted.
+            These organisations are more likely to have data dictionaries and business glossaries for critical data assets.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Providing resources and training in </li>
+                <li> </li>
+                <li> </li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_analysis_1.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<h4>Standards</h4>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_standards_1 }}
+            </strong>
+        </div>
+        <p>
+            Organisations scoring higher on this question strategically document business metadata that describes how and why data is collected.
+            This belief means that business users are more likely document fields within data assets to improve the ability to interpret and link data assets.
+        </p>
+        <p>
+            This is seen in organisations that provide business units with resources to document how data is collected and how it should be interpreted.
+            These organisations are more likely to have data dictionaries and business glossaries for critical data assets.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Providing resources and training in </li>
+                <li> </li>
+                <li> </li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_standards_1.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<h4>Teamwork</h4>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_teamwork_1 }}
+            </strong>
+        </div>
+        <p>
+            Organisations scoring higher on this question strategically document business metadata that describes how and why data is collected.
+            This belief means that business users are more likely document fields within data assets to improve the ability to interpret and link data assets.
+        </p>
+        <p>
+            This is seen in organisations that provide business units with resources to document how data is collected and how it should be interpreted.
+            These organisations are more likely to have data dictionaries and business glossaries for critical data assets.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Providing resources and training in </li>
+                <li> </li>
+                <li> </li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_teamwork_1.histogram|safe }}
+    </div>    
+</div>
+<hr>
+
+<h2 id="teams">Results by Team</h2>
+{% if team_data %}
+    {% for team in team_data %}
+    {{ team.team.name}}
+    <div class="row">
+        <div class="col-6 px-3">
+            {{team.mast_plot|safe}}
+        </div>
+        <div class="col-6 px-3">
+            {{team.ideal_plot|safe}}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-warning">
+        No teams have been set up for this assessment, so no data is available.
+    </div>
+{% endif %}
+
+<h2 id="roles">Results by Roles</h2>
+
+<h2 id="download">Download</h2>
+
+{% endblock %}

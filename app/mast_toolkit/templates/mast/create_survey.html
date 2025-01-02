@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Create assessment survey{% endblock %}
+
+{% block content %}
+<h1>Create a new assessment survey</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.errors }}
+    <div class="container py-3">
+        {% include "components/survey_management_form.html" %}
+
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-success" action="submit">Save changes</button>
+                <p class="form-text text-muted">
+                    By clicking create survey you are agreeing for us to collect data on your behalf, and agreeing to our <a href="https://www.aristotlemetadata.com/legal/privacy-policy">privacy policy</a>.
+                    <br>
+                    The MAST Maturity Toolkit is created and maintained by Aristotle Metadata.
+                </p>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
