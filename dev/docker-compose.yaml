@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  web: &web
+    build:
+      context: ../app
+      dockerfile: Dockerfile
+      args:
+        install_dev_packages: 'True'
+    env_file:
+      - dev.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      # - db
+      - mailhog
+    volumes:
+      - ..:/usr/src
+    user: 'root'
+    # command: django-admin runserver 0.0.0.0:8000
+    command: tail /dev/null -f
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "8082:8025"
+      - "1025:1025"

@@ -1,0 +1,497 @@
+{% extends "mast/dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Full report - {{ object.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Full report - {{ object.title }}</h1>
+
+{% if survey.response_count == 0 %}
+<div class="alert alert-primary">
+        <p>
+            You haven't recieved any responses yet.
+            Once you start recieving responses, your report will automatically show.
+        </p>
+        <p>
+            Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}">{{object.share_link}}</a>.
+            This link will allow users to respond to your survey.     
+        </p>
+        <hr>
+        <p>
+            Below is a preview of the report that will be available once you begin recieving repsonses to the assessment.
+        </p>
+</div>
+{% else %}
+{% endif %}
+
+<h2 id="overview">Overview</h2>
+<hr>
+<div class="row">
+    <div class="col-8">
+        <p>
+            This report was prepared for {{ survey.organisation }} and the results in this report are based on {{ metrics.OVERALL.total_responses }} responses collected between {{ survey.responses.last.response_date|date }} and {{ survey.responses.first.response_date|date }}.
+        </p>
+    </div>
+    <div class="col-4">
+        <div class="row">
+            <div class="col-3">
+                <img src="{% static 'logos/mast-logo-blank.png' %}" alt="" class="me-2 small-cool-mast">
+            </div>
+            <div class="col">
+            MAST Data Governance Maturity Toolkit
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+
+<div class="row page-break-before">
+    <div class="col-6">
+        <h2>Beliefs</h2>
+        <p>
+            What does our organisation believe about the ease of use and understanding of our data?
+        </p>
+        <div class="card card-body">
+            {{ plot | safe }}
+        </div>
+    </div>
+    <div class="col-6">
+        <h2>Behaviours</h2>
+        <p>
+            How easy is it for our staff to manage our data documentation?
+            <br>&nbsp;
+        </p>
+        <div class="card card-body">
+            {{ radar | safe }}
+        </div>
+    </div>
+</div>
+
+
+<h2 id="organisation" class="page-break-before">Organisation results</h2>
+<hr>
+<h3>Beliefs</h3>
+<h4>Metadata</h4>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            Question:
+            <strong>
+                {{ questions.beliefs_metadata_1 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_metadata_1 | floatformat:1 }} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question actively use  metadata to make it easier to find and interpret data.
+            This belief means that business users across the organisation are more likely to seek out and follow policies for data documentation.
+        </p>
+        <p>
+            This is seen in organisations that a clear data strategy where performance goals or indicators that link to existing data assets.
+            These organisations are more likely to have a well developed data inventory that supports asset discovery to faciliate access.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Developing policies that promote data documentation</li>
+                <li>Developing a central data inventory where users can document their assets</li>
+                <li>Developing data sharing policies that help users request access to data that is documented within the inventory</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_metadata_1.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<div class="row page-break-before">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            Question:
+            <strong>
+                {{ questions.beliefs_metadata_2 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_metadata_2 | floatformat:1 }} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question are likely to be able to find data faster.
+            Because users are finding data faster, their belief in metadata is reinforced and promotes continued documentation.
+        </p>
+        <p>
+            Organisations scoring well in this area are likely fostering collaboration, enhancing productivity, and enabling teams to extract greater value from their data assets.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Promoting documentation of data assets</li>
+                <li>Developing a central data inventory where users can find assets</li>
+                <li>Encourage a long-term vision in users, where metadata is seen as a tool that delivers ongoing future benefits</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_metadata_2.histogram|safe }}
+    </div>    
+</div>
+
+<hr>
+<h4 class="page-break-before">Analysis</h4>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_analysis_1 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_analysis_1 | floatformat:1 }} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question strategically document business metadata that describes how and why data is collected.
+            This belief means that business users are more likely document fields within data assets to improve the ability to interpret and link data assets.
+        </p>
+        <p>
+            This is seen in organisations that provide business units with resources to document how data is collected and how it should be interpreted.
+            These organisations are more likely to have data dictionaries and business glossaries for critical data assets.
+        </p>
+        <p>If your organisation scores low on this,consider:
+            <ul>
+                <li>Promoting documentation of data assets using simple templates</li>
+                <li>Providing examples of data dictionaries to demonstrate good practice</li>
+                <li>Strategically working with areas with where data is widely reused to deliver quick value to the rest of the organisation</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_analysis_1.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<div class="row page-break-before">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_analysis_2 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_analysis_2 | floatformat:1 }} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question have users that are finding and refering to data documentation.
+            This belief means that business users are more confident in what data means and are more accurate in their decision making.
+        </p>
+        <p>
+            This is commonly seen in organisations with a strong culture of data literacy, where data user can confidently interpret and use data.
+            This leads to more consistent decision-making, reduced errors, and improved collaboration across teams.
+        </p>
+        <p>If your organisation scores low on this,consider:
+            <ul>
+                <li>Developing knowledge bases or metadata registers where users can deposit data dictionaries</li>
+                <li>Promoting data dictionaries and data documentation to internal and external users</li>
+                <li>Strategically working with areas with where data is widely reused to deliver quick value to the rest of the organisation</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_analysis_2.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<h4 class="page-break-before">Standards</h4>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_standards_1 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_standards_1 | floatformat:1 }} out of 5.</strong></div>
+
+        <p>
+            Organisations scoring higher on this question promote consistency and reuse of internal or externally developed data standards.
+            This belief means that users are likely save time on data documentation activities as they know where to find existing documentation and how to reuse it.
+        </p>
+        <p>
+            This is seen in organisations that have centralised teams that support the endorsement and review of newly developed standards.
+            These organisations are more likely to be able to link data as data assets have more in common and linkages are more accurate as they are based on higher quality documentation.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Promoting the use of external standards to quickly see benefits without overhead</li>
+                <li>Developing guidelines for what is high quality data documentation</li>
+                <li>Promoting the reuse of existing data documentation that meets quality standards</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_standards_1.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<div class="row page-break-before">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_standards_2 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_standards_2 | floatformat:1 }} out of 5.</strong></div>
+
+        <p>
+            Organisations scoring higher on this question are able to leverage the reuse of standards to find and link assets.
+            This belief means that organisations are likely to be able to quickly extract value from data by generating new insights and new data products faster on average.
+        </p>
+        <p>
+            This is seen in organisations that have implemented consistent data models, taxonomies, or frameworks.
+            These enable teams to seamlessly connect and analyse data across systems to deliver  efficiency, innovation, and deeper insights.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Creating standard ways to organise and connect data</li>
+                <li>Introducing systems that support business users linking metadata across assets</li>
+                <li>Promoting the advantages of reuse of terms, such as reduced time to document information and more consistent secondary data use</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_standards_2.histogram|safe }}
+    </div>    
+</div>
+<hr>
+
+<h4 class="page-break-before">Teamwork</h4>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_teamwork_1 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_teamwork_1 | floatformat:1 }} out of 5.</strong></div>
+
+        <p>
+            Organisations scoring higher on this question actively promote the sharing of information across siloes leading to higher secondary use of data.
+            This belief means the organisation is more resiliant against staff moevements and is at lower risk of knowledge loss about critical data assets.
+        </p>
+        <p>
+            This is seen in organisations that have a strong culture of innovation, accountability and shared responsibility,
+            where teams actively contribute to improving data quality and accessibility, fostering trust and alignment across the organisation.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Promoting a culture of collaboration by making documentation a shared team responsibility</li>
+                <li>Providing tools and templates to make creating and sharing documentation easier</li>
+                <li>Recognising and rewarding teams for contributing to data documentation efforts</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_teamwork_1.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<div class="row page-break-before">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.beliefs_teamwork_2 }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.MAST_DEPTH.beliefs_teamwork_2 | floatformat:1 }} out of 5.</strong></div>
+
+        <p>
+            Organisations scoring higher on this question have developed a culture where users are able to confidently talk about data.
+            This belief means that business users and analysts spend less time trying to understand data and are able to collaborate on data products faster.
+        </p>
+        <p>
+            These organisations have clear communication practices, common language for discussing data, and a high level of data literacy, enabling teams to work together effectively and make data-driven decisions with confidence.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Encouraging open communication and collaboration about data across teams</li>
+                <li>Providing training to improve data literacy and confidence in discussing data</li>
+                <li>Using common terms and definitions to make data conversations clearer and more consistent</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        {{ graphics.beliefs_teamwork_2.histogram|safe }}
+    </div>    
+</div>
+<hr>
+
+<h2 class="page-break-before" id="teams">Results by Team</h2>
+{% if team_data %}
+    <p>Below is a breakdown of all teams who have provided data, along with their scores across the MAST/IDEAL dimensions.</p>
+    <p>Teams with metrics <span class="text-danger">below 2 are marked in red</span>, those <span class="text-warning">between 2-3 are marked in yellow</span>
+        and those with <span class="text-success">scores greater than 4 are marked in green</span>.</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Responses</th>
+                <th class="team-table-border" colspan="4">Beliefs</th>
+                <th class="team-table-border" colspan="4">Behaviours</th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th class="team-table-border">M</th>
+                <th>A</th>
+                <th>S</th>
+                <th>T</th>
+                <th class="team-table-border">I</th>
+                <th>D</th>
+                <th>E</th>
+                <th>A</th>
+                <th>L</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>{{ survey.organisation }}</strong></td>
+                <td>{{ metrics.OVERALL.total_responses }}</td>
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.metadata border=True %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.analysis %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.standards %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.teamwork %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.inventory border=True %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.document %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.endorse %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.audit %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.leadership %}
+            </tr>
+        </tbody>
+        <tbody>
+            {% for team in team_data %}
+            <tr>
+                <td>{% if team.team %}
+                        {{ team.team.name }}
+                    {% else %}
+                        <i>No team provided</i>
+                    {% endif %}
+                </td>
+                <td>{{ team.metrics.OVERALL.total_responses }}</td>
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.MAST.metadata border=True %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.MAST.analysis %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.MAST.standards %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.MAST.teamwork %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.inventory border=True %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.document %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.endorse %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.audit %}
+                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.leadership %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% for team in team_data %}
+    <h3 class="page-break-before">
+        {% if team.team %}
+            {{ team.team.name }}
+        {% else %}
+            <i>No team provided</i>
+        {% endif %}
+    </h3>
+    {% if not team.team %}
+        <p>Note: This section includes results for all users who did not select a tea mwhen responding to the survey.</p>
+    {% endif %}
+    <div class="row">
+        <div class="col-6 px-3">
+            {{team.mast_plot|safe}}
+        </div>
+        <div class="col-6 px-3">
+            {{team.ideal_plot|safe}}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-warning">
+        No teams have been set up for this assessment, so no data is available.
+    </div>
+{% endif %}
+
+<h2 id="roles" class="page-break-before">Results by Activity</h2>
+<p>
+    Note: Users may select more than 1 activity, so total responses within the the table may total to more than total responses for the organisation.
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Activity Type</th>
+            <th>Responses</th>
+            <th  class="team-table-border" colspan="4">Beliefs</th>
+            <th  class="team-table-border" colspan="4">Behaviours</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th class="team-table-border">M</th>
+            <th>A</th>
+            <th>S</th>
+            <th>T</th>
+            <th class="team-table-border">I</th>
+            <th>D</th>
+            <th>E</th>
+            <th>A</th>
+            <th>L</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>{{ survey.organisation }}</strong></td>
+            <td>{{ metrics.OVERALL.total_responses }}</td>
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.metadata border=True %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.analysis %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.standards %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.teamwork %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.inventory border=True %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.document %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.endorse %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.audit %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.leadership %}
+        </tr>
+    </tbody>
+    <tbody>
+        {% for activity in activity_data %}
+        <tr>
+            <td>{% if activity.activity %}
+                    {{ activity.activity.activity }}
+                {% else %}
+                    <i>{{ activity.activity_type_name }}</i>
+                {% endif %}
+            </td>
+            <td>{{ activity.metrics.OVERALL.total_responses }}</td>
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.MAST.metadata border=True %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.MAST.analysis %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.MAST.standards %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.MAST.teamwork %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.inventory border=True %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.document %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.endorse %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.audit %}
+            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.leadership %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2 id="methodology">Methodology</h2>
+<hr>
+<p>
+    The results in this report are based on {{ metrics.OVERALL.total_responses }} responses collected between {{ survey.responses.last.response_date|date }} and {{ survey.responses.first.response_date|date }}.
+</p>
+<h3 class="h5">Free-text responses</h5>
+<p>
+    Free text qualitative responses are not aggregated in this report, but can be downloaded for further analysis.
+</p>
+<h3 class="h5">Handing 'Don't know' responses</h5>
+<p>
+    When assessing the 'beliefs', to provide aggregated responses, we recode all "don't know" responses to the mid point (3) of a 5-point likert scale.
+    This represents that respondents who are "unaware" data governance programs have a less negative perception of data that those who actively disagree with these belief statements.
+</p>
+<h3 class="h5">Downloading your report</h5>
+<p class="print-hide">
+    To get a sharable copy of your report, you can print this page to PDF with Crtl+P. Recommended landscape to ensure all results are retained.
+</p>
+
+<h3 class="h5">Copyright</h5>
+<p>The MAST Methodology, MAST Maturity Toolkit Questionnaite and the MAST/IDEAL Compass logo are all copyright Aristotle Metadata.</p>
+<img src="{% static 'logos/aristotle-metadata-wide.png' %}" alt="Aristotle Metadata Logo" class="" style="height: auto; width:250px;">
+
+{% endblock %}

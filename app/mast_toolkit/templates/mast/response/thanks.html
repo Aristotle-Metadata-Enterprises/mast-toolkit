@@ -1,0 +1,21 @@
+{% extends "mast/response/base.html" %}
+
+{% block title %}Create survey{% endblock %}
+
+{% block content %}
+<h1>{{ survey.title }}</h1>
+
+<div class="card card-body m-2 p-3">
+{% if survey.confirmation_message %}
+    {{ survey.confirmation_message }}
+{% else %}
+    {{ default_texts.confirmation | safe }}
+{% endif %}
+</div>
+
+<hr>
+
+<p class="form-text text-muted">
+The MAST Maturity Toolkit is developed by Aristotle Metadata.
+</p>
+{% endblock %}

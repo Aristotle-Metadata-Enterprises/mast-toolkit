@@ -1,0 +1,30 @@
+{% extends "mast/dashboard/base.html" %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Survey - {{ object.title }}</h1>
+
+<form method="POST" action="{% url 'survey_manage_add_team' survey.pk %}">
+    {% csrf_token %}
+    <div class="container py-3">
+        <div class="row">
+            <label class="col-2" for="{{form.name.id_for_label}}">{{ form.name.label }}:</label>
+            <div class="col-5">
+                <div>
+                <input name="{{form.name.name}}" class="form-control" id="{{form.name.id_for_label}}" value="{% if form.name.value %}{{form.name.value}}{% endif %}"></input>
+                <p class="form-text text-muted">
+                    {{form.name.help_text}}
+                </p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-success" action="submit">Add team</button>
+                <a class="btn btn-primary" href="{% url 'survey_manage' survey.pk %}">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

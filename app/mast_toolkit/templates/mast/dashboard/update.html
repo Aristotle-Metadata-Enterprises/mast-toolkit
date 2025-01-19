@@ -1,0 +1,85 @@
+{% extends "mast/dashboard/base.html" %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Survey - {{ object.title }}</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="container py-3">
+        {% include "components/survey_management_form.html" %}
+        
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-success" action="submit">Save changes</button>
+                <a class="btn btn-primary" href="{% url 'survey_dashboard' survey.pk %}">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<hr class="">
+<div class="container py-3">
+    <h2 id="teams">Teams</h2>
+    <div class="row">
+        <div class="col-7">
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th># Responses</th>
+                    <th><a href="{% url 'survey_manage_add_team' survey.pk %}" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-team-modal">Add</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in survey.teams.all %}
+                <tr>
+                    <td>{{ team.name }}</td>
+                    <td>{{ team.responses.all.count }}</td>
+                    <td><a href="{% url 'survey_manage_delete_team' survey.pk team.pk %}" class="btn btn-sm btn-danger">Delete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        <div class="col-5">
+            <p>Adding Teams allows you to aggregate your results to compare different business areas across your organisation to identify hotspots of data excellence
+                 or areas that require additional support.</p>
+            <p>If you remove a team results can be retained but they only be available at the organisation level.</p>
+            <p>
+                If you don't add any teams, this question won't be asked.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" id="add-team-modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'survey_manage_add_team' survey.pk %}">
+                {% csrf_token %}
+                <div class="container py-3">
+                    <div class="row">
+                        <label class="col-2" for="team_modal_name">Team name:</label>
+                        <div class="col-5">
+                            <div>
+                            <input name="name" class="form-control" id="team_modal_name" value="" placeholder="sdfdsf"></input>
+                            <p class="form-text text-muted">
+                                {{form.name.help_text}}
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-success" action="submit">Add team</button>
+                            <a class="btn btn-primary" href="{% url 'survey_manage' survey.pk %}">Cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

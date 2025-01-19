@@ -1,0 +1,77 @@
+{% extends "mast/dashboard/base.html" %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Survey - {{ object.title }}</h1>
+
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="alert alert-warning">
+            <div class="alert-heading">Your secret link is <a href="{{ object.get_absolute_url}}">{{object.id}}</a>.</div>
+            This link will bring you back to this page, and allow you to manage this manage this maturity survey.
+            Only share this link with people you trust.
+        </div>
+    </div>
+    <div class="col-6 px-2">
+        <div class="alert alert-primary">
+            <div class="alert-heading">You have {{ survey.responses.all.count }} responses so far.</div>
+            Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}">{{object.share_link}}</a>.
+            This link will allow users to respond to your survey.
+        </div>
+    </div>    
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <h2>Beliefs</h2>
+        <p>
+            What does our organisation believe about the ease of use and understanding of our data?
+        </p>
+        <div class="card card-body">
+            {% if survey.response_count == 0 %}
+                <p>
+                    You haven't recieved any responses yet.
+                </p>
+                <p>
+                    Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}">{{object.share_link}}</a>.
+                    This link will allow users to respond to your survey.     
+                </p>
+            {% else %}
+                {{ plot | safe }}
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-6">
+        <h2>Behaviours</h2>
+        <p>
+            How easy is it for our staff to manage our data documentation?
+            <br>&nbsp;
+        </p>
+        <div class="card card-body">
+            {% if survey.response_count == 0 %}
+                <p>
+                    You haven't recieved any responses yet.
+                </p>
+                <p>
+                    Once you start recieving responses, these graphs will automatically show.
+                </p>
+            {% else %}
+                {{ radar | safe }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="row pt-5">
+    <div class="col-6">
+        <h2>Responses in the past 14 days</h2>
+        {{ recent_responses|safe }}
+    </div>
+    <div class="col-6"></div>
+</div>
+<!-- <pre>
+    {{ metrics }}
+</pre> -->
+<hr>
+
+{% endblock %}

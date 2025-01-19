@@ -1,0 +1,44 @@
+{% extends "mast/dashboard/base.html" %}
+
+{% block title %}{{ survey.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Survey - {{ survey.title }}</h1>
+
+<div class="alert alert-warning">
+    <div class="alert-heading">Your secret link is <a href="{{ survey.get_absolute_url}}">{{survey.id}}</a>.</div>
+    <br>
+    This link will bring you back to this page, and allow you to manage this manage this maturity survey.
+    Only share this link with people you trust.
+</div>
+<p>
+    Below are all responses collected so far.
+</p>
+<div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>User Email</th>
+                <th>Response Date</th>
+                <th>Team Name</th>
+                <th><small class="text-muted">Coming soon</small></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for response in object_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ response.email }}</td>
+            <td>{{ response.response_date }}</td>
+            <td>{{ response.team.name }}</td>
+            <td>
+                <a href="#">See more...</a><br>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
