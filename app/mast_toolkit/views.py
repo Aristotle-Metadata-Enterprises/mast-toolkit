@@ -36,11 +36,26 @@ class ResponseCreateView(ResponseBase, CreateView):
     form_class = mast_toolkit.forms.ResponseForm
     template_name = "mast/response/create.html"
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['survey'] = self.survey
+        return kwargs
+
     def form_valid(self, form):
         form.instance.survey = self.survey
         form.instance.phase = None
         # form.instance.team = None
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('survey_respond_thanks', args=[self.survey.share_link])
+
+    def get_context_data(self, **kwargs):
+        kwargs['survey'] = self.survey
+        kwargs['has_teams'] = self.survey.teams.all().exists()
+        kwargs['show_qualitative'] = self.survey.qualitative == mast_toolkit.consts.Qualitative.SHOW
+        kwargs['show_data_used_field'] = self.survey.include_data_used_or_created == mast_toolkit.consts.DataUsed.SHOW
+        return super().get_context_data(**kwargs)
 
 
 class ResponseThanksView(ResponseBase, TemplateView):
@@ -54,6 +69,7 @@ class SurveyCreateMixin:
             for field in mast.Response._meta.fields
             if field.name.endswith('_qual')
         ]
+        kwargs['data_uses_question'] = mast.Response._meta.get_field('data_used_or_created').verbose_name
         kwargs['default_texts'] = {
             'preamble': mast_toolkit.consts.DEFAULT_SURVEY_PREAMBLE,
             'confirmation': mast_toolkit.consts.DEFAULT_SURVEY_CONFIRMATION_HTML,
@@ -192,9 +208,7 @@ class SurveyResponseListView(DashboardMixin, ListView):
     active_dashboard_tab = "responses"
 
     def get_queryset(self):
-        return super().get_queryset().filter(survey=self.kwargs['survey_pk']).order_by('-response_date')
-
-
+        return super().get_queryset().filter(survey=self.kwargs['survey_pk'])
 
 
 def report_histogram(x, y):
@@ -209,6 +223,7 @@ def report_histogram(x, y):
         margin=dict(t=10)
     )
     return plot(bar_plot, output_type="div", include_plotlyjs=False)
+
 
 class SurveyReportDetailView(DashboardMixin, DetailView):
     model = mast.Survey
@@ -251,14 +266,45 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
                     mast.Likert.display_labels_dk_first(),
                     [x['count'] for x in report_metrics['beliefs_teamwork_1']['histogram']]
                 )
+            },
+            'beliefs_metadata_2': {
+                "histogram": report_histogram(
+                    mast.Likert.display_labels_dk_first(),
+                    [x['count'] for x in report_metrics['beliefs_metadata_2']['histogram']]
+                )
+            },
+            'beliefs_analysis_2': {
+                "histogram": report_histogram(
+                    mast.Likert.display_labels_dk_first(),
+                    [x['count'] for x in report_metrics['beliefs_analysis_2']['histogram']]
+                )
+            },
+            'beliefs_standards_2': {
+                "histogram": report_histogram(
+                    mast.Likert.display_labels_dk_first(),
+                    [x['count'] for x in report_metrics['beliefs_standards_2']['histogram']]
+                )
+            },
+            'beliefs_teamwork_2': {
+                "histogram": report_histogram(
+                    mast.Likert.display_labels_dk_first(),
+                    [x['count'] for x in report_metrics['beliefs_teamwork_2']['histogram']]
+                )
             }
+            
         }
         context['plot'] = plot(mast_bar_plot(survey.metrics), output_type="div", include_plotlyjs=False)
         context['radar'] = plot(ideal_polar_plot(survey.metrics), output_type="div", include_plotlyjs=False)
 
         team_data = []
-        for team in survey.teams.all():
+        teams = list(survey.teams.all())
+        for team in teams + [None]:
+            if team is None:
+                team_name = "No team provided"
+            else:
+                team_name = team.name
             team_metrics = survey.generate_basic_metrics(team=team)
+
             data = list(team_metrics['IDEAL'].values())
             data.append(data[0])  # Close the plot, otherwise there is a gap
             ideal_radar = ideal_polar_plot(survey.metrics)
@@ -266,25 +312,42 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
                 r=data,
                 theta=IDEAL_LABELS+IDEAL_LABELS[0:1],
                 # fill='toself',
-                name=team.name
+                name=team_name
             ))
 
-            mast_bar = mast_bar_plot(survey.metrics)
+            mast_bar = mast_bar_plot(survey.metrics, name=survey.organisation)
             mast_bar.add_trace(go.Bar(
                     x = list(team_metrics['MAST'].keys()), 
                     y = list(team_metrics['MAST'].values()),
                     textposition = 'auto',
-                    name=team.name
+                    name=team_name
                 )  
             )
 
             team_data.append({
                 "team": team,
+                "name": team_name,
                 "ideal_plot": plot(ideal_radar, output_type="div", include_plotlyjs=False),
                 "mast_plot": plot(mast_bar, output_type="div", include_plotlyjs=False),
                 "metrics": team_metrics
             })
-        context['team_data'] = team_data
+        if teams:
+            context['team_data'] = team_data
+
+        activity_data = []
+        for activity_type in list(mast.ActivityType.objects.all()) + [None]:
+            if activity_type is None:
+                activity_type_name = "No activities selected"
+            else:
+                activity_type_name = activity_type.activity
+            activity_type_metrics = survey.generate_basic_metrics(activity_type=activity_type)
+            activity_data.append({
+                "activity": activity_type,
+                "activity_type_name": activity_type_name,
+                "metrics": activity_type_metrics
+            })
+        context['activity_data'] = activity_data
+
         return context
 
 

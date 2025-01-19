@@ -7,7 +7,7 @@ from django.db.models import Case, When, Value, IntegerField, Avg, F
 
 import shortuuid
 import uuid
-
+import mast_toolkit.consts
 
 import datetime
 from django.db.models.functions import TruncDate
@@ -33,32 +33,6 @@ class Likert(models.IntegerChoices):
         return labels
 
 
-class ISICChoices(models.TextChoices):
-    # From ISIC: https://unstats.un.org/unsd/classifications/Econ/isic
-
-    I = "I", _("Accommodation and food service activities")
-    N = "N", _("Administrative and support service activities")
-    A = "A", _("Agriculture, forestry and fishing")
-    R = "R", _("Arts, entertainment and recreation")
-    F = "F", _("Construction")
-    P = "P", _("Education")
-    D = "D", _("Electricity, gas, steam and air conditioning supply")
-    K = "K", _("Financial and insurance activities")
-    Q = "Q", _("Human health and social work activities")
-    J = "J", _("Information and communication")
-    C = "C", _("Manufacturing")
-    L = "L", _("Real estate activities")
-    B = "B", _("Mining and quarrying")
-    M = "M", _("Professional, scientific and technical activities")
-    O = "O", _("Public administration and defence; compulsory social security")
-    H = "H", _("Transportation and storage")
-    E = "E", _("Water supply; sewerage, waste management and remediation activities")
-    G = "G", _("Wholesale and retail trade; repair of motor vehicles and motorcycles")
-    S = "S", _("Other service activities")
-    # T = "T", _("Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use")
-    # U = "U", _("Activities of extraterritorial organizations and bodies")
-
-
 def censor_dk_as_midpoint(field_name):
     return Case(
         When(**{field_name:Likert.DONTKNOW}, then=Value(Likert.NN)),
@@ -68,10 +42,6 @@ def censor_dk_as_midpoint(field_name):
 
 
 class Survey(models.Model):
-    class Qualitative(models.IntegerChoices):
-        SHOW = 1, _("Show free-text qualitative options")
-        HIDE = 2, _("Hide free-text qualitative options")
-
     id = models.CharField(primary_key=True, default=shortuuid.uuid, editable=False, max_length=256)
     share_link = models.CharField(default=shortuuid.uuid, editable=False, max_length=256)
     # report_link = models.CharField(default=shortuuid.uuid, editable=False, max_length=256)
@@ -86,21 +56,27 @@ class Survey(models.Model):
     preamble = models.TextField(
         verbose_name="Introductory text",
         blank=True,
-        help_text="This is a rich-text field you can text is shown to respondents on the first page of the assessment survey."
+        help_text="This is a closing paragraph that is shown to respondents at the start of the assessment survey."
     )
     confirmation_message = models.TextField(
         blank=True,
-        help_text="This is a rich-text field shown to respondents after they have completed their survey."
+        help_text="This is a closing paragraph shown to respondents after they have completed their survey."
     )
     qualitative = models.PositiveIntegerField(
         verbose_name="Include qualitative questions",
-        choices=Qualitative,
-        default=Qualitative.SHOW,
+        choices=mast_toolkit.consts.Qualitative,
+        default=mast_toolkit.consts.Qualitative.SHOW,
         help_text="If selected, we will ask additional questions for each of the 'I-D-E-A-L' behaviours that can be downloaded and analysed."
     )
     industry = models.CharField(
-        max_length=1, null=True, choices=ISICChoices, blank=True, default=None,
+        max_length=1, null=True, choices=mast_toolkit.consts.ISICChoices, blank=True, default=None,
         help_text="We collect the industry of your organisation to provide you with industry comparables."
+    )
+    include_data_used_or_created = models.PositiveIntegerField(
+        verbose_name="Ask respondents about data they use",
+        choices=mast_toolkit.consts.DataUsed,
+        default=mast_toolkit.consts.DataUsed.HIDE,
+        help_text="If selected, we will ask additional questions for each of the 'I-D-E-A-L' behaviours that can be downloaded and analysed."
     )
 
     # size = ???
@@ -119,11 +95,20 @@ class Survey(models.Model):
     def metrics(self):
         return self.generate_basic_metrics()
 
-    def generate_basic_metrics(self, team=False):
+    def generate_basic_metrics(self, team=mast_toolkit.consts.NO_TEAM_SELECTED, activity_type=mast_toolkit.consts.NO_ACTIVITY_SELECTED):
         qs = self.responses.all()
 
-        if team:
-            qs = self.responses.all().filter(team=team)
+        if team != mast_toolkit.consts.NO_TEAM_SELECTED:
+            # We check for False, as "None" as a team is a valid filter to find users who didn't select a team.
+            qs = qs.filter(team=team)
+
+        if activity_type is None:
+            qs = qs.filter(data_uses__isnull=True)
+        elif activity_type != mast_toolkit.consts.NO_ACTIVITY_SELECTED:
+            # We check for False, as "None" as a team is a valid filter to find users who didn't select a team.
+            qs = qs.filter(data_uses=activity_type)
+        
+        total_responses = qs.count()
 
         responses = qs.aggregate(
 
@@ -131,6 +116,11 @@ class Survey(models.Model):
             Avg('beliefs_analysis_1', default=3),
             Avg('beliefs_standards_1', default=3),
             Avg('beliefs_teamwork_1', default=3),
+            
+            Avg('beliefs_metadata_2', default=3),
+            Avg('beliefs_analysis_2', default=3),
+            Avg('beliefs_standards_2', default=3),
+            Avg('beliefs_teamwork_2', default=3),
             
             Avg('actions_inventory_1', default=3),
             Avg('actions_inventory_2', default=3),
@@ -159,6 +149,22 @@ class Survey(models.Model):
                 censor_dk_as_midpoint('beliefs_teamwork_1'),
                 default=3,
             ),
+            beliefs_metadata_2_dk__avg = Avg(
+                censor_dk_as_midpoint('beliefs_metadata_2'),
+                default=3,
+            ),
+            beliefs_analysis_2_dk__avg = Avg(
+                censor_dk_as_midpoint('beliefs_analysis_2'),
+                default=3,
+            ),
+            beliefs_standards_2_dk__avg = Avg(
+                censor_dk_as_midpoint('beliefs_standards_2'),
+                default=3,
+            ),
+            beliefs_teamwork_2_dk__avg = Avg(
+                censor_dk_as_midpoint('beliefs_teamwork_2'),
+                default=3,
+            ),
 
         )
 
@@ -167,25 +173,24 @@ class Survey(models.Model):
         ).values('date').annotate(count=Count('date')).order_by('date')
 
         _metrics = {
+            "OVERALL": {
+                "total_responses": total_responses,
+            },
             "MAST": {
-                "metadata": responses['beliefs_metadata_1_dk__avg'],
-                "analysis": responses['beliefs_analysis_1_dk__avg'],
-                "standards": responses['beliefs_standards_1_dk__avg'],
-                "teamwork": responses['beliefs_teamwork_1_dk__avg'],
-                # "metadata": (responses['beliefs_metadata_1']+responses['actions_inventory_2__avg'])/2,
-                # "analysis": (responses['beliefs_analysis_1__avg']+responses['actions_inventory_2__avg'])/2,
-                # "standards": (responses['beliefs_standards_1']+responses['actions_inventory_2__avg'])/2,
-                # "teamwork": (responses['beliefs_teamwork_1']+responses['actions_inventory_2__avg'])/2,
+                "metadata": (responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2,
+                "analysis": (responses['beliefs_analysis_1_dk__avg']+responses['beliefs_analysis_2_dk__avg'])/2,
+                "standards": (responses['beliefs_standards_1_dk__avg']+responses['beliefs_standards_2_dk__avg'])/2,
+                "teamwork": (responses['beliefs_teamwork_1_dk__avg']+responses['beliefs_teamwork_2_dk__avg'])/2,
             },
             "MAST_DEPTH": {
                 "beliefs_metadata_1": responses['beliefs_metadata_1_dk__avg'],
                 "beliefs_analysis_1": responses['beliefs_analysis_1_dk__avg'],
                 "beliefs_standards_1": responses['beliefs_standards_1_dk__avg'],
                 "beliefs_teamwork_1": responses['beliefs_teamwork_1_dk__avg'],
-                # "metadata": (responses['beliefs_metadata_1']+responses['actions_inventory_2__avg'])/2,
-                # "analysis": (responses['beliefs_analysis_1__avg']+responses['actions_inventory_2__avg'])/2,
-                # "standards": (responses['beliefs_standards_1']+responses['actions_inventory_2__avg'])/2,
-                # "teamwork": (responses['beliefs_teamwork_1']+responses['actions_inventory_2__avg'])/2,
+                "beliefs_metadata_2": responses['beliefs_metadata_2_dk__avg'],
+                "beliefs_analysis_2": responses['beliefs_analysis_2_dk__avg'],
+                "beliefs_standards_2": responses['beliefs_standards_2_dk__avg'],
+                "beliefs_teamwork_2": responses['beliefs_teamwork_2_dk__avg'],
             },
             "IDEAL": {
                 # Aggregates responses at the IDEAL level
@@ -241,6 +246,19 @@ class Survey(models.Model):
             "histogram": likert_histogram_results('beliefs_teamwork_1')
         }
 
+        _metrics['beliefs_metadata_2'] = {
+            "histogram": likert_histogram_results('beliefs_metadata_2'),
+        }
+        _metrics['beliefs_analysis_2'] = {
+            "histogram": likert_histogram_results('beliefs_analysis_2')
+        }
+        _metrics['beliefs_standards_2'] = {
+            "histogram": likert_histogram_results('beliefs_standards_2')
+        }
+        _metrics['beliefs_teamwork_2'] = {
+            "histogram": likert_histogram_results('beliefs_teamwork_2')
+        }
+
         return _metrics
 
 
@@ -263,54 +281,88 @@ class Wave(models.Model):
     expected_responses = models.PositiveIntegerField(help_text="What is the expected number of responses you expect to get in this phase?")
 
 
+class ActivityType(models.Model):
+    code = models.CharField(primary_key=True, max_length=1)
+    activity = models.CharField(max_length=256)
+
+    def __str__(self):
+        return self.activity
+
+
 class Response(models.Model):
     id = models.CharField(primary_key=True, default=shortuuid.uuid, editable=False, max_length=256)
-    email = models.EmailField()
-    team = models.ForeignKey(BusinessUnit, on_delete=models.CASCADE, null=True, related_name="responses")
-    phase = models.ForeignKey(Wave, on_delete=models.CASCADE, null=True, related_name="responses")
+    email = models.EmailField(blank=True)
+    team = models.ForeignKey(BusinessUnit, on_delete=models.CASCADE, blank=True, null=True, related_name="responses")
+    phase = models.ForeignKey(Wave, null=True, on_delete=models.CASCADE, blank=True, related_name="responses")
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="responses")
     response_date = models.DateTimeField(auto_now_add=True)
 
-    "What data do you use or create as part of your role in the organisation?"
+    class Meta:
+        ordering = ['-response_date']
 
-    "What do you do with data as part of your role in the organisation?"
+    data_uses = models.ManyToManyField(
+        ActivityType,
+        verbose_name="What activities do you perform with data as part of your role in the organisation"
+    )
+    other_data_activity = models.CharField(blank=True, max_length=2048)
+    data_used_or_created = models.TextField(blank=True,
+        verbose_name="What data do you use or create as part of your role in the organisation?"
+    )
 
     beliefs_metadata_1 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
         verbose_name="My organisation understands how data documentation supports the delivery of core functions and outcomes.",
+        choices=Likert
+    )
+    beliefs_metadata_2 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+        verbose_name="It is easy for me to find data I need for my role.",
         choices=Likert
     )
     beliefs_analysis_1 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
         verbose_name="My organisation documents why data is collected, along with what is stored.",
         choices=Likert
     )
+    beliefs_analysis_2 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+        verbose_name="It is easy for me to find documentation that describes what data means.",
+        choices=Likert
+    )
     beliefs_standards_1 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
         verbose_name="My organisation has a consistent approach to data documentation.",
+        choices=Likert
+    )
+    beliefs_standards_2 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+        verbose_name="It is easy for me to find, link and compare related data using common terms.",
         choices=Likert
     )
     beliefs_teamwork_1 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
         verbose_name="Teams in my organisation are encouraged to create, review and share documentation for their data assets.",
         choices=Likert
     )
+    beliefs_teamwork_2 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+        verbose_name="It is easy is it for me to talk about data with others across my organisation.",
+        choices=Likert
+    )
 
     actions_inventory_1 = models.PositiveIntegerField(blank=False, default=None,
-        verbose_name="Where do you go to discover other data assets in the organisation?",
+        verbose_name="How do you most commonly discover other data assets in the organisation?",
         choices={
             1: "I don't do this as part of my current role",
-            2: "I do not have access to a central data discovery location",
-            3: "My team has a list of data assets, but I am not aware of data outside my team",
+            2: "I will speak directly to a person who I think knows about this data",
+            3: "I have access to a list of data assets managed by my team, but I am not aware of data outside my team",
             4: "I have access to a list of data assets that is shared by members of my organisation",
-            5: "I have restricted access to metadata within a central data inventory based on my needs and permissions",
-        }
+            5: "I can search for data within a central data inventory that returns results based on my needs and permissions",
+        },
+        help_text="If more than one is applicable, select the activity you most commonly perform."
     )
     actions_inventory_2 = models.PositiveIntegerField(blank=False, default=None,
-        verbose_name=" How do you record the existence of data assets within your team?",
+        verbose_name="How do you most commonly record the existence of data assets within your team?",
         choices={
             1: "I don't do this as part of my current role",
             2: "I do not have a tool for recording documentation about data assets made within my team",
             3: "I use ad hoc systems like Excel or Word etc.",
             4: "I use generalised documentation systems such as SharePoint or Confluence",
             5: "I use specialised data cataloguing tools for documenting data assets",
-        }
+        },
+        help_text="If more than one is applicable, select the activity you most commonly perform."
     )
 
     actions_inventory_qual = models.TextField(
@@ -319,24 +371,26 @@ class Response(models.Model):
     )
 
     actions_document_1 = models.PositiveIntegerField(blank=False, default=None,
-        verbose_name="What information do you record for data assets created within your team?",
+        verbose_name="What information do you usually record for data assets created within your team?",
         choices={
             1: "I don't do this as part of my current role",
             2: "I do not document data assets at this point in time",
             3: "I document data based on my own needs or requirements",
-            4: "My team has its own processes for documenting data",
-            5: "I use organisational standards for recording information about data assets",
-        }
+            4: "I follow processes my team has developed for documenting data",
+            5: "I follow organisational standards for recording information about data assets",
+        },
+        help_text="If more than one is applicable, select the activity you most commonly perform."
     )
     actions_document_2 = models.PositiveIntegerField(blank=False, default=None,
-        verbose_name="What information do you or your team record about fields within a data asset, such as describing columns in a spreadsheet or database table?",
+        verbose_name="What information do you or your team commonly record about fields within a data asset, such as describing columns in a spreadsheet or database table?",
         choices={
             1: "I don't do this as part of my current role",
             2: "I do not record information at this level about our data",
             3: "I record the names and descriptions of columns",
             4: "I record the names, descriptions, and any codes or data types for each column",
             5: "I record the names, descriptions and codes for each column, and include links to common data glossary defintions",
-        }
+        },
+        help_text="If more than one is applicable, select the activity you most commonly perform."
     )
     actions_document_qual = models.TextField(
         verbose_name="(Optional) Please include a list of systems or tools you use to document data in your organisation. If this includes tools like Word, Excel, Sharepoint or other similar knowledge management tools, include these as tools you use.",
@@ -351,7 +405,8 @@ class Response(models.Model):
             3: "Data documentation is reviewed on an informal basis by my peers",
             4: "My team has a process for reviewing data documentation",
             5: "Data governance team(s) within the organisation review data documentation",
-        }
+        },
+        help_text="If more than one is applicable, select the answer that matches you usual routine."
     )
     actions_endorse_2 = models.PositiveIntegerField(blank=False, default=None,
         verbose_name="How can you find out who has signed off on approval/review of data assets in the organisation?",
@@ -360,7 +415,7 @@ class Response(models.Model):
             2: "I do not have access to documentation from other teams",
             3: "I can view information about data assets, but am unable to see approval documentation",
             4: "I can view approval processes for data documentation within my team",
-            5: "Approval processes are documented in a formal register in the organisation",
+            5: "Approval processes for all data I use is documented in a formal register in the organisation",
         }
     )
     actions_endorse_qual = models.TextField(
@@ -369,13 +424,13 @@ class Response(models.Model):
     )
 
     actions_audit_1 = models.PositiveIntegerField(blank=False, default=None,
-        verbose_name="How do you or your team manage common data terms?",
+        verbose_name="How do you manage commonly referenced data terms?",
         choices={
             1: "I don't do this as part of my current role",
             2: "I do not manage common data terms at this point in time",
             3: "I use methods such as copying and pasting existing definitions from existing records for consistency when documenting new data assets",
-            4: "My team has a list of data terms that we manage internally",
-            5: "My team manages our data terms in a governed central system that records and links these terms to data assets",
+            4: "I refer to a list of data terms that my team manages internally",
+            5: "I use data terms from a governed central system that records and links these terms to data assets",
         }
     )
     actions_audit_2 = models.PositiveIntegerField(blank=False, default=None,
@@ -394,13 +449,13 @@ class Response(models.Model):
     )
 
     actions_leadership_1 = models.PositiveIntegerField(blank=False, default=None,
-        verbose_name="Are you aware of policies for managing data assets within your team or organisation?",
+        verbose_name="Are you aware of policies for managing data assets within your organisation?",
         choices={
             1: "I do not manage data in my role, and am not impacted by data policies",
             2: "I am not aware of policies for managing data assets at the present time",
-            3: "My team has internal policies for managing data assets",
+            3: "I am aware of internal policies my team has developed for managing data assets",
             4: "I am aware of policies for managing data assets, but am not aware of how they relate to my role",
-            5: "I am aware of our organisation's data governance and data management policies, and how I am responsible for data safety",
+            5: "I am aware of our organisation's data governance and data management policies, and my responsiblity for data safety",
         }
     )
     actions_leadership_2 = models.PositiveIntegerField(blank=False, default=None,

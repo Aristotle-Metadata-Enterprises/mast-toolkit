@@ -10,12 +10,16 @@
     {{ form.errors }}
 
     <div class="card"><div class="card-body">
+        {% if survey.preamble %}
+            {{ survey.preamble|linebreaks }}
+        {% else %}
         <p>Thank you for taking the time to participate in Aristotle Metadata's survey of data asset knowledge and management.</p>
         <p>
             Your input will help us gain an understanding of how your organisation manages its data assets.
             A <b>data asset</b> is a collection of data that is developed for a broad purpose.
             This information will help your organisation recognise how data assets can be used to support strategic plans and goals.
         </p>
+        {% endif %}
         <p>
             This survey should take less than ten minutes to complete.
             We’ve designed it to be as straightforward as possible, and your responses will be kept strictly confidential.
@@ -34,30 +38,15 @@
         </div>
     </div>
 
-    <div class="container">
-        <div class="row">
-            <label class="col" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
-            <div class="col">
-                <input type="email" name="{{form.email.name}}" class="form-control" id="{{form.email.id_for_label}}" value="{% if form.email.value %}{{form.email.value}}{% endif %}"></input>
-            </div>
-        </div>
-        <div class="row">
-            <label class="col" for="{{form.team.id_for_label}}">{{ form.team.label }}:</label>
-            <div class="col">
-              {{ form.team }}
-            </div>
-          </div>
-    </div>
-
     <h2 class="h3 py-3">
-        The first four questions in this survey are about your beliefs regarding data documentation in your organisation.
+        The first four questions in this survey are about your <u>beliefs</u> regarding data documentation in your organisation.
     </h2>
-    <div class="container mt-5">
+    <div class="container mt-5 likert-table">
         <div class="row likert-headers">
             <div class="col-5"></div>
             <div class="col">Strongly Disagree</div>
             <div class="col">Disagree</div>
-            <div class="col">Neutral</div>
+            <div class="col">Neither Agree nor Disagree</div>
             <div class="col">Agree</div>
             <div class="col">Strongly Agree</div>
             <div class="col">Don't Know</div>
@@ -66,10 +55,16 @@
         {% include "mast/response/helpers/likert.html" with field=form.beliefs_analysis_1 %}
         {% include "mast/response/helpers/likert.html" with field=form.beliefs_standards_1 %}
         {% include "mast/response/helpers/likert.html" with field=form.beliefs_teamwork_1 %}
+        <hr>
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_metadata_2 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_analysis_2 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_standards_2 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_teamwork_2 %}
     </div>
 
-    <h2 class="h3 py-3">
-        The following questions are about the actions you perform as part of your regular tasks.
+    <hr>
+    <h2 class="h3 py-3 my-5">
+        The following questions are about the <u>actions</u> you perform as part of your regular tasks.
     </h2>
     <p class="pb-5">
         Developing a greater awareness of data assets is part of the <b>IDEAL</b> (Inventory-Document-Endorse-Audit-Leadership) Framework.
@@ -81,13 +76,16 @@
         The following questions are about how you find data in your organisation and where you record information about data assets that you are responsible for.
     </div>
     <div class="pb-3">
-    The <b>I</b> in the IDEAL framework stands for 'Investigate and inventory data'  which leads to an increased knowledge of data assets and their location. These questions are about how you record the existence of data that you manage, and how you find data for your regular activities.
+    The <b>I</b> in the IDEAL framework stands for 'Investigate and inventory data' which leads to an increased knowledge of data assets and their location. These questions are about how you record the existence of data that you manage, and how you find data for your regular activities.
     </div>
     {% include "mast/response/helpers/radio.html" with field=form.actions_inventory_1 %}
     {% include "mast/response/helpers/radio.html" with field=form.actions_inventory_2 %}
+    {% if show_qualitative %}
     {% include "mast/response/helpers/textarea.html" with field=form.actions_inventory_qual %}
+    {% endif %}
 
-    <div class="h4 border-top border-info pt-5 mt-1">
+
+    <div class="h4 border-top border-info pt-3 mt-1">
         The following questions are related to the types of of information that are collected about data assets in your organisation. 
     </div>
     <div class="pb-3">
@@ -95,8 +93,9 @@
     </div>
     {% include "mast/response/helpers/radio.html" with field=form.actions_document_1 %}
     {% include "mast/response/helpers/radio.html" with field=form.actions_document_2 %}
+    {% if show_qualitative %}
     {% include "mast/response/helpers/textarea.html" with field=form.actions_document_qual %}
-
+    {% endif %}
     
     <div class="h4 border-top border-info pt-5 mt-1">
         The following questions are about how data documentation is reviewed and published in your organisation. 
@@ -106,18 +105,22 @@
     </div>
     {% include "mast/response/helpers/radio.html" with field=form.actions_endorse_1 %}
     {% include "mast/response/helpers/radio.html" with field=form.actions_endorse_2 %}
+    {% if show_qualitative %}
     {% include "mast/response/helpers/textarea.html" with field=form.actions_endorse_qual %}
+    {% endif %}
 
 
     <div class="h4 border-top border-info pt-5 mt-1">
-        The following questions are about how data documentation is reviewed and published in your organisation. 
+        The following questions are about how your organisation links related data documentation and reuses common terms over time.
     </div>
     <div class="pb-3">
         The <b>A</b> in the IDEAL framework stands for 'Audit and Harmonise' which focuses on how similar terms in data glossaries and related data assets are managed to reduce duplicates and improve consistency. These questions are about how you and your team manage your data glossaries and how these align with glossaries across your organisation.
     </div>
     {% include "mast/response/helpers/radio.html" with field=form.actions_audit_1 %}
     {% include "mast/response/helpers/radio.html" with field=form.actions_audit_2 %}
+    {% if show_qualitative %}
     {% include "mast/response/helpers/textarea.html" with field=form.actions_audit_qual %}
+    {% endif %}
 
     
     <div class="h4 border-top border-info pt-5 mt-1">
@@ -128,9 +131,68 @@
     </div>
     {% include "mast/response/helpers/radio.html" with field=form.actions_leadership_1 %}
     {% include "mast/response/helpers/radio.html" with field=form.actions_leadership_2 %}
+    {% if show_qualitative %}
     {% include "mast/response/helpers/textarea.html" with field=form.actions_leadership_qual %}
+    {% endif %}
 
 
-    <button class="btn btn-primary" type=submit>Save</submit></form>
+    <div class="h4 border-top border-info pt-3 mt-1">
+        Lastly, we are going to ask about your role and specific activities you perform in the organisation.
+    </div>
 
+    <div class="container">
+        <div class="row my-2">
+            <label class="col-5" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
+            <div class="col">
+                <input type="email" name="{{form.email.name}}" class="form-control" id="{{form.email.id_for_label}}" value="{% if form.email.value %}{{form.email.value}}{% endif %}"></input>
+            </div>
+        </div>
+        {% if has_teams %}
+        <div class="row my-2">
+            <label class="col-5" for="{{form.team.id_for_label}}">{{ form.team.label }}:</label>
+            <div class="col">
+              {{ form.team }}
+            </div>
+        </div>
+        {% endif %}
+        <div class="row my-2">
+            <label class="col-5" for="{{form.data_uses.id_for_label}}">{{ form.data_uses.label }}:</label>
+            <div class="col data_uses_checkboxes">
+                {{ form.data_uses }}
+
+                <div id="other_activity_section">
+                <label for="{{form.other_data_activity.id_for_label}}">List other activities you perform with data in your role below:</label>
+                {{ form.other_data_activity }}
+                </div>
+            </div>
+        </div>
+        {% if show_data_used_field %}
+        {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
+        {% endif %}
+    </div>
+
+    <button class="btn btn-primary" type=submit>Submit responses</submit>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const otherActivitySection = document.getElementById("other_activity_section");
+        const otherActivityCheckbox = document.querySelector('input[name="data_uses"][value="Z"]');
+
+        // Initially hide the other activity section
+        otherActivitySection.style.display = "none";
+
+        // Add an event listener to the checkbox
+        otherActivityCheckbox.addEventListener("change", function () {
+            if (this.checked) {
+                // Show the section if the checkbox is checked
+                otherActivitySection.style.display = "block";
+            } else {
+                // Hide the section if the checkbox is unchecked
+                otherActivitySection.style.display = "none";
+            }
+        });
+    });
+    </script>
+    
 {% endblock %}

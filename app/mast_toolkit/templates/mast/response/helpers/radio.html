@@ -1,6 +1,8 @@
 <div class="row pb-5">
-    <label class="col-5" for="{{field.id_for_label}}">{{ field.label }}</label>
-    
+    <div class="col-5">
+        <label for="{{field.id_for_label}}">{{ field.label }}</label>
+        <p class="form-text">{{ field.help_text }}</p>
+    </div>    
     <div class="col">
     {% for choice in field %}
     <div class="row action-option">

@@ -1,0 +1,221 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAST Data Maturity Toolkit</title>
+    <link href="https://bootswatch.com/5/flatly/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-size: 1.25rem;
+        }
+        header {
+            background-color: #356a69;
+            color: white;
+        }
+        .btn-primary { background-color: #356a69; color: white; border: 2px solid #356a69; } .btn-primary:hover { background-color: white; color: #356a69; border: 2px solid white; } .btn-primary:hover { background-color: white; color: #356a69; }
+        .btn-primary:hover {
+            background-color: #356a69;
+            color: white;
+        }
+        .btn-outline-secondary { background-color: white; color: #4e8382; border: 2px solid #4e8382; } .btn-outline-secondary:hover { background-color: #4e8382; color: white; }
+        .btn-outline-secondary:hover {
+            background-color: #4e8382;
+            color: white;
+        }
+        .custom-list {
+            list-style: none;
+            padding: 0;
+        }
+        .custom-list li {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 1.25rem;
+        }
+        .custom-list li::before {
+            content: '\2022';
+            color: #356a69;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        footer {
+            background-color: #4e8382;
+            color: white;
+        }
+        .logo-placeholder {
+            height: 50px;
+            width: 150px;
+            background-color: white;
+            color: #356a69;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+        }
+        .pretty-blockquote {
+            position: relative;
+            padding: 1em;
+            padding-left: 2rem;
+            font-size: 1.25rem;
+            color: #356a69;
+            background-color: #f8f9fa;
+            border-left: 4px solid #356a69
+        }
+        .pretty-blockquote::before {
+            content: '“';
+            font-size: 4rem;
+            color: #356a69;
+            position: absolute;
+            left: 5px;
+            top: 10px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <header class="text-center py-5">
+        <div class="container">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="h2">Discover Your Organization’s Data Governance Potential and Deliver Your Next Data Strategy with Confidence!</h1>
+                    <p class="lead">From a short survey to an insightful dashboard—our trusted toolkit gives you everything you need to measure, understand, and improve data maturity across your organization.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="#" class="btn btn-outline-light btn-lg">Get Started Now</a>
+                        <a href="#" class="btn btn-outline-secondary btn-lg">See a Sample Report</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{% static 'logos/mast-logo-letters.png' %}" alt="" class="img-fluid rounded" style="height: 350px;">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="bg-white py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">How It Works</h2>
+            <p>You don’t need to be a data governance expert — our toolkit will guide you step by step, helping you get actionable insights with ease.</p>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <figure class="figure">
+                        <img src="{% static 'home/mast-toolkit-governance-insights.png' %}" alt="" class="img-fluid rounded">
+                        <figcaption class="pt-2 figure-caption text-center">Get immediate insights that align with leading data governance practice that provide clear actions to bolster data governance programs.</figcaption>
+                      </figure>
+                      
+                </div>
+                <div class="col-md-6">
+                    <ul class="custom-list">
+                        <li><strong>Step 1:</strong> Set up your survey using our trusted, standardized template for industry comparability.</li>
+                        <li><strong>Step 2:</strong> Share a quick, short survey with your team via email or using built-in tools. Each response takes less than 10 minutes to complete.</li>
+                        <li><strong>Step 3:</strong> View your personalized dashboard for actionable insights.</li>
+
+                    </ul>
+                    <p>Use your personalised dashboard to start meaningful conversations and take immediate action to improve data governance across your organization.</p>
+                    <p><a href="#" class="btn btn-primary btn-lg">Set up your survey now</a></p>
+                </div>
+            </div>
+        </p>
+    </div>
+    </section>
+    <section class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Why Choose the MAST Data Maturity Toolkit?</h2>
+            <p>The MAST Data Maturity Toolkit goes beyond traditional assessments to provide an actionable, real-world understanding of how data governance works in your organization. From beliefs to behaviors, it builds a comprehensive picture of what your team is actually doing and how they feel about data in their workplace.</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <figure class="figure">
+                        <img src="{% static 'home/mast-toolkit-team-insights.png' %}" alt="" class="img-fluid rounded">
+                        <figcaption class="pt-2 figure-caption text-center">Use your tailored dashboard to get a deep dive into hotspots in need of improvement and areas of excellence that are leading the way.</figcaption>
+                      </figure>
+                      
+                </div>
+                <div class="col-md-6">
+                    <ul class="custom-list">
+                        <li><strong>Consistency:</strong> Standardized questions ensure reliable and comparable results.</li>
+                        <li><strong>Speed:</strong> Quick for users to share their experiences, with immediate dashboards ready to share with executives.</li>
+                        <li><strong>Ease of Use:</strong> No technical expertise required—simple tools for all, scaling from small teams to multinationals.</li>
+                        <li><strong>Grounded in real-world practice:</strong> Builds a real, on-the-ground understanding of how data governance practices and attitudes are shaping your workplace.</li>
+                        <li><strong>Completely Free:</strong> Experience the toolkit at no cost, making it accessible for organizations of all sizes.</li>
+                    </ul>
+                    <p>Your dashboard aligns with leading data governance practices, packaging insights from across your organization to highlight critical hotspots, areas of excellence, and actionable opportunities for improvement.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="bg-light pb-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <hr class="pb-5">
+                <div class="col-md-6">
+                    <p>Organizations in academic, healthcare, private industry, and government sectors rely on the MAST Data Maturity Toolkit to unlock actionable insights and drive meaningful change.</p>
+                </div>
+                <div class="col-md-6">
+                    <blockquote class="pretty-blockquote blockquote">
+                        <p class="mb-3">The MAST Toolkit provided us with actionable insights we could implement immediately—it's a game-changer!</p>
+                        <div class="blockquote-footer">Data Governance Lead, Leading Australian Hospital</div>
+                    </blockquote>
+                    <blockquote class="pretty-blockquote blockquote mt-4">
+                        <p class="mb-3"></span> This helped me explain why our data strategy wasn’t delivering and identify areas we could immediately improve.</p>
+                        <div class="blockquote-footer">Chief Data Officer, large United States University</div>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="bg-white py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">What is the MAST Methodology?</h2>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    
+                    <p>Developed by <a class="link-dark" href="https://aristotlemetadata.com">Aristotle Metadata through years of research</a>, the MAST Methodology stands for <strong>Metadata - Analysis - Standards - Teamwork</strong>. It provides clear, discrete beliefs and behaviors for data governance across the organization. By building pragmatic processes for documenting and governing metadata, it enhances data understanding over time.</p>
+                    <ul class="custom-list">
+                        <li><strong>Beliefs:</strong> Prerequisites for any data governance program.</li>
+                        <li><strong>Behaviors:</strong> Actions that can be taken to improve data governance, even when time is limited.</li>
+                        <li><strong>Processes:</strong> Operational methods that evolve and strengthen data understanding.</li>
+                    </ul>
+                    <p><a href="https://mastmethodology.com" class="btn btn-primary btn-lg">Learn more about the MAST Methodology</a></p>
+                </div>
+                <div class="col-md-6">
+                    <figure class="figure">
+                        <img src="{% static 'home/mast-toolkit-wheel.png' %}" alt="MAST Methodology Graphic" class="img-fluid rounded">
+                        <figcaption class="pt-2 figure-caption text-center">Build through years of experience, the MAST/IDEAL Methodology breaks down data governance to core activities understandable at every level.</figcaption>
+                      </figure>                      
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-white py-5">
+        <div class="container text-center">
+            <h2>Ready to Unlock Your Data Maturity Insights today?</h2>
+            <p>You don’t need specialized tools or software — just insights that help build awareness and engagement, delivered through quick responses and an immediate dashboard.</p>
+            <p class="lead">Don't wait — start transforming your data practices today with the MAST Data Maturity Toolkit!</p>
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="#" class="btn btn-primary btn-lg">Get Started Now</a>
+                <a href="#" class="btn btn-outline-secondary btn-lg">Explore a Sample Dashboard</a>
+                <a href="#" class="btn btn-outline-secondary btn-lg">Review the questionnaire</a>
+            </div>
+        </div>
+</section>
+<footer class="text-white text-center py-3">
+        <div class="container">
+            <a class="link-light" href="https://aristotlemetadata.com">
+                <p>&copy; 2025 Aristotle Metadata. All rights reserved.</p>
+                <img src="{% static 'logos/aristotle-metadata-wide.png' %}" alt="Aristotle Metadata Logo" class="" style="height: auto; width:250px;">
+            </a>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
