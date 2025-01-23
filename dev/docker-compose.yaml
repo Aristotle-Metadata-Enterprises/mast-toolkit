@@ -3,7 +3,7 @@ version: '3'
 services:
   web: &web
     build:
-      context: ../app
+      context: ..
       dockerfile: Dockerfile
       args:
         install_dev_packages: 'True'

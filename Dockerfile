@@ -8,8 +8,10 @@ ENV DJANGO_SETTINGS_MODULE web.settings
 # Install python package management tools
 RUN pip install --upgrade setuptools pip poetry
 
-COPY ./* /usr/src/app/
-WORKDIR /usr/src/app
+COPY ./app /usr/src/app/
+COPY ./poetry.lock /usr/src/
+COPY ./pyproject.toml /usr/src/
+WORKDIR /usr/src
 
 RUN poetry config virtualenvs.create false \
     && poetry install --no-root

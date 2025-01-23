@@ -55,6 +55,35 @@
       .likert-headers {
         text-align: center;
       }
+      @media print
+      {    
+          * {
+            font-size: 0.95em;
+          }
+          h1 {
+            font-size: 1.5em;
+          }
+          h2, h3, .h3 {
+            font-size: 1.1em;
+          }
+          .survey-outer {
+              max-width: 100%;
+              padding: 0px !important;
+              margin: 0px !important;
+          }
+          .survey-outer .card {
+              padding: 1px !important;
+              margin: 1px !important;
+              border: none !important;
+          }
+          .likert-table {
+            max-width: 100%;
+          }
+          .print-hide {
+            display: none !important;
+          }
+      }
+
     </style>
   </head>
   <body>
