@@ -88,8 +88,8 @@
                     <h1 class="h2">Discover Your Organisation’s Data Governance Potential and Deliver Your Next Data Strategy with Confidence!</h1>
                     <p class="lead">From a short survey to an insightful dashboard—our trusted toolkit gives you everything you need to measure, understand, and improve data maturity across your organisation.</p>
                     <div class="d-flex justify-content-center gap-3 mt-4">
-                        <a href="#" class="btn btn-outline-light btn-lg">Get Started Now</a>
-                        <a href="#" class="btn btn-outline-secondary btn-lg">See a Sample Report</a>
+                        <a href="{% url 'survey_create' %}" class="btn btn-outline-light btn-lg">Get Started Now</a>
+                        <a href="{% static 'examples/sample-report.pdf' %}" target="_blank" class="btn btn-outline-secondary btn-lg">See a Sample Report</a>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -119,7 +119,7 @@
 
                     </ul>
                     <p>Use your personalised dashboard to start meaningful conversations and take immediate action to improve data governance across your organisation.</p>
-                    <p><a href="#" class="btn btn-primary btn-lg">Set up your survey now</a></p>
+                    <p><a href="{% url 'survey_create' %}" class="btn btn-primary btn-lg">Set up your survey now</a></p>
                 </div>
             </div>
         </p>
@@ -201,9 +201,9 @@
             <p>You don’t need specialized tools or software — just insights that help build awareness and engagement, delivered through quick responses and an immediate dashboard.</p>
             <p class="lead">Don't wait — start transforming your data practices today with the MAST Data Maturity Toolkit!</p>
             <div class="d-flex justify-content-center gap-3 mt-4">
-                <a href="#" class="btn btn-primary btn-lg">Get Started Now</a>
-                <a href="#" class="btn btn-outline-secondary btn-lg">Explore a Sample Dashboard</a>
-                <a href="#" class="btn btn-outline-secondary btn-lg">Review the questionnaire</a>
+                <a href="{% url 'survey_create' %}" class="btn btn-primary btn-lg">Get Started Now</a>
+                <a href="{% static 'examples/sample-report.pdf' %}" target="_blank" class="btn btn-outline-secondary btn-lg">Explore a Sample Dashboard</a>
+                <a href="{% static 'examples/sample-questionnaire.pdf' %}" target="_blank" class="btn btn-outline-secondary btn-lg">Review the questionnaire</a>
             </div>
         </div>
 </section>

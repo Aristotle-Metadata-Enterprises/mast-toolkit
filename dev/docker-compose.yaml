@@ -14,8 +14,8 @@ services:
     depends_on:
       # - db
       - mailhog
-    # volumes:
-    #   - ..:/usr/src
+    volumes:
+      - ..:/usr/src
     user: 'root'
     # command: django-admin runserver 0.0.0.0:8000
     command: tail /dev/null -f

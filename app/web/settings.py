@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import secrets
 from pathlib import Path
+import dj_database_url
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -108,9 +109,11 @@ WSGI_APPLICATION = "web.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+print(str(BASE_DIR / "db.sqlite3"))
+
 DATABASES = {
     "default": dj_database_url.config(
-        default='sqlite://./db.sqlite3',
+        default='sqlite:///'+ str(BASE_DIR / "db.sqlite3"),
         conn_max_age=600,
         conn_health_checks=True,
     )
