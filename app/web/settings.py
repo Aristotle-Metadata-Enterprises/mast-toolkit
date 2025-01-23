@@ -10,30 +10,61 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import secrets
 from pathlib import Path
 from decouple import config, Csv
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ez_qdds!gklqzbdlx7**^l#j-w$bn%4rw0yupnlrc9pao0vjke"
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    default=secrets.token_urlsafe(nbytes=64),
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+
+# The `DYNO` env var is set on Heroku CI, but it's not a real Heroku app, so we have to
+# also explicitly exclude CI:
+# https://devcenter.heroku.com/articles/heroku-ci#immutable-environment-variables
+IS_HEROKU_APP = "DYNO" in os.environ and "CI" not in os.environ
+
+if IS_HEROKU_APP:
+    # On Heroku, it's safe to use a wildcard for `ALLOWED_HOSTS`, since the Heroku router performs
+    # validation of the Host header in the incoming HTTP request. On other platforms you may need to
+    # list the expected hostnames explicitly in production to prevent HTTP Host header attacks. See:
+    # https://docs.djangoproject.com/en/5.1/ref/settings/#std-setting-ALLOWED_HOSTS
+    ALLOWED_HOSTS = ["*"]
+
+    # Redirect all non-HTTPS requests to HTTPS. This requires that:
+    # 1. Your app has a TLS/SSL certificate, which all `*.herokuapp.com` domains do by default.
+    #    When using a custom domain, you must configure one. See:
+    #    https://devcenter.heroku.com/articles/automated-certificate-management
+    # 2. Your app's WSGI web server is configured to use the `X-Forwarded-Proto` headers set by
+    #    the Heroku Router (otherwise you may encounter infinite HTTP 301 redirects). See this
+    #    app's `gunicorn.conf.py` for how this is done when using gunicorn.
+    #
+    # For maximum security, consider enabling HTTP Strict Transport Security (HSTS) headers too:
+    # https://docs.djangoproject.com/en/5.1/ref/middleware/#http-strict-transport-security
+    SECURE_SSL_REDIRECT = True
+else:
+    ALLOWED_HOSTS = [".localhost", "127.0.0.1", "[::1]", "0.0.0.0", "[::]"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
     "mast_toolkit",
+    "whitenoise.runserver_nostatic",
     # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -44,6 +75,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
