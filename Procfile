@@ -1,1 +1,1 @@
-web: gunicorn perforate.wsgi:application -p $PORT
+web: gunicorn web.wsgi:application -p $PORT
