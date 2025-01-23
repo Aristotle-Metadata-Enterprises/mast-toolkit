@@ -1,0 +1,1 @@
+web: gunicorn perforate.wsgi:application -p $PORT

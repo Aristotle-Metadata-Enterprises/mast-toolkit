@@ -9,12 +9,11 @@ ENV DJANGO_SETTINGS_MODULE web.settings
 RUN pip install --upgrade setuptools pip poetry
 
 COPY ./app /usr/src/app/
-COPY ./poetry.lock /usr/src/
-COPY ./pyproject.toml /usr/src/
+COPY ./* /usr/src/
 WORKDIR /usr/src
 
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-root
+    && poetry install
 
 ENV PYTHONPATH=/usr/src/app
 
