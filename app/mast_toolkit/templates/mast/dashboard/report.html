@@ -312,6 +312,251 @@
         {{ graphics.beliefs_teamwork_2.histogram|safe }}
     </div>    
 </div>
+
+<hr>
+<h3 class="page-break-before">Behaviours</h3>
+
+<hr>
+<h4>Investigate & Inventory Data</h4>
+
+<div class="row">
+    <div class="col-12 px-3">
+        <p><strong>Your overall score is {{metrics.IDEAL.inventory | floatformat:1}}</strong></p>
+
+        <p>
+            Organisations scoring higher on these metrics typically have established systems and processes that promote transparency and accessibility of data assets.
+        </p>
+        <p>
+            These organisations often maintain centralised data inventories or catalogues, enabling users to efficiently discover and access data based on their needs and permissions.
+        </p>
+        <p>
+            Organisations scoring lower on this metric rely on ad-hoc or manual processes for discovering data, and are at risk of inefficent processes or data loss due to lack of documentation.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Encouraging team members to document and share data assets across departments to improve visibility and collaboration</li>
+                <li>Implementing search tools or platforms that make it easy for users to find data assets relevant to their work</li>
+                <li>Creating, maintaining and promoting a centralised data inventory that is accessible to employees based on their roles and permissions</li>
+                <li>Establishing clear processes for recording data documentation and encouraging teams to adhere to these practices</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-12 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_inventory_1 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_inventory_1 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+        
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_inventory_1.data %}
+
+        <hr>
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_inventory_2 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_inventory_2 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_inventory_2.data %}
+
+    </div>    
+</div>
+<hr>
+
+<h4>Document Data & Metadata</h4>
+
+<div class="row">
+    <div class="col-12 px-3">
+        <p><strong>Your overall score is {{metrics.IDEAL.document | floatformat:1}}</strong></p>
+
+        <p>
+            Organisations scoring higher on this metric typically follow structured and standardised processes for documenting data assets.
+        </p>
+        <p>
+            Teams in these organisations align their practices with organisational standards, ensuring consistency, accuracy, and collaboration.
+            This level of detail supports data understanding, enhances interoperability, and ensures alignment across teams and systems.
+        </p>
+        <p>
+            Organisations scoring lower on this metric are likely to take longer to understand data and have limited capability to reliably interpet data without direct access to data owners or other users with direct access to data.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Expanding the scope of documentation to include descriptions, codes and data types for fields or columns</li>
+                <li>Providing easy-to-use tools and templates for documenting data assets effectively and consistently</li>
+                <li>Develop centralised data glossaries, and use tools that support linkages to commonly used terms to make discovery and linkage of related data easier</li>
+                <li>Implementing tools that make field-level metadata easy to capture and maintain to reduce burden on users</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-12 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_document_1 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_document_1 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+        
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_document_1.data %}
+
+        <hr>
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_document_2 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_document_2 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_document_2.data %}
+
+    </div>    
+</div>
+<hr>
+
+<h4>Endorse & Publish</h4>
+
+<div class="row">
+    <div class="col-12 px-3">
+        <p><strong>Your overall score is {{metrics.IDEAL.endorse | floatformat:1}}</strong></p>
+
+        <p>
+            Organisations scoring higher on these metrics have clear, structured processes for reviewing and approving data documentation, ensuring accountability and alignment with data governance practices.
+        </p>
+        <p>
+            Teams in these organisations prioritise transparency by maintaining formal records of governance activities, which support trust, compliance, and collaboration.
+            These activities are supported by appropriate tools that aid collaboration between goverannce teams, reviewers and documenters of data in a streamlined manner.
+        </p>
+        <p>
+            Organisations scoring lower on this metric are likely to have informal or inconsistent processes for reviewing and approving data documentation.
+            Users are likley to struggle to identify who is responsible for data oversight, creating bottlenecks and inefficiencies in data use and decision-making.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Establishing a formal review process for data documentation, involving both team-level and organisational-level governance</li>
+                <li>Document who is responsible for settings standards for data documentation to assist with collaboration</li>
+                <li>Maintaining a centralised register to track approval and review processes for all data and metadata assets</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-12 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_endorse_1 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_endorse_1 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+        
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_endorse_1.data %}
+
+        <hr>
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_endorse_2 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_endorse_2 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_endorse_2.data %}
+
+    </div>    
+</div>
+<hr>
+
+<h4>Audit & Harmonise</h4>
+
+<div class="row">
+    <div class="col-12 px-3">
+        <p><strong>Your overall score is {{metrics.IDEAL.audit | floatformat:1}}</strong></p>
+
+        <p>
+            Organisations scoring higher on these metrics demonstrate strong governance and consistency in managing and reusing data glossary terms.</p>
+        <p>
+            These organisations are supported by processes that promote the review and harmonisation of data terminology over time.
+            By aligning their practices with a central system, they reduce duplication, improve consistency, and ensure that data assets are accurately linked to well-defined, governed terms. This approach fosters trust in data, enhances interoperability, and enables teams to collaborate effectively across the organisation.        </p>
+        <p>
+            Organisations scoring lower on this metric often rely on ad hoc or team-specific methods for managing and reusing data glossary terms, leading to duplication, inconsistency, and misalignment.
+            Lack of consistency of terms leads to reduced capability to find and link related data.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Implementing a centralised and governed data glossary that records, manages, and links terms to data assets</li>
+                <li>Encouraging teams to use reuse glossary terms directly from the central system, instead of duplicating terms using ad hoc methods like copying and pasting</li>
+                <li>Providing training and resources to help teams understand the value of harmonised data terms and how to align their practices with organisational standards</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-12 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_audit_1 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_audit_1 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+        
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_audit_1.data %}
+
+        <hr>
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_audit_2 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_audit_2 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_audit_2.data %}
+
+    </div>    
+</div>
+<hr>
+
+<h4>Leadership & Long-term strategy</h4>
+
+<div class="row">
+    <div class="col-12 px-3">
+        <p><strong>Your overall score is {{metrics.IDEAL.leadership | floatformat:1}}</strong></p>
+
+        <p>
+            Organisations scoring higher on these metrics demonstrate a clear commitment to leadership in data governance and have a long-term data strategy supported by practical processes.</p>
+        <p>
+            These organisations ensure that policies for managing data assets are well-communicated, relevant to all roles, and actively promoted by leadership.
+            Additionally, metadata adoption is championed across all levels, reinforcing its value and embedding it into daily operations and strategic initiatives.
+        </p>
+        <p>
+            Organisations scoring lower on this metric often lack awareness of policies and leadership-driven initiatives for data governance and metadata. This can lead to fragmented processes, inconsistent adoption, and a missed opportunity to leverage data as a strategic asset.            .
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Clearly defining and communicating data governance policies, ensuring they are accessible, actionable, and tied to individual roles and responsibilities</li>
+                <li>Actively promoting metadata adoption through leadership-led initiatives, internal communications, and showcasing its value in organisational success stories</li>
+                <li>Aligning leadership efforts with long-term data strategies by embedding metadata and governance practices into organisational goals and external reporting</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-12 px-3">
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_leadership_1 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_leadership_1 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+        
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_leadership_1.data %}
+
+        <hr>
+        <div class="card card-body">
+            <strong>
+                {{ questions.actions_leadership_2 }}
+            </strong>
+            <div><strong>Your score is {{metrics.IDEAL_DEPTH.actions_leadership_2 | floatformat:1 }} out of 5.</strong></div>
+        </div>
+
+        {% include 'mast/dashboard/helpers/report/actions_table.html' with data=report_metrics.actions_leadership_2.data %}
+
+    </div>    
+</div>
+
+
 <hr>
 
 <h2 class="page-break-before" id="teams">Results by Team</h2>
@@ -485,9 +730,10 @@
     When assessing the 'beliefs', to provide aggregated responses, we recode all "don't know" responses to the mid point (3) of a 5-point likert scale.
     This represents that respondents who are "unaware" data governance programs have a less negative perception of data that those who actively disagree with these belief statements.
 </p>
-<h3 class="h5">Downloading your report</h5>
+<h3 class="h5 print-hide">Downloading your report</h5>
 <p class="print-hide">
-    To get a sharable copy of your report, you can print this page to PDF with Crtl+P. Recommended landscape to ensure all results are retained.
+    To get a sharable copy of your report, you can print this page to PDF with Crtl+P.
+    It is recommended to print in landscape to ensure all graphs stay in their correct orientation.
 </p>
 
 <h3 class="h5">Copyright</h5>

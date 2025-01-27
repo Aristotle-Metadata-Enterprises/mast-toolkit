@@ -224,6 +224,7 @@ class Survey(models.Model):
 
     def generate_report_metrics(self, team=False):
         qs = self.responses.all()
+        total_count_of_responses = qs.count() or 1
 
         def likert_histogram_results(field):
             values = list(qs.values(field).annotate(count=Count(field)).order_by(field))
@@ -231,7 +232,25 @@ class Survey(models.Model):
                 # Move don't know from end, to start
                 values.insert(0, values.pop(-1))
             return values
-        
+                
+        def actions_histogram_results(field):
+            # This gets the raw data from the db and annotates it with the response text
+            values = dict(qs.values_list(field).annotate(count=Count(field)).order_by(field))
+            # Pad max value to ensure histogram looks nice
+            top_value = max(values.values()) * 1.1
+            data = {
+                choice[0]: {
+                    'code': choice[0],
+                    'label': choice[1],
+                    'count': values.get(choice[0], 0),
+                    'percent': int(values.get(choice[0], 0)/total_count_of_responses*100),
+                    'percent_of_max': int(values.get(choice[0], 0)/top_value*100)
+                }
+                for choice in Response._meta.get_field(field).choices
+            }
+            
+            return data
+
         _metrics = {}
         _metrics['beliefs_metadata_1'] = {
             "histogram": likert_histogram_results('beliefs_metadata_1'),
@@ -257,6 +276,37 @@ class Survey(models.Model):
         }
         _metrics['beliefs_teamwork_2'] = {
             "histogram": likert_histogram_results('beliefs_teamwork_2')
+        }
+
+        _metrics['actions_inventory_1'] = {
+            "data": actions_histogram_results('actions_inventory_1'),
+        }
+        _metrics['actions_inventory_2'] = {
+            "data": actions_histogram_results('actions_inventory_2'),
+        }
+        _metrics['actions_document_1'] = {
+            "data": actions_histogram_results('actions_document_1'),
+        }
+        _metrics['actions_document_2'] = {
+            "data": actions_histogram_results('actions_document_2'),
+        }
+        _metrics['actions_endorse_1'] = {
+            "data": actions_histogram_results('actions_endorse_1'),
+        }
+        _metrics['actions_endorse_2'] = {
+            "data": actions_histogram_results('actions_endorse_2'),
+        }
+        _metrics['actions_audit_1'] = {
+            "data": actions_histogram_results('actions_audit_1'),
+        }
+        _metrics['actions_audit_2'] = {
+            "data": actions_histogram_results('actions_audit_2'),
+        }
+        _metrics['actions_leadership_1'] = {
+            "data": actions_histogram_results('actions_leadership_1'),
+        }
+        _metrics['actions_leadership_2'] = {
+            "data": actions_histogram_results('actions_leadership_2'),
         }
 
         return _metrics

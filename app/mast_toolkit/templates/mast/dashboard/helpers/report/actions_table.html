@@ -1,0 +1,24 @@
+<table class="table table-striped">
+    <thead>
+        <th>Score</th>
+        <th>Question</th>
+        <th>Total responses</th>
+        <th style="width:25%">% of responses</th>
+    </thead>
+    <tbody>
+    {% for d in data.values %}
+        <tr>
+            <td>{{d.code}}</td>
+            <td>{{d.label}}</td>
+            <td>{{d.count}}</td>
+            <td>
+                <div class="progress" title="{{d.percent}}%" style="height: 3em;">
+                <div class="progress-bar bg-info" role="progressbar" style="width: {{d.percent_of_max}}%" aria-valuenow="{{d.percent}}" aria-valuemin="0" aria-valuemax="100">
+                    <span class="fs-6">{{d.percent}} %</span>
+                </div>
+            </div>
+        </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
