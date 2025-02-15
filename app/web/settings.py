@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', False)
 
 
 # The `DYNO` env var is set on Heroku CI, but it's not a real Heroku app, so we have to
@@ -108,8 +108,6 @@ WSGI_APPLICATION = "web.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-print(str(BASE_DIR / "db.sqlite3"))
 
 DATABASES = {
     "default": dj_database_url.config(
