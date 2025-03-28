@@ -1,5 +1,5 @@
 serve:
-	django-admin runserver 0.0.0.0:8000
+	PYTHONPATH=./app DJANGO_SETTINGS_MODULE=web.settings django-admin runserver 0.0.0.0:8000
 
 clean_slate:
 	# This is useful for local development and will blow everything away.

@@ -14,7 +14,7 @@
     <title>{% block title %}{% endblock %} - MAST Toolkit</title>
     <style>
       .likert {
-        height: 4em;
+        min-height: 4em;
       }
       input[type=checkbox] {
         height: 1.25em;
@@ -84,11 +84,14 @@
           }
       }
 
+      {% block styles %}
+      {% endblock %}
+
     </style>
   </head>
   <body>
     <div class="container survey-outer">
-      <div class="card card-body p-5 m-5">
+      <div class="card card-body p-lg-5 m-lg-5 m-md-2 p-md-3">
       {% block content %}
       {% endblock %}
       </div>

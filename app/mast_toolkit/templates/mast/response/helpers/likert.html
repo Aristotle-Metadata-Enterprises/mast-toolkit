@@ -1,7 +1,7 @@
 <div class="row likert pt-1">
-    <label class="col-5" for="{{field.id_for_label}}">{{ field.label }}</label>
+    <label class="col-6" for="{{field.id_for_label}}"><span class="my-5">{{ field.label }}</span></label>
     {% for choice in field %}
-    <div class="col bolded-radio-cell">
+    <div class="col-1 bolded-radio-cell">
         {{ choice.tag }}
     </div>
     {% endfor %}
