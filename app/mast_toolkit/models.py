@@ -78,6 +78,12 @@ class Survey(models.Model):
         default=mast_toolkit.consts.DataUsed.HIDE,
         help_text="If selected, we will ask additional questions for each of the 'I-D-E-A-L' behaviours that can be downloaded and analysed."
     )
+    ask_respondents_for_email = models.PositiveIntegerField(
+        verbose_name="Ask respondents for a contact email",
+        choices=mast_toolkit.consts.EmailRequiredForSurvey,
+        default=mast_toolkit.consts.EmailRequiredForSurvey.OPTIONAL,
+        help_text="If selected, we will ask repsondents for an email address so that you can follow up with specific users."
+    )
 
     # size = ???
     # tools = ???

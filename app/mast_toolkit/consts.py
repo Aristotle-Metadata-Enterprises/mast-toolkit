@@ -43,6 +43,12 @@ class DataUsed(models.IntegerChoices):
     HIDE = 2, _("Hide question on data used and created by the respondent")
 
 
+class EmailRequiredForSurvey(models.IntegerChoices):
+    NOEMAIL = 1, _("Do not ask respondents for their email")
+    OPTIONAL = 2, _("Allow respondents to provide their email")
+    REQUIRED = 3, _("Require respodents to provide their email")
+
+
 ACTIVITY_TYPES = [
     ('A', "I analyse data for research purposes"),
     ('B', "I create new data assets"),
