@@ -3,7 +3,7 @@
 {% block title %}Complete MAST Maturity survey - {{ survey.title }}{% endblock %}
 
 {% block content %}
-<h1>MAST Data Documentation Maturity Assessment</h1>
+<h1>{{ survey.title }}</h1>
 
 <form method="post">
     {% csrf_token %}
