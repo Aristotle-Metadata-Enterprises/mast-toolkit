@@ -35,9 +35,9 @@ class Likert(models.IntegerChoices):
 
 def censor_dk_as_midpoint(field_name):
     return Case(
-        When(**{field_name:Likert.DONTKNOW}, then=Value(Likert.NN)),
+        When(**{field_name:Likert.DONTKNOW}, then=Value(1.5)),
         default=F(field_name),  # Default value if no conditions match
-        output_field=models.PositiveIntegerField()
+        output_field=models.FloatField()
     )
 
 
