@@ -46,6 +46,11 @@ def CensoredAvg(field_name, default=0):
         default=default,
     )
 
+def adjusted_likert(avg_score):
+    gamma = 1.75
+    adjusted = 1 + ((avg_score - 1) ** gamma) / (4 ** (gamma - 1))
+    return round(adjusted.real, 1)
+
 
 class Survey(models.Model):
     id = models.CharField(primary_key=True, default=shortuuid.uuid, editable=False, max_length=256)
@@ -185,41 +190,41 @@ class Survey(models.Model):
             "MAST": {
                 # TODO: Investigate spreading
                 # "metadata": (((responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2)**2)/5,
-                "metadata": (((responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2)),
-                "analysis": (((responses['beliefs_analysis_1_dk__avg']+responses['beliefs_analysis_2_dk__avg'])/2)),
-                "standards": (((responses['beliefs_standards_1_dk__avg']+responses['beliefs_standards_2_dk__avg'])/2)),
-                "teamwork": (((responses['beliefs_teamwork_1_dk__avg']+responses['beliefs_teamwork_2_dk__avg'])/2)),
+                "metadata": adjusted_likert((responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2),
+                "analysis": adjusted_likert((responses['beliefs_analysis_1_dk__avg']+responses['beliefs_analysis_2_dk__avg'])/2),
+                "standards": adjusted_likert((responses['beliefs_standards_1_dk__avg']+responses['beliefs_standards_2_dk__avg'])/2),
+                "teamwork": adjusted_likert((responses['beliefs_teamwork_1_dk__avg']+responses['beliefs_teamwork_2_dk__avg'])/2),
             },
             "MAST_DEPTH": {
-                "beliefs_metadata_1": responses['beliefs_metadata_1_dk__avg'],
-                "beliefs_analysis_1": responses['beliefs_analysis_1_dk__avg'],
-                "beliefs_standards_1": responses['beliefs_standards_1_dk__avg'],
-                "beliefs_teamwork_1": responses['beliefs_teamwork_1_dk__avg'],
-                "beliefs_metadata_2": responses['beliefs_metadata_2_dk__avg'],
-                "beliefs_analysis_2": responses['beliefs_analysis_2_dk__avg'],
-                "beliefs_standards_2": responses['beliefs_standards_2_dk__avg'],
-                "beliefs_teamwork_2": responses['beliefs_teamwork_2_dk__avg'],
+                "beliefs_metadata_1": adjusted_likert(responses['beliefs_metadata_1_dk__avg']),
+                "beliefs_analysis_1": adjusted_likert(responses['beliefs_analysis_1_dk__avg']),
+                "beliefs_standards_1": adjusted_likert(responses['beliefs_standards_1_dk__avg']),
+                "beliefs_teamwork_1": adjusted_likert(responses['beliefs_teamwork_1_dk__avg']),
+                "beliefs_metadata_2": adjusted_likert(responses['beliefs_metadata_2_dk__avg']),
+                "beliefs_analysis_2": adjusted_likert(responses['beliefs_analysis_2_dk__avg']),
+                "beliefs_standards_2": adjusted_likert(responses['beliefs_standards_2_dk__avg']),
+                "beliefs_teamwork_2": adjusted_likert(responses['beliefs_teamwork_2_dk__avg']),
             },
             "IDEAL": {
                 # Aggregates responses at the IDEAL level
-                "inventory": (((responses['actions_inventory_1__avg']+responses['actions_inventory_2__avg'])/2)),
-                "document": (((responses['actions_document_1__avg']+responses['actions_document_2__avg'])/2)),
-                "endorse": (((responses['actions_endorse_1__avg']+responses['actions_endorse_2__avg'])/2)),
-                "audit": (((responses['actions_audit_1__avg']+responses['actions_audit_2__avg'])/2)),
-                "leadership": (((responses['actions_leadership_1__avg']+responses['actions_leadership_1__avg'])/2)),
+                "inventory": adjusted_likert((responses['actions_inventory_1__avg']+responses['actions_inventory_2__avg'])/2),
+                "document": adjusted_likert((responses['actions_document_1__avg']+responses['actions_document_2__avg'])/2),
+                "endorse": adjusted_likert((responses['actions_endorse_1__avg']+responses['actions_endorse_2__avg'])/2),
+                "audit": adjusted_likert((responses['actions_audit_1__avg']+responses['actions_audit_2__avg'])/2),
+                "leadership": adjusted_likert((responses['actions_leadership_1__avg']+responses['actions_leadership_1__avg'])/2),
             },
             "IDEAL_DEPTH": {
                 # Aggregates each response
-                "actions_inventory_1": responses['actions_inventory_1__avg'],
-                "actions_inventory_2": responses['actions_inventory_2__avg'],
-                "actions_document_1": responses['actions_document_1__avg'],
-                "actions_document_2": responses['actions_document_2__avg'],
-                "actions_endorse_1": responses['actions_endorse_1__avg'],
-                "actions_endorse_2": responses['actions_endorse_2__avg'],
-                "actions_audit_1": responses['actions_audit_1__avg'],
-                "actions_audit_2": responses['actions_audit_2__avg'],
-                "actions_leadership_1": responses['actions_leadership_1__avg'],                
-                "actions_leadership_2": responses['actions_leadership_2__avg'],                
+                "actions_inventory_1": adjusted_likert(responses['actions_inventory_1__avg']),
+                "actions_inventory_2": adjusted_likert(responses['actions_inventory_2__avg']),
+                "actions_document_1": adjusted_likert(responses['actions_document_1__avg']),
+                "actions_document_2": adjusted_likert(responses['actions_document_2__avg']),
+                "actions_endorse_1": adjusted_likert(responses['actions_endorse_1__avg']),
+                "actions_endorse_2": adjusted_likert(responses['actions_endorse_2__avg']),
+                "actions_audit_1": adjusted_likert(responses['actions_audit_1__avg']),
+                "actions_audit_2": adjusted_likert(responses['actions_audit_2__avg']),
+                "actions_leadership_1": adjusted_likert(responses['actions_leadership_1__avg']),
+                "actions_leadership_2": adjusted_likert(responses['actions_leadership_2__avg']),
             },
             "RECENT_RESPONSES": response_dates.filter(response_date__gt = datetime.datetime.now() - datetime.timedelta(days=14))
         }
