@@ -35,9 +35,16 @@ class Likert(models.IntegerChoices):
 
 def censor_dk_as_midpoint(field_name):
     return Case(
-        When(**{field_name:Likert.DONTKNOW}, then=Value(1)),
+        When(**{field_name: Likert.DONTKNOW.value}, then=Value(1)),
         default=F(field_name),  # Default value if no conditions match
         output_field=models.PositiveIntegerField()
+    )
+
+
+def CensoredAvg(field_name, default=3):
+    return Avg(
+        censor_dk_as_midpoint(field_name),
+        default=default,
     )
 
 
@@ -111,16 +118,6 @@ class Survey(models.Model):
         total_responses = qs.count()
 
         responses = qs.aggregate(
-
-            Avg('beliefs_metadata_1', default=3),
-            Avg('beliefs_analysis_1', default=3),
-            Avg('beliefs_standards_1', default=3),
-            Avg('beliefs_teamwork_1', default=3),
-            
-            Avg('beliefs_metadata_2', default=3),
-            Avg('beliefs_analysis_2', default=3),
-            Avg('beliefs_standards_2', default=3),
-            Avg('beliefs_teamwork_2', default=3),
             
             Avg('actions_inventory_1', default=3),
             Avg('actions_inventory_2', default=3),
@@ -132,6 +129,16 @@ class Survey(models.Model):
             Avg('actions_audit_2', default=3),
             Avg('actions_leadership_1', default=3),
             Avg('actions_leadership_2', default=3),
+
+            beliefs_metadata_1_dk__avg = CensoredAvg('beliefs_metadata_1', default=3),
+            beliefs_analysis_1_dk__avg = CensoredAvg('beliefs_analysis_1', default=3),
+            beliefs_standards_1_dk__avg = CensoredAvg('beliefs_standards_1', default=3),
+            beliefs_teamwork_1_dk__avg = CensoredAvg('beliefs_teamwork_1', default=3),
+            
+            beliefs_metadata_2_dk__avg = CensoredAvg('beliefs_metadata_2', default=3),
+            beliefs_analysis_2_dk__avg = CensoredAvg('beliefs_analysis_2', default=3),
+            beliefs_standards_2_dk__avg = CensoredAvg('beliefs_standards_2', default=3),
+            beliefs_teamwork_2_dk__avg = CensoredAvg('beliefs_teamwork_2', default=3),
 
             beliefs_metadata_1_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_metadata_1'),
