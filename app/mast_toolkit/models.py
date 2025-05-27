@@ -183,10 +183,12 @@ class Survey(models.Model):
                 "total_responses": total_responses,
             },
             "MAST": {
-                "metadata": (((responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2)**2)/5,
-                "analysis": (((responses['beliefs_analysis_1_dk__avg']+responses['beliefs_analysis_2_dk__avg'])/2)**2)/5,
-                "standards": (((responses['beliefs_standards_1_dk__avg']+responses['beliefs_standards_2_dk__avg'])/2)**2)/5,
-                "teamwork": (((responses['beliefs_teamwork_1_dk__avg']+responses['beliefs_teamwork_2_dk__avg'])/2)**2)/5,
+                # TODO: Investigate spreading
+                # "metadata": (((responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2)**2)/5,
+                "metadata": (((responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2)),
+                "analysis": (((responses['beliefs_analysis_1_dk__avg']+responses['beliefs_analysis_2_dk__avg'])/2)),
+                "standards": (((responses['beliefs_standards_1_dk__avg']+responses['beliefs_standards_2_dk__avg'])/2)),
+                "teamwork": (((responses['beliefs_teamwork_1_dk__avg']+responses['beliefs_teamwork_2_dk__avg'])/2)),
             },
             "MAST_DEPTH": {
                 "beliefs_metadata_1": responses['beliefs_metadata_1_dk__avg'],
@@ -200,11 +202,11 @@ class Survey(models.Model):
             },
             "IDEAL": {
                 # Aggregates responses at the IDEAL level
-                "inventory": (((responses['actions_inventory_1__avg']+responses['actions_inventory_2__avg'])/2)**2)/5,
-                "document": (((responses['actions_document_1__avg']+responses['actions_document_2__avg'])/2)**2)/5,
-                "endorse": (((responses['actions_endorse_1__avg']+responses['actions_endorse_2__avg'])/2)**2)/5,
-                "audit": (((responses['actions_audit_1__avg']+responses['actions_audit_2__avg'])/2)**2)/5,
-                "leadership": (((responses['actions_leadership_1__avg']+responses['actions_leadership_1__avg'])/2)**2)/5,
+                "inventory": (((responses['actions_inventory_1__avg']+responses['actions_inventory_2__avg'])/2)),
+                "document": (((responses['actions_document_1__avg']+responses['actions_document_2__avg'])/2)),
+                "endorse": (((responses['actions_endorse_1__avg']+responses['actions_endorse_2__avg'])/2)),
+                "audit": (((responses['actions_audit_1__avg']+responses['actions_audit_2__avg'])/2)),
+                "leadership": (((responses['actions_leadership_1__avg']+responses['actions_leadership_1__avg'])/2)),
             },
             "IDEAL_DEPTH": {
                 # Aggregates each response
