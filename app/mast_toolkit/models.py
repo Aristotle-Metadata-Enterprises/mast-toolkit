@@ -47,8 +47,8 @@ def CensoredAvg(field_name, default=0):
     )
 
 def adjusted_likert(avg_score):
-    if score == 0:
-        return score
+    if avg_score == 0:
+        return avg_score
     gamma = 1.5
     adjusted = 1 + ((avg_score - 1) ** gamma) / (4 ** (gamma - 1))
     return round(adjusted.real, 1)
