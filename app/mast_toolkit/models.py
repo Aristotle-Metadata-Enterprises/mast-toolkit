@@ -35,9 +35,9 @@ class Likert(models.IntegerChoices):
 
 def censor_dk_as_midpoint(field_name):
     return Case(
-        When(**{field_name: Likert.DONTKNOW.value}, then=Value(1)),
+        When(**{field_name: Likert.DONTKNOW.value}, then=Value(1.5)),
         default=F(field_name),  # Default value if no conditions match
-        output_field=models.PositiveIntegerField()
+        output_field=models.FloatField()
     )
 
 def CensoredAvg(field_name, default=0):
@@ -183,10 +183,10 @@ class Survey(models.Model):
                 "total_responses": total_responses,
             },
             "MAST": {
-                "metadata": (responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2,
-                "analysis": (responses['beliefs_analysis_1_dk__avg']+responses['beliefs_analysis_2_dk__avg'])/2,
-                "standards": (responses['beliefs_standards_1_dk__avg']+responses['beliefs_standards_2_dk__avg'])/2,
-                "teamwork": (responses['beliefs_teamwork_1_dk__avg']+responses['beliefs_teamwork_2_dk__avg'])/2,
+                "metadata": (((responses['beliefs_metadata_1_dk__avg']+responses['beliefs_metadata_2_dk__avg'])/2)**2)/5,
+                "analysis": (((responses['beliefs_analysis_1_dk__avg']+responses['beliefs_analysis_2_dk__avg'])/2)**2)/5,
+                "standards": (((responses['beliefs_standards_1_dk__avg']+responses['beliefs_standards_2_dk__avg'])/2)**2)/5,
+                "teamwork": (((responses['beliefs_teamwork_1_dk__avg']+responses['beliefs_teamwork_2_dk__avg'])/2)**2)/5,
             },
             "MAST_DEPTH": {
                 "beliefs_metadata_1": responses['beliefs_metadata_1_dk__avg'],
@@ -200,11 +200,11 @@ class Survey(models.Model):
             },
             "IDEAL": {
                 # Aggregates responses at the IDEAL level
-                "inventory": (responses['actions_inventory_1__avg']+responses['actions_inventory_2__avg'])/2,
-                "document": (responses['actions_document_1__avg']+responses['actions_document_2__avg'])/2,
-                "endorse": (responses['actions_endorse_1__avg']+responses['actions_endorse_2__avg'])/2,
-                "audit": (responses['actions_audit_1__avg']+responses['actions_audit_2__avg'])/2,
-                "leadership": (responses['actions_leadership_1__avg']+responses['actions_leadership_1__avg'])/2,
+                "inventory": (((responses['actions_inventory_1__avg']+responses['actions_inventory_2__avg'])/2)**2)/5,
+                "document": (((responses['actions_document_1__avg']+responses['actions_document_2__avg'])/2)**2)/5,
+                "endorse": (((responses['actions_endorse_1__avg']+responses['actions_endorse_2__avg'])/2)**2)/5,
+                "audit": (((responses['actions_audit_1__avg']+responses['actions_audit_2__avg'])/2)**2)/5,
+                "leadership": (((responses['actions_leadership_1__avg']+responses['actions_leadership_1__avg'])/2)**2)/5,
             },
             "IDEAL_DEPTH": {
                 # Aggregates each response
