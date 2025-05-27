@@ -1,8 +1,9 @@
 {% spaceless %}
 <td class="
 {% if border %}team-table-border{% endif %}
-{% if metric < 1.5 %}table-danger
-{% elif metric < 2.5 %}table-warning
+{% if metric == 0.0 %}table-light
+{% elif metric < 2.0 %}table-danger
+{% elif metric < 3.0 %}table-warning
 {% elif metric >= 4 %}table-success
 {% else %}{% endif %}
 ">{{ metric | floatformat:1 }}</td>

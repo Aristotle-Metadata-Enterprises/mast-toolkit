@@ -40,7 +40,7 @@ def censor_dk_as_midpoint(field_name):
         output_field=models.PositiveIntegerField()
     )
 
-def CensoredAvg(field_name, default=3):
+def CensoredAvg(field_name, default=0):
     return Avg(
         censor_dk_as_midpoint(field_name),
         default=default,
@@ -118,58 +118,58 @@ class Survey(models.Model):
 
         responses = qs.aggregate(
 
-            Avg('beliefs_metadata_1', default=3),
-            Avg('beliefs_analysis_1', default=3),
-            Avg('beliefs_standards_1', default=3),
-            Avg('beliefs_teamwork_1', default=3),
+            Avg('beliefs_metadata_1', default=0),
+            Avg('beliefs_analysis_1', default=0),
+            Avg('beliefs_standards_1', default=0),
+            Avg('beliefs_teamwork_1', default=0),
             
-            Avg('beliefs_metadata_2', default=3),
-            Avg('beliefs_analysis_2', default=3),
-            Avg('beliefs_standards_2', default=3),
-            Avg('beliefs_teamwork_2', default=3),
+            Avg('beliefs_metadata_2', default=0),
+            Avg('beliefs_analysis_2', default=0),
+            Avg('beliefs_standards_2', default=0),
+            Avg('beliefs_teamwork_2', default=0),
             
-            Avg('actions_inventory_1', default=3),
-            Avg('actions_inventory_2', default=3),
-            Avg('actions_document_1', default=3),
-            Avg('actions_document_2', default=3),
-            Avg('actions_endorse_1', default=3),
-            Avg('actions_endorse_2', default=3),
-            Avg('actions_audit_1', default=3),
-            Avg('actions_audit_2', default=3),
-            Avg('actions_leadership_1', default=3),
-            Avg('actions_leadership_2', default=3),
+            Avg('actions_inventory_1', default=0),
+            Avg('actions_inventory_2', default=0),
+            Avg('actions_document_1', default=0),
+            Avg('actions_document_2', default=0),
+            Avg('actions_endorse_1', default=0),
+            Avg('actions_endorse_2', default=0),
+            Avg('actions_audit_1', default=0),
+            Avg('actions_audit_2', default=0),
+            Avg('actions_leadership_1', default=0),
+            Avg('actions_leadership_2', default=0),
 
             beliefs_metadata_1_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_metadata_1'),
-                default=3,
+                default=0,
             ),
             beliefs_analysis_1_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_analysis_1'),
-                default=3,
+                default=0,
             ),
             beliefs_standards_1_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_standards_1'),
-                default=3,
+                default=0,
             ),
             beliefs_teamwork_1_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_teamwork_1'),
-                default=3,
+                default=0,
             ),
             beliefs_metadata_2_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_metadata_2'),
-                default=3,
+                default=0,
             ),
             beliefs_analysis_2_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_analysis_2'),
-                default=3,
+                default=0,
             ),
             beliefs_standards_2_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_standards_2'),
-                default=3,
+                default=0,
             ),
             beliefs_teamwork_2_dk__avg = Avg(
                 censor_dk_as_midpoint('beliefs_teamwork_2'),
-                default=3,
+                default=0,
             ),
 
         )
