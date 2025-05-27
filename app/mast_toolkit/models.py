@@ -234,6 +234,14 @@ class Survey(models.Model):
 
         def likert_histogram_results(field):
             values = list(qs.values(field).annotate(count=Count(field)).order_by(field))
+            data = {opt.value: 0 for opt in Likert}
+            for v in values:
+                data[v[field]] = v['count']
+            print(data)
+            values = [
+                {field: value, 'count': count}
+                for value, count in data.items()
+            ]
             if values:
                 # Move don't know from end, to start
                 values.insert(0, values.pop(-1))
