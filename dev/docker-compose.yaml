@@ -17,8 +17,8 @@ services:
     volumes:
       - ..:/usr/src
     user: 'root'
-    # command: django-admin runserver 0.0.0.0:8000
-    command: tail /dev/null -f
+    command: django-admin runserver 0.0.0.0:8000
+    # command: tail /dev/null -f
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
