@@ -162,7 +162,11 @@
 
                 <div id="other_activity_section">
                 <label for="{{form.other_data_activity.id_for_label}}">List other activities you perform with data in your role below:</label>
-                {{ form.other_data_activity }}
+                <input type="text" 
+                   name="{{ form.other_data_activity.name }}" 
+                   id="{{ form.other_data_activity.id_for_label }}" 
+                   class="form-control" 
+                   {% if form.other_data_activity.value %}value="{{ form.other_data_activity.value }}"{% endif %}>
                 </div>
             </div>
         </div>
