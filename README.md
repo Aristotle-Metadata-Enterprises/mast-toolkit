@@ -7,6 +7,10 @@
 All changes below are relative to the `master` branch.  
 Feature tag: `Select Organisation Only or Industry Benchmarking - 160326 Kathy`
 
+#### Table of Contents
+- [v0.2.1 — Survey Wording & Tools Field Update](#v021--2026-03-16-survey-wording--tools-field-update)
+- [v0.2.0 — Multi-step Response + Survey Type](#v020--2026-03-16-multi-step-response--survey-type)
+
 ---
 
 ### v0.2.0 — 2026-03-16 (Multi-step Response + Survey Type)
@@ -108,3 +112,43 @@ Error display: red border + pink background + "This field is required." message
 | `0005` | Added `Response.other_tool`, altered `Response.tools` max_length=2 |
 | `0006` | Auto-generated field alterations |
 | `0007` | Added `Response.is_complete`, all beliefs/actions fields → `null=True` |
+
+---
+
+### v0.2.1 — 2026-03-16 (Survey Wording & Tools Field Update)
+
+#### Summary
+- Changed intro wording from "first four questions" to "first section"
+- Renamed tools question and converted from radio select to free-text textarea
+- Made "What data do you use or create…" question always visible (removed conditional toggle)
+
+#### 1. Wording Changes
+
+**`templates/mast/response/step1.html`** and **`templates/mast/response/create.html`**:
+- `"The first four questions in this survey are about your beliefs…"` → `"The first section in this survey is about your beliefs…"`
+
+#### 2. Tools Field — Radio → Free-text Textarea
+
+**`app/mast_toolkit/models.py`**:
+- `tools` field changed from `CharField(max_length=2, choices=ToolChoices)` → `TextField(blank=True)`
+- `verbose_name` changed from `"What tools do you use to work with data in the organisation?"` → `"What tools do you use to document and organise data at your organisation?"`
+
+**`app/mast_toolkit/forms.py`**:
+- `ResponseForm`: tools widget changed from `RadioSelect` → `TextInput`; removed `tools.choices` filtering in `__init__`
+- `ResponseStep3Form`: tools widget changed from `RadioSelect` → `TextInput`; removed `tools.choices` filtering in `__init__`
+
+**`templates/mast/response/step3.html`** and **`templates/mast/response/create.html`**:
+- Tools field rendered via `textarea.html` helper (same style as `data_used_or_created`)
+- Removed "Other tools" sub-section and related JavaScript toggle
+
+#### 3. Data Used Question — Always Visible
+
+**`templates/mast/response/step3.html`**:
+- Removed `{% if show_data_used_field %}` conditional; `data_used_or_created` textarea now always displays on Step 3
+
+#### 4. Migration Required
+
+Model field change (`tools`: CharField → TextField) requires a new migration:
+```
+PYTHONPATH=./app DJANGO_SETTINGS_MODULE=web.settings django-admin makemigrations mast_toolkit
+```
