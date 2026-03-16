@@ -71,13 +71,7 @@
                 </div>
             </div>
         </div>
-        <div class="row my-2">
-            <label class="col-5" for="{{form.tools.id_for_label}}">{{ form.tools.label }}:</label>
-            <div class="col">
-                <input type="text" name="{{ form.tools.name }}" id="{{ form.tools.id_for_label }}" class="form-control"
-                    {% if form.tools.value %}value="{{ form.tools.value }}"{% endif %}>
-            </div>
-        </div>
+        {% include "mast/response/helpers/textarea.html" with field=form.tools %}
         {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
     </div>
 
