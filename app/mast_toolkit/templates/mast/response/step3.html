@@ -73,18 +73,12 @@
         </div>
         <div class="row my-2">
             <label class="col-5" for="{{form.tools.id_for_label}}">{{ form.tools.label }}:</label>
-            <div class="col tool-choices">
-                {{ form.tools }}
-                <div id="other_tool_section">
-                    <label for="id_other_tool">Please specify:</label>
-                    <input type="text" name="other_tool" id="id_other_tool" class="form-control"
-                        {% if form.other_tool.value %}value="{{ form.other_tool.value }}"{% endif %}>
-                </div>
+            <div class="col">
+                <input type="text" name="{{ form.tools.name }}" id="{{ form.tools.id_for_label }}" class="form-control"
+                    {% if form.tools.value %}value="{{ form.tools.value }}"{% endif %}>
             </div>
         </div>
-        {% if show_data_used_field %}
         {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
-        {% endif %}
     </div>
 
     <div class="d-flex justify-content-end mt-4">
@@ -106,16 +100,6 @@
         }
 
         // Select Organisation Only or Industry Benchmarking - 160326 Kathy
-        const otherToolSection = document.getElementById("other_tool_section");
-        if (otherToolSection) {
-            otherToolSection.style.display = "none";
-            const toolRadios = document.querySelectorAll('input[name="tools"]');
-            toolRadios.forEach(function(radio) {
-                radio.addEventListener("change", function () {
-                    otherToolSection.style.display = this.value === "OT" ? "block" : "none";
-                });
-            });
-        }
     });
 </script>
 

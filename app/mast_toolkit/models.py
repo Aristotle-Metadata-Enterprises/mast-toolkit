@@ -379,7 +379,7 @@ class Response(models.Model):
     is_complete = models.BooleanField(default=False)
     # Select Organisation Only or Industry Benchmarking - 160326 Kathy
     seniority = models.CharField(max_length=1, choices=mast_toolkit.consts.SeniorityChoices, blank=True, null=True, verbose_name="Seniority level")
-    tools = models.CharField(max_length=2, choices=mast_toolkit.consts.ToolChoices, blank=True, null=True, verbose_name="What tools do you use to work with data in the organisation?")
+    tools = models.TextField(blank=True, verbose_name="What tools do you use to document and organise data at your organisation?")
     other_tool = models.CharField(blank=True, max_length=2048)
     industry = models.CharField(max_length=1, choices=mast_toolkit.consts.ISICChoices, blank=True, null=True, verbose_name="Industry")
 

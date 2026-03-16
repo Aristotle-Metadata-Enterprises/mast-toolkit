@@ -74,7 +74,7 @@ class ResponseForm(forms.ModelForm):
 
             # Select Organisation Only or Industry Benchmarking - 160326 Kathy
             "seniority": forms.RadioSelect,
-            "tools": forms.RadioSelect,
+            "tools": forms.TextInput(attrs={"class": "form-control"}),
             "industry": forms.Select(attrs={"class": "form-select"}),
 
             # "actions_inventory_qual
@@ -91,9 +91,6 @@ class ResponseForm(forms.ModelForm):
         # Select Organisation Only or Industry Benchmarking - 160326 Kathy
         self.fields['seniority'].choices = [
             c for c in self.fields['seniority'].choices if c[0] != ''
-        ]
-        self.fields['tools'].choices = [
-            c for c in self.fields['tools'].choices if c[0] != ''
         ]
         # Make seniority, tasks, and industry mandatory - 160326 Kathy
         self.fields['seniority'].required = True
@@ -166,7 +163,7 @@ class ResponseStep3Form(forms.ModelForm):
             "data_used_or_created": forms.Textarea(attrs={"class": "form-control"}),
             "data_uses": forms.CheckboxSelectMultiple,
             "seniority": forms.RadioSelect,
-            "tools": forms.RadioSelect,
+            "tools": forms.TextInput(attrs={"class": "form-control"}),
             "industry": forms.Select(attrs={"class": "form-select"}),
         }
 
@@ -176,9 +173,6 @@ class ResponseStep3Form(forms.ModelForm):
         self.fields['team'].queryset = self.fields['team'].queryset.filter(survey=survey)
         self.fields['seniority'].choices = [
             c for c in self.fields['seniority'].choices if c[0] != ''
-        ]
-        self.fields['tools'].choices = [
-            c for c in self.fields['tools'].choices if c[0] != ''
         ]
         # Make seniority, tasks, and industry mandatory - 160326 Kathy
         self.fields['seniority'].required = True

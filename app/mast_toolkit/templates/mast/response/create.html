@@ -50,7 +50,7 @@
     </div>
 
     <h2 class="h3 py-3">
-        The first four questions in this survey are about your <u>beliefs</u> regarding data documentation in your organisation.
+        The first section in this survey is about your <u>beliefs</u> regarding data documentation in your organisation.
     </h2>
     <div class="container mt-5 likert-table">
         <div class="row likert-headers">
@@ -219,13 +219,9 @@
         </div>
         <div class="row my-2">
             <label class="col-5" for="{{form.tools.id_for_label}}">{{ form.tools.label }}:</label>
-            <div class="col tool-choices">
-                {{ form.tools }}
-                <div id="other_tool_section">
-                    <label for="id_other_tool">Please specify:</label>
-                    <input type="text" name="other_tool" id="id_other_tool" class="form-control"
-                        {% if form.other_tool.value %}value="{{ form.other_tool.value }}"{% endif %}>
-                </div>
+            <div class="col">
+                <input type="text" name="{{ form.tools.name }}" id="{{ form.tools.id_for_label }}" class="form-control"
+                    {% if form.tools.value %}value="{{ form.tools.value }}"{% endif %}>
             </div>
         </div>
         {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
