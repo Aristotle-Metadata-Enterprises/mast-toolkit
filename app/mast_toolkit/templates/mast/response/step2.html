@@ -1,0 +1,90 @@
+{% extends "mast/response/base.html" %}
+
+{% block title %}Complete MAST Maturity survey - {{ survey.title }} (Step 2 of 3){% endblock %}
+
+{% block content %}
+<h1>{{ survey.title }}</h1>
+<p class="text-muted">Step {{ step }} of 3</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.errors }}
+
+    <h2 class="h3 py-3 my-5">
+        The following questions are about the <u>actions</u> you perform as part of your regular tasks.
+    </h2>
+    <p class="pb-5">
+        Developing a greater awareness of data assets is part of the <b>IDEAL</b> (Inventory-Document-Endorse-Audit-Leadership) Framework.
+        The framework has processes that help an organisation make their data more accessible and easier to understand.
+        These questions are designed to get an understanding of things you do in your role, so if a question doesn't relate to your job role or you aren't sure if you do that task select "I don't do this as part of my current role".
+    </p>
+
+    <div class="h4 border-top border-info pt-5 mt-1">
+        The following questions are about how you find data in your organisation and where you record information about data assets that you are responsible for.
+    </div>
+    <div class="pb-3">
+    The <b>I</b> in the IDEAL framework stands for 'Investigate and inventory data' which leads to an increased knowledge of data assets and their location. These questions are about how you record the existence of data that you manage, and how you find data for your regular activities.
+    </div>
+    {% include "mast/response/helpers/radio.html" with field=form.actions_inventory_1 %}
+    {% include "mast/response/helpers/radio.html" with field=form.actions_inventory_2 %}
+    {% if show_qualitative %}
+    {% include "mast/response/helpers/textarea.html" with field=form.actions_inventory_qual %}
+    {% endif %}
+
+
+    <div class="h4 border-top border-info pt-3 mt-1">
+        The following questions are related to the types of information that are collected about data assets in your organisation. 
+    </div>
+    <div class="pb-3">
+        The <b>D</b> in the IDEAL framework stands for 'Document data and metadata'  which improves the understanding of how data is collected and processed. These questions are about the types of information you and your team collect in your data documentation.
+    </div>
+    {% include "mast/response/helpers/radio.html" with field=form.actions_document_1 %}
+    {% include "mast/response/helpers/radio.html" with field=form.actions_document_2 %}
+    {% if show_qualitative %}
+    {% include "mast/response/helpers/textarea.html" with field=form.actions_document_qual %}
+    {% endif %}
+    
+    <div class="h4 border-top border-info pt-5 mt-1">
+        The following questions are about how data documentation is reviewed and published in your organisation. 
+    </div>
+    <div class="pb-3">
+        The <b>E</b> in the IDEAL framework stands for 'Endorse and Publish' which captures activities related to peer review, governance and publication of documentation about data assets. These questions are about how you work with standards, perform peer reviews and publication of data documentation in your team.
+    </div>
+    {% include "mast/response/helpers/radio.html" with field=form.actions_endorse_1 %}
+    {% include "mast/response/helpers/radio.html" with field=form.actions_endorse_2 %}
+    {% if show_qualitative %}
+    {% include "mast/response/helpers/textarea.html" with field=form.actions_endorse_qual %}
+    {% endif %}
+
+
+    <div class="h4 border-top border-info pt-5 mt-1">
+        The following questions are about how your organisation links related data documentation and reuses common terms over time.
+    </div>
+    <div class="pb-3">
+        The <b>A</b> in the IDEAL framework stands for 'Audit and Harmonise' which focuses on how similar terms in data glossaries and related data assets are managed to reduce duplicates and improve consistency. These questions are about how you and your team manage your data glossaries and how these align with glossaries across your organisation.
+    </div>
+    {% include "mast/response/helpers/radio.html" with field=form.actions_audit_1 %}
+    {% include "mast/response/helpers/radio.html" with field=form.actions_audit_2 %}
+    {% if show_qualitative %}
+    {% include "mast/response/helpers/textarea.html" with field=form.actions_audit_qual %}
+    {% endif %}
+
+    
+    <div class="h4 border-top border-info pt-5 mt-1">
+        The following questions are about steps you, your team and the leadership of your organisation take to promote data documentation.
+    </div>
+    <div class="pb-3">
+        The <b>L</b> in the IDEAL framework stands for 'Leadership and Long-term strategy' which focuses on how people and teams can continuously improve their data processes, and promote these activities across the organisation. These questions are about activities your team follows and organisation initiatives you are personally aware of for data documentation and metadata management in your organisation.
+    </div>
+    {% include "mast/response/helpers/radio.html" with field=form.actions_leadership_1 %}
+    {% include "mast/response/helpers/radio.html" with field=form.actions_leadership_2 %}
+    {% if show_qualitative %}
+    {% include "mast/response/helpers/textarea.html" with field=form.actions_leadership_qual %}
+    {% endif %}
+
+    <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-primary" type="submit">Next &raquo;</button>
+    </div>
+</form>
+
+{% endblock %}

@@ -19,6 +19,8 @@
     </div>
 </form>
 
+<!-- Select Organisation Only or Industry Benchmarking - 160326 Kathy -->
+{% if is_organisation_only %}
 <hr class="">
 <div class="container py-3">
     <h2 id="teams">Teams</h2>
@@ -82,4 +84,5 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

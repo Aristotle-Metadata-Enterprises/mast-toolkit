@@ -5,9 +5,20 @@
 {% block content %}
 <h1>{{ survey.title }}</h1>
 
-<form method="post">
+<style>
+    .has-error {
+        border: 2px solid #dc3545;
+        border-radius: 6px;
+        padding: 8px;
+        background-color: #fff5f5;
+    }
+</style>
+
+<form method="post" id="survey-form">
     {% csrf_token %}
-    {{ form.errors }}
+
+    <!-- Page 1: Beliefs -->
+    <div class="survey-page" id="page-1">
 
     <div class="card"><div class="card-body">
         {% if survey.preamble %}
@@ -62,7 +73,15 @@
         {% include "mast/response/helpers/likert.html" with field=form.beliefs_teamwork_1 %}
     </div>
 
-    <hr>
+    <div class="d-flex justify-content-end mt-4">
+        <button type="button" class="btn btn-primary" onclick="showPage(2)">Next &raquo;</button>
+    </div>
+
+    </div><!-- end page-1 -->
+
+    <!-- Page 2: Actions -->
+    <div class="survey-page" id="page-2" style="display:none;">
+
     <h2 class="h3 py-3 my-5">
         The following questions are about the <u>actions</u> you perform as part of your regular tasks.
     </h2>
@@ -135,11 +154,22 @@
     {% include "mast/response/helpers/textarea.html" with field=form.actions_leadership_qual %}
     {% endif %}
 
+    <div class="d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-secondary" onclick="showPage(1)">&laquo; Back</button>
+        <button type="button" class="btn btn-primary" onclick="showPage(3)">Next &raquo;</button>
+    </div>
+
+    </div><!-- end page-2 -->
+
+    <!-- Page 3: Role & Activities -->
+    <div class="survey-page" id="page-3" style="display:none;">
 
     <div class="h4 border-top border-info pt-3 mt-1">
         Lastly, we are going to ask about your role and specific activities you perform in the organisation.
     </div>
+    <p class="text-muted small mb-3"><span class="text-danger">*</span> indicates a required field</p>
 
+    <!-- Select Organisation Only or Industry Benchmarking - 160326 Kathy -->
     <div class="container">
         <div class="row my-2">
             <label class="col-5" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
@@ -147,7 +177,7 @@
                 <input type="email" name="{{form.email.name}}" class="form-control" id="{{form.email.id_for_label}}" value="{% if form.email.value %}{{form.email.value}}{% endif %}"></input>
             </div>
         </div>
-        {% if has_teams %}
+        {% if is_organisation_only and has_teams %}
         <div class="row my-2">
             <label class="col-5" for="{{form.team.id_for_label}}">{{ form.team.label }}:</label>
             <div class="col">
@@ -155,10 +185,27 @@
             </div>
         </div>
         {% endif %}
-        <div class="row my-2">
-            <label class="col-5" for="{{form.data_uses.id_for_label}}">{{ form.data_uses.label }}:</label>
+        {% if is_industry_wide %}
+        <div id="row-industry" class="row my-2 {% if form.industry.errors %}has-error{% endif %}">
+            <label class="col-5" for="{{form.industry.id_for_label}}">{{ form.industry.label }} <span class="text-danger">*</span>:</label>
+            <div class="col">
+                {{ form.industry }}
+                {% if form.industry.errors %}<div class="text-danger small mt-1">{{ form.industry.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+        <div id="row-seniority" class="row my-2 {% if form.seniority.errors %}has-error{% endif %}">
+            <label class="col-5" for="{{form.seniority.id_for_label}}">{{ form.seniority.label }} <span class="text-danger">*</span>:</label>
+            <div class="col seniority-choices">
+                {{ form.seniority }}
+                {% if form.seniority.errors %}<div class="text-danger small mt-1">{{ form.seniority.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        <div id="row-data-uses" class="row my-2 {% if form.data_uses.errors %}has-error{% endif %}">
+            <label class="col-5" for="{{form.data_uses.id_for_label}}">{{ form.data_uses.label }} <span class="text-danger">*</span>:</label>
             <div class="col data_uses_checkboxes">
                 {{ form.data_uses }}
+                {% if form.data_uses.errors %}<div class="text-danger small mt-1">{{ form.data_uses.errors.0 }}</div>{% endif %}
 
                 <div id="other_activity_section">
                 <label for="{{form.other_data_activity.id_for_label}}">List other activities you perform with data in your role below:</label>
@@ -170,16 +217,109 @@
                 </div>
             </div>
         </div>
-        {% if show_data_used_field %}
+        <div class="row my-2">
+            <label class="col-5" for="{{form.tools.id_for_label}}">{{ form.tools.label }}:</label>
+            <div class="col tool-choices">
+                {{ form.tools }}
+                <div id="other_tool_section">
+                    <label for="id_other_tool">Please specify:</label>
+                    <input type="text" name="other_tool" id="id_other_tool" class="form-control"
+                        {% if form.other_tool.value %}value="{{ form.other_tool.value }}"{% endif %}>
+                </div>
+            </div>
+        </div>
         {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
-        {% endif %}
     </div>
 
-    <button class="btn btn-primary" type=submit>Submit responses</submit>
+    <div class="d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-secondary" onclick="showPage(2)">&laquo; Back</button>
+        <button class="btn btn-primary" type="submit">Submit responses</button>
+    </div>
+
+    </div><!-- end page-3 -->
+
 </form>
 
 <script>
+    function showPage(pageNum) {
+        document.querySelectorAll('.survey-page').forEach(function(page) {
+            page.style.display = 'none';
+        });
+        document.getElementById('page-' + pageNum).style.display = 'block';
+        window.scrollTo(0, 0);
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
+        // --- Client-side validation on submit ---
+        var form = document.getElementById('survey-form');
+        form.addEventListener('submit', function(e) {
+            // Clear previous client-side highlights
+            document.querySelectorAll('.js-error').forEach(function(el) {
+                el.classList.remove('has-error');
+            });
+            document.querySelectorAll('.client-error-msg').forEach(function(el) {
+                el.remove();
+            });
+
+            var errors = [];
+
+            // Check seniority (radio buttons)
+            var seniorityRow = document.getElementById('row-seniority');
+            if (seniorityRow && !document.querySelector('input[name="seniority"]:checked')) {
+                seniorityRow.classList.add('has-error', 'js-error');
+                appendErrorMsg(seniorityRow, 'This field is required.');
+                errors.push('seniority');
+            }
+
+            // Check data_uses (checkboxes)
+            var dataUsesRow = document.getElementById('row-data-uses');
+            if (dataUsesRow && document.querySelectorAll('input[name="data_uses"]:checked').length === 0) {
+                dataUsesRow.classList.add('has-error', 'js-error');
+                appendErrorMsg(dataUsesRow, 'This field is required.');
+                errors.push('data_uses');
+            }
+
+            // Check industry (select dropdown, only if present on page)
+            var industryRow = document.getElementById('row-industry');
+            if (industryRow) {
+                var sel = industryRow.querySelector('select');
+                if (sel && !sel.value) {
+                    industryRow.classList.add('has-error', 'js-error');
+                    appendErrorMsg(industryRow, 'This field is required.');
+                    errors.push('industry');
+                }
+            }
+
+            if (errors.length > 0) {
+                e.preventDefault();
+                showPage(3);
+                return;
+            }
+        });
+
+        function appendErrorMsg(row, msg) {
+            if (row.querySelector('.client-error-msg')) return;
+            var div = document.createElement('div');
+            div.className = 'text-danger small mt-1 client-error-msg';
+            div.textContent = msg;
+            // Append to the value column (not the label column)
+            var cols = row.querySelectorAll('.col, [class^="col-"]');
+            var target = cols.length > 1 ? cols[1] : cols[0];
+            if (target) target.appendChild(div);
+        }
+
+        // --- Server-side error fallback: jump to page with errors ---
+        var serverErrors = document.querySelectorAll('.has-error');
+        if (serverErrors.length > 0) {
+            for (var i = 1; i <= 3; i++) {
+                var page = document.getElementById('page-' + i);
+                if (page && page.querySelector('.has-error')) {
+                    showPage(i);
+                    break;
+                }
+            }
+        }
+
         const otherActivitySection = document.getElementById("other_activity_section");
         const otherActivityCheckbox = document.querySelector('input[name="data_uses"][value="Z"]');
 
@@ -189,13 +329,27 @@
         // Add an event listener to the checkbox
         otherActivityCheckbox.addEventListener("change", function () {
             if (this.checked) {
-                // Show the section if the checkbox is checked
                 otherActivitySection.style.display = "block";
             } else {
-                // Hide the section if the checkbox is unchecked
                 otherActivitySection.style.display = "none";
             }
         });
+
+        // Select Organisation Only or Industry Benchmarking - 160326 Kathy
+        const otherToolSection = document.getElementById("other_tool_section");
+        if (otherToolSection) {
+            otherToolSection.style.display = "none";
+            const toolRadios = document.querySelectorAll('input[name="tools"]');
+            toolRadios.forEach(function(radio) {
+                radio.addEventListener("change", function () {
+                    if (this.value === "OT") {
+                        otherToolSection.style.display = "block";
+                    } else {
+                        otherToolSection.style.display = "none";
+                    }
+                });
+            });
+        }
     });
     </script>
     
