@@ -217,8 +217,12 @@
                 </div>
             </div>
         </div>
+        {% if is_industry_wide %}
         {% include "mast/response/helpers/textarea.html" with field=form.tools %}
+        {% endif %}
+        {% if is_organisation_only %}
         {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
+        {% endif %}
     </div>
 
     <div class="d-flex justify-content-between mt-4">
