@@ -6,7 +6,6 @@ from django.utils.functional import cached_property
 from django.db.models import Case, When, Value, IntegerField, Avg, F
 
 import shortuuid
-import shortuuid.main
 import uuid
 import mast_toolkit.consts
 
@@ -56,9 +55,9 @@ def adjusted_likert(avg_score):
 
 
 class Survey(models.Model):
-    id = models.CharField(primary_key=True, default=shortuuid.main.ShortUUID.uuid, editable=False, max_length=256)
-    share_link = models.CharField(default=shortuuid.main.ShortUUID.uuid, editable=False, max_length=256)
-    # report_link = models.CharField(default=shortuuid.main.ShortUUID.uuid, editable=False, max_length=256)
+    id = models.CharField(primary_key=True, default=shortuuid.uuid, editable=False, max_length=256)
+    share_link = models.CharField(default=shortuuid.uuid, editable=False, max_length=256)
+    # report_link = models.CharField(default=shortuuid.uuid, editable=False, max_length=256)
     title = models.CharField(
         max_length=1024, verbose_name="Survey title",
         help_text="This is name of your maturity assessment and is shown to users when they fill in your assessment survey."
@@ -370,7 +369,7 @@ class ActivityType(models.Model):
 
 
 class Response(models.Model):
-    id = models.CharField(primary_key=True, default=shortuuid.main.ShortUUID.uuid, editable=False, max_length=256)
+    id = models.CharField(primary_key=True, default=shortuuid.uuid, editable=False, max_length=256)
     email = models.EmailField(blank=True)
     team = models.ForeignKey(BusinessUnit, on_delete=models.CASCADE, blank=True, null=True, related_name="responses")
     phase = models.ForeignKey(Wave, null=True, on_delete=models.CASCADE, blank=True, related_name="responses")
