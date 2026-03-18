@@ -91,6 +91,12 @@ class Survey(models.Model):
         default=mast_toolkit.consts.DataUsed.HIDE,
         help_text="If selected, we will ask additional questions for each of the 'I-D-E-A-L' behaviours that can be downloaded and analysed."
     )
+    benchmark_scope = models.PositiveIntegerField(
+    verbose_name="Survey type",
+    choices=mast_toolkit.consts.BenchmarkScope,
+    default=mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY,
+    help_text="Select whether to compare results within your organisation only or across the industry."
+    )   
 
     # size = ???
     # tools = ???
@@ -109,7 +115,7 @@ class Survey(models.Model):
         return self.generate_basic_metrics()
 
     def generate_basic_metrics(self, team=mast_toolkit.consts.NO_TEAM_SELECTED, activity_type=mast_toolkit.consts.NO_ACTIVITY_SELECTED):
-        qs = self.responses.all()
+        qs = self.responses.filter(is_complete=True)
 
         if team != mast_toolkit.consts.NO_TEAM_SELECTED:
             # We check for False, as "None" as a team is a valid filter to find users who didn't select a team.
@@ -181,7 +187,7 @@ class Survey(models.Model):
 
         )
 
-        response_dates = self.responses.all().annotate(
+        response_dates = self.responses.filter(is_complete=True).annotate(
             date=TruncDate('response_date')
         ).values('date').annotate(count=Count('date')).order_by('date')
 
@@ -238,7 +244,7 @@ class Survey(models.Model):
         return self.generate_report_metrics()
 
     def generate_report_metrics(self, team=False):
-        qs = self.responses.all()
+        qs = self.responses.filter(is_complete=True)
         total_count_of_responses = qs.count() or 1
 
         def likert_histogram_results(field):
@@ -369,6 +375,10 @@ class Response(models.Model):
     phase = models.ForeignKey(Wave, null=True, on_delete=models.CASCADE, blank=True, related_name="responses")
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="responses")
     response_date = models.DateTimeField(auto_now_add=True)
+    is_complete = models.BooleanField(default=False)
+    seniority = models.CharField(max_length=1, choices=mast_toolkit.consts.SeniorityChoices, blank=True, null=True, verbose_name="Seniority level")
+    tools = models.TextField(blank=True, verbose_name="What tools do you use to document and organise data at your organisation?")
+    industry = models.CharField(max_length=1, choices=mast_toolkit.consts.ISICChoices, blank=True, null=True, verbose_name="Industry")
 
     class Meta:
         ordering = ['-response_date']
@@ -382,40 +392,40 @@ class Response(models.Model):
         verbose_name="What data do you use or create as part of your role in the organisation?"
     )
 
-    beliefs_metadata_1 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+    beliefs_metadata_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="My organisation understands how data documentation supports the delivery of core functions and outcomes.",
         choices=Likert
     )
-    beliefs_metadata_2 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+    beliefs_metadata_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="It is easy for me to find data I need for my role.",
         choices=Likert
     )
-    beliefs_analysis_1 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+    beliefs_analysis_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="My organisation documents why data is collected, along with what is stored.",
         choices=Likert
     )
-    beliefs_analysis_2 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+    beliefs_analysis_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="It is easy for me to find documentation that describes what data means.",
         choices=Likert
     )
-    beliefs_standards_1 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+    beliefs_standards_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="My organisation has a consistent approach to data documentation.",
         choices=Likert
     )
-    beliefs_standards_2 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+    beliefs_standards_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="It is easy for me to find, link and compare related data using common terms.",
         choices=Likert
     )
-    beliefs_teamwork_1 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+    beliefs_teamwork_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="Teams in my organisation are encouraged to create, review and share documentation for their data assets.",
         choices=Likert
     )
-    beliefs_teamwork_2 = models.PositiveIntegerField(max_length=2, blank=False, default=None,
+    beliefs_teamwork_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="It is easy is it for me to talk about data with others across my organisation.",
         choices=Likert
     )
 
-    actions_inventory_1 = models.PositiveIntegerField(blank=False, default=None,
+    actions_inventory_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="How do you most commonly discover other data assets in the organisation?",
         choices={
             1: "I don't do this as part of my current role",
@@ -426,7 +436,7 @@ class Response(models.Model):
         },
         help_text="If more than one is applicable, select the activity you most commonly perform."
     )
-    actions_inventory_2 = models.PositiveIntegerField(blank=False, default=None,
+    actions_inventory_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="How do you most commonly record the existence of data assets within your team?",
         choices={
             1: "I don't do this as part of my current role",
@@ -443,7 +453,7 @@ class Response(models.Model):
         blank=True
     )
 
-    actions_document_1 = models.PositiveIntegerField(blank=False, default=None,
+    actions_document_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="What information do you usually record for data assets created within your team?",
         choices={
             1: "I don't do this as part of my current role",
@@ -454,7 +464,7 @@ class Response(models.Model):
         },
         help_text="If more than one is applicable, select the activity you most commonly perform."
     )
-    actions_document_2 = models.PositiveIntegerField(blank=False, default=None,
+    actions_document_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="What information do you or your team commonly record about fields within a data asset, such as describing columns in a spreadsheet or database table?",
         choices={
             1: "I don't do this as part of my current role",
@@ -470,7 +480,7 @@ class Response(models.Model):
         blank=True
     )
 
-    actions_endorse_1 = models.PositiveIntegerField(blank=False, default=None,
+    actions_endorse_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="Who is responsible for reviewing data documentation in your team or organisation?",
         choices={
             1: "I don't do this as part of my current role",
@@ -481,7 +491,7 @@ class Response(models.Model):
         },
         help_text="If more than one is applicable, select the answer that matches you usual routine."
     )
-    actions_endorse_2 = models.PositiveIntegerField(blank=False, default=None,
+    actions_endorse_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="How can you find out who has signed off on approval/review of data assets in the organisation?",
         choices={
             1: "I don't do this as part of my current role",
@@ -496,7 +506,7 @@ class Response(models.Model):
         blank=True
     )
 
-    actions_audit_1 = models.PositiveIntegerField(blank=False, default=None,
+    actions_audit_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="How do you manage commonly referenced data terms?",
         choices={
             1: "I don't do this as part of my current role",
@@ -506,7 +516,7 @@ class Response(models.Model):
             5: "I use data terms from a governed central system that records and links these terms to data assets",
         }
     )
-    actions_audit_2 = models.PositiveIntegerField(blank=False, default=None,
+    actions_audit_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="How do you reuse common data terms from a data glossary?",
         choices={
             1: "I don't do this as part of my current role",
@@ -521,7 +531,7 @@ class Response(models.Model):
         blank=True
     )
 
-    actions_leadership_1 = models.PositiveIntegerField(blank=False, default=None,
+    actions_leadership_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="Are you aware of policies for managing data assets within your organisation?",
         choices={
             1: "I do not manage data in my role, and am not impacted by data policies",
@@ -531,7 +541,7 @@ class Response(models.Model):
             5: "I am aware of our organisation's data governance and data management policies, and my responsiblity for data safety",
         }
     )
-    actions_leadership_2 = models.PositiveIntegerField(blank=False, default=None,
+    actions_leadership_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="How does your organisation's leadership promote metadata adoption?",
         choices={
             1: "I do not use metadata in my role",

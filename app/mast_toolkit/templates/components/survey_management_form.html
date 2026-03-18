@@ -46,6 +46,15 @@
 <hr class="">
 <h2>Survey customisation</h2>
 <div class="row my-5">
+    <label class="col-2" for="{{form.benchmark_scope.id_for_label}}">{{ form.benchmark_scope.label }}:</label>
+    <div class="col-5">
+        {{ form.benchmark_scope }}
+        <p class="form-text text-muted">
+            {{form.benchmark_scope.help_text}}
+        </p>
+    </div>
+</div>
+<div class="row my-5">
     <label class="col-2" for="{{form.qualitative.id_for_label}}">{{ form.qualitative.label }}:</label>
     <div class="col-5">
         {{ form.qualitative }}
@@ -83,6 +92,7 @@
         </div>
     </div>
 </div>
+
 <div class="row  my-5">
     <label class="col-2" for="{{form.preamble.id_for_label}}">{{ form.preamble.label }}:</label>
     <div class="col-5">

@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import CreateView, DetailView, ListView, DeleteView, UpdateView, TemplateView
+from django.views import View
 from mast_toolkit import models as mast
 import mast_toolkit.forms
 import mast_toolkit.consts
@@ -55,7 +56,99 @@ class ResponseCreateView(ResponseBase, CreateView):
         kwargs['has_teams'] = self.survey.teams.all().exists()
         kwargs['show_qualitative'] = self.survey.qualitative == mast_toolkit.consts.Qualitative.SHOW
         kwargs['show_data_used_field'] = self.survey.include_data_used_or_created == mast_toolkit.consts.DataUsed.SHOW
+        kwargs['is_organisation_only'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY
+        kwargs['is_industry_wide'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE
         return super().get_context_data(**kwargs)
+
+
+class ResponseStep1View(ResponseBase, View):
+    """Step 1: Beliefs - creates a new Response and saves beliefs data."""
+    template_name = "mast/response/step1.html"
+
+    def get(self, request, *args, **kwargs):
+        form = mast_toolkit.forms.ResponseStep1Form()
+        return render(request, self.template_name, self._context(form))
+
+    def post(self, request, *args, **kwargs):
+        form = mast_toolkit.forms.ResponseStep1Form(request.POST)
+        if form.is_valid():
+            response = form.save(commit=False)
+            response.survey = self.survey
+            response.is_complete = False
+            response.save()
+            return redirect('survey_respond_step2', survey_pk=self.survey.share_link, response_pk=response.pk)
+        return render(request, self.template_name, self._context(form))
+
+    def _context(self, form):
+        return {
+            'form': form,
+            'survey': self.survey,
+            'step': 1,
+        }
+
+
+class ResponseStep2View(ResponseBase, View):
+    """Step 2: Actions - updates existing Response with actions data."""
+    template_name = "mast/response/step2.html"
+
+    def get_response_obj(self):
+        return get_object_or_404(mast.Response, pk=self.kwargs['response_pk'], survey=self.survey, is_complete=False)
+
+    def get(self, request, *args, **kwargs):
+        response_obj = self.get_response_obj()
+        form = mast_toolkit.forms.ResponseStep2Form(instance=response_obj)
+        return render(request, self.template_name, self._context(form))
+
+    def post(self, request, *args, **kwargs):
+        response_obj = self.get_response_obj()
+        form = mast_toolkit.forms.ResponseStep2Form(request.POST, instance=response_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('survey_respond_step3', survey_pk=self.survey.share_link, response_pk=response_obj.pk)
+        return render(request, self.template_name, self._context(form))
+
+    def _context(self, form):
+        return {
+            'form': form,
+            'survey': self.survey,
+            'step': 2,
+            'show_qualitative': self.survey.qualitative == mast_toolkit.consts.Qualitative.SHOW,
+        }
+
+
+class ResponseStep3View(ResponseBase, View):
+    """Step 3: Role & Activities - updates Response and marks complete."""
+    template_name = "mast/response/step3.html"
+
+    def get_response_obj(self):
+        return get_object_or_404(mast.Response, pk=self.kwargs['response_pk'], survey=self.survey, is_complete=False)
+
+    def get(self, request, *args, **kwargs):
+        response_obj = self.get_response_obj()
+        form = mast_toolkit.forms.ResponseStep3Form(instance=response_obj, survey=self.survey)
+        return render(request, self.template_name, self._context(form))
+
+    def post(self, request, *args, **kwargs):
+        response_obj = self.get_response_obj()
+        form = mast_toolkit.forms.ResponseStep3Form(request.POST, instance=response_obj, survey=self.survey)
+        if form.is_valid():
+            response_obj = form.save(commit=False)
+            response_obj.is_complete = True
+            response_obj.save()
+            form.save_m2m()
+            return redirect('survey_respond_thanks', survey_pk=self.survey.share_link)
+        return render(request, self.template_name, self._context(form))
+
+    def _context(self, form):
+        return {
+            'form': form,
+            'survey': self.survey,
+            'step': 3,
+            'has_teams': self.survey.teams.all().exists(),
+            'is_organisation_only': self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY,
+            'is_industry_wide': self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE,
+            'show_data_used_field': self.survey.include_data_used_or_created == mast_toolkit.consts.DataUsed.SHOW,
+        }
 
 
 class ResponseThanksView(ResponseBase, TemplateView):
@@ -80,7 +173,7 @@ class SurveyCreateMixin:
 class SurveyCreateView(SurveyCreateMixin, CreateView):
     model = mast.Survey
     template_name = "mast/create_survey.html"
-    form_class = mast_toolkit.forms.SurveyManageForm
+    form_class = mast_toolkit.forms.SurveyCreateForm
 
 
 class DashboardMixin:
@@ -157,6 +250,11 @@ class SurveyUpdateView(DashboardMixin, SurveyCreateMixin, UpdateView):
     pk_url_kwarg = 'survey_pk'
     form_class = mast_toolkit.forms.SurveyManageForm
 
+    def get_context_data(self, **kwargs):
+        kwargs['is_organisation_only'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY
+        kwargs['is_industry_wide'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE
+        return super().get_context_data(**kwargs)
+
     def get_success_url(self):
         return reverse('survey_manage', args=[self.survey.pk])
 
@@ -208,7 +306,7 @@ class SurveyResponseListView(DashboardMixin, ListView):
     active_dashboard_tab = "responses"
 
     def get_queryset(self):
-        return super().get_queryset().filter(survey=self.kwargs['survey_pk'])
+        return super().get_queryset().filter(survey=self.kwargs['survey_pk'], is_complete=True)
 
 
 def report_histogram(x, y):

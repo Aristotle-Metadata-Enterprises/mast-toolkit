@@ -1,0 +1,71 @@
+{% extends "mast/response/base.html" %}
+
+{% block title %}Complete MAST Maturity survey - {{ survey.title }} (Step 1 of 3){% endblock %}
+
+{% block content %}
+<h1>{{ survey.title }}</h1>
+<p class="text-muted">Step {{ step }} of 3</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.errors }}
+
+    <div class="card"><div class="card-body">
+        {% if survey.preamble %}
+            {{ survey.preamble|linebreaks }}
+        {% else %}
+        <p>Thank you for taking the time to participate in Aristotle Metadata's survey of data asset knowledge and management.</p>
+        <p>
+            Your input will help us gain an understanding of how your organisation manages its data assets.
+            A <b>data asset</b> is a collection of data that is developed for a broad purpose.
+            This information will help your organisation recognise how data assets can be used to support strategic plans and goals.
+        </p>
+        {% endif %}
+        <p>
+            This survey should take less than ten minutes to complete.
+            We've designed it to be as straightforward as possible, and your responses will be kept strictly confidential.
+        </p>
+        <p>
+            For this questionnaire:
+            <ul>
+                <li>Your<b> team </b>is the unit you are assigned to, or the project team you spend the most time working with</li>
+                <li>A <b>data asset </b>is any data file or system, and can include databases or Excel spreadsheets, but also systems that collect data such as HR systems or analytics tools</li>
+                <li><b>Data documentation</b>, also known as <b>metadata</b>,<b>&nbsp;</b>is information you record about a data asset so that others can understand what it contains and how they should interpret it</li>
+                <li>A<b>&nbsp;data term </b>is an entry in a glossary that has a consistent meaning across the organisation, such as Staff Member, Patient, or Identifier</li>
+                <li>A <b>data glossary</b>&nbsp;is a collection of business terms and their meanings related to data. It helps people understand and use data in the same way.&nbsp;</li>
+                <li>A <b>data dictionary </b>is a data glossary for a single data asset; it provides a technical description of a data asset. For example, the 2021 Census dictionary contains detailed information about Census variables and concepts. The dictionary helps data users better understand and interpret Census data.</li>
+            </ul>
+            </p>
+        </div>
+    </div>
+
+    <h2 class="h3 py-3">
+        The first section in this survey is about your <u>beliefs</u> regarding data documentation in your organisation.
+    </h2>
+    <div class="container mt-5 likert-table">
+        <div class="row likert-headers">
+            <div class="col-6"></div>
+            <div class="col-1">Strongly Disagree</div>
+            <div class="col-1">Disagree</div>
+            <div class="col-1">Neither Agree nor Disagree</div>
+            <div class="col-1">Agree</div>
+            <div class="col-1">Strongly Agree</div>
+            <div class="col-1">Don't Know</div>
+        </div>
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_metadata_2 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_analysis_2 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_standards_2 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_teamwork_2 %}
+        <hr>
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_metadata_1 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_analysis_1 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_standards_1 %}
+        {% include "mast/response/helpers/likert.html" with field=form.beliefs_teamwork_1 %}
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-primary" type="submit">Next &raquo;</button>
+    </div>
+</form>
+
+{% endblock %}

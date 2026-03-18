@@ -85,3 +85,22 @@ class ISICChoices(models.TextChoices):
 
 NO_TEAM_SELECTED = 9999
 NO_ACTIVITY_SELECTED = 9998
+
+class BenchmarkScope(models.IntegerChoices):
+    ORGANISATION_ONLY = 1, _("Organisation-Only")
+    INDUSTRY_WIDE = 2, _("Industry-Wide")
+
+class SeniorityChoices(models.TextChoices):
+    CXO = 'C', _("CXO / Executive (15+ years)")
+    SENIOR = 'S', _("Senior (8–15 years)")
+    MID_LEVEL = 'M', _("Mid-Level (3–7 years)")
+    JUNIOR = 'J', _("Junior (0–2 years)")
+
+class ToolChoices(models.TextChoices):
+    SHAREPOINT = 'SP', _("SharePoint")
+    COLLIBRA = 'CO', _("Collibra")
+    PURVIEW = 'PV', _("Microsoft Purview")
+    ARISTOTLE = 'AR', _("Aristotle Metadata")
+    INFORMATICA = 'IN', _("Informatica")
+    DATA_GOV = 'DG', _("Data.gov.au")
+    OTHER = 'OT', _("Other tools (please provide more details below)")

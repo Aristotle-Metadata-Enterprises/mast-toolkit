@@ -33,7 +33,9 @@ urlpatterns = [
     path("survey/manage/<survey_pk>/update/delete_team/<team_pk>", views.SurveyDeleteTeamView.as_view(), name="survey_manage_delete_team"),
     # path("survey/dashboard/<survey_share_uuid>/", views.SurveyDeleteView.as_view(), name="survey_shared_dashboard"),
     # path("survey/dashboard/<survey_share_uuid>/report", views.SurveyDeleteView.as_view(), name="survey_shared_dashboard"),
-    path("survey/response/<survey_pk>", views.ResponseCreateView.as_view(), name="survey_respond"),
+    path("survey/response/<survey_pk>", views.ResponseStep1View.as_view(), name="survey_respond"),
+    path("survey/response/<survey_pk>/step2/<response_pk>", views.ResponseStep2View.as_view(), name="survey_respond_step2"),
+    path("survey/response/<survey_pk>/step3/<response_pk>", views.ResponseStep3View.as_view(), name="survey_respond_step3"),
     path("survey/response/<survey_pk>/thanks", views.ResponseThanksView.as_view(), name="survey_respond_thanks"),
     path("survey/deleted", TemplateView.as_view(template_name="mast/dashboard/delete_confirmation.html"), name="survey_deleted_confirmation"),
 ]
