@@ -18,6 +18,10 @@ dependencies = [
     "psycopg2~=2.9.10",
 ]
 
-[tool.setuptools]
-package-dir = { "" = "app" }
-packages = ["mast_toolkit", "web"]
+[build-system]
+requires = ["uv_build>=0.10.9,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-root = "app"
+module-name = ["mast_toolkit", "web"]
