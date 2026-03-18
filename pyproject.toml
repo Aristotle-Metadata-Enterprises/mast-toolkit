@@ -17,3 +17,7 @@ dependencies = [
     "weasyprint~=63.1",
     "psycopg2~=2.9.10",
 ]
+
+[tool.setuptools]
+package-dir = { "" = "app" }
+packages = ["mast_toolkit", "web"]
