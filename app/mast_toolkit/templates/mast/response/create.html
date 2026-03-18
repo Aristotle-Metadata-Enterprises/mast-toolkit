@@ -169,7 +169,6 @@
     </div>
     <p class="text-muted small mb-3"><span class="text-danger">*</span> indicates a required field</p>
 
-    <!-- Select Organisation Only or Industry Benchmarking - 160326 Kathy -->
     <div class="container">
         <div class="row my-2">
             <label class="col-5" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
@@ -329,21 +328,6 @@
             }
         });
 
-        // Select Organisation Only or Industry Benchmarking - 160326 Kathy
-        const otherToolSection = document.getElementById("other_tool_section");
-        if (otherToolSection) {
-            otherToolSection.style.display = "none";
-            const toolRadios = document.querySelectorAll('input[name="tools"]');
-            toolRadios.forEach(function(radio) {
-                radio.addEventListener("change", function () {
-                    if (this.value === "OT") {
-                        otherToolSection.style.display = "block";
-                    } else {
-                        otherToolSection.style.display = "none";
-                    }
-                });
-            });
-        }
     });
     </script>
     

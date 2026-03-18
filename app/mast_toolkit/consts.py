@@ -86,19 +86,16 @@ class ISICChoices(models.TextChoices):
 NO_TEAM_SELECTED = 9999
 NO_ACTIVITY_SELECTED = 9998
 
-# Select Organisation Only or Industry Benchmarking - 160326 Kathy
 class BenchmarkScope(models.IntegerChoices):
     ORGANISATION_ONLY = 1, _("Organisation-Only")
     INDUSTRY_WIDE = 2, _("Industry-Wide")
 
-# Select Organisation Only or Industry Benchmarking - 160326 Kathy
 class SeniorityChoices(models.TextChoices):
     CXO = 'C', _("CXO / Executive (15+ years)")
     SENIOR = 'S', _("Senior (8–15 years)")
     MID_LEVEL = 'M', _("Mid-Level (3–7 years)")
     JUNIOR = 'J', _("Junior (0–2 years)")
 
-# Select Organisation Only or Industry Benchmarking - 160326 Kathy
 class ToolChoices(models.TextChoices):
     SHAREPOINT = 'SP', _("SharePoint")
     COLLIBRA = 'CO', _("Collibra")

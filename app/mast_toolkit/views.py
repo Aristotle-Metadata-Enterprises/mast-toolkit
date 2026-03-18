@@ -56,13 +56,10 @@ class ResponseCreateView(ResponseBase, CreateView):
         kwargs['has_teams'] = self.survey.teams.all().exists()
         kwargs['show_qualitative'] = self.survey.qualitative == mast_toolkit.consts.Qualitative.SHOW
         kwargs['show_data_used_field'] = self.survey.include_data_used_or_created == mast_toolkit.consts.DataUsed.SHOW
-        # Select Organisation Only or Industry Benchmarking - 160326 Kathy
         kwargs['is_organisation_only'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY
         kwargs['is_industry_wide'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE
         return super().get_context_data(**kwargs)
 
-
-# --- Multi-step response views - 160326 Kathy ---
 
 class ResponseStep1View(ResponseBase, View):
     """Step 1: Beliefs - creates a new Response and saves beliefs data."""
@@ -176,7 +173,6 @@ class SurveyCreateMixin:
 class SurveyCreateView(SurveyCreateMixin, CreateView):
     model = mast.Survey
     template_name = "mast/create_survey.html"
-    # Select Organisation Only or Industry Benchmarking - 160326 Kathy
     form_class = mast_toolkit.forms.SurveyCreateForm
 
 
@@ -255,7 +251,6 @@ class SurveyUpdateView(DashboardMixin, SurveyCreateMixin, UpdateView):
     form_class = mast_toolkit.forms.SurveyManageForm
 
     def get_context_data(self, **kwargs):
-        # Select Organisation Only or Industry Benchmarking - 160326 Kathy
         kwargs['is_organisation_only'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY
         kwargs['is_industry_wide'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE
         return super().get_context_data(**kwargs)

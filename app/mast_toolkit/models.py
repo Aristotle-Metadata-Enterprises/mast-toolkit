@@ -91,7 +91,6 @@ class Survey(models.Model):
         default=mast_toolkit.consts.DataUsed.HIDE,
         help_text="If selected, we will ask additional questions for each of the 'I-D-E-A-L' behaviours that can be downloaded and analysed."
     )
-    # Select Organisation Only or Industry Benchmarking - 160326 Kathy
     benchmark_scope = models.PositiveIntegerField(
     verbose_name="Survey type",
     choices=mast_toolkit.consts.BenchmarkScope,
@@ -377,10 +376,8 @@ class Response(models.Model):
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="responses")
     response_date = models.DateTimeField(auto_now_add=True)
     is_complete = models.BooleanField(default=False)
-    # Select Organisation Only or Industry Benchmarking - 160326 Kathy
     seniority = models.CharField(max_length=1, choices=mast_toolkit.consts.SeniorityChoices, blank=True, null=True, verbose_name="Seniority level")
     tools = models.TextField(blank=True, verbose_name="What tools do you use to document and organise data at your organisation?")
-    other_tool = models.CharField(blank=True, max_length=2048)
     industry = models.CharField(max_length=1, choices=mast_toolkit.consts.ISICChoices, blank=True, null=True, verbose_name="Industry")
 
     class Meta:

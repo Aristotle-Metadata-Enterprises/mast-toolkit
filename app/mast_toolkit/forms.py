@@ -3,7 +3,6 @@ from mast_toolkit import models as mast
 from mast_toolkit.consts import BenchmarkScope
 
 
-# Select Organisation Only or Industry Benchmarking - 160326 Kathy
 class SurveyCreateForm(forms.ModelForm):
     class Meta:
         model = mast.Survey
@@ -16,7 +15,6 @@ class SurveyCreateForm(forms.ModelForm):
         }
 
 
-# Select Organisation Only or Industry Benchmarking - 160326 Kathy
 class SurveyManageForm(forms.ModelForm):
     class Meta:
         model = mast.Survey
@@ -30,7 +28,6 @@ class SurveyManageForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Select Organisation Only or Industry Benchmarking - 160326 Kathy
         self.fields['benchmark_scope'].disabled = True
         self.fields['benchmark_scope'].help_text = "This can only be changed when the survey is first created."
 
@@ -72,7 +69,6 @@ class ResponseForm(forms.ModelForm):
 
             "data_uses": forms.CheckboxSelectMultiple,
 
-            # Select Organisation Only or Industry Benchmarking - 160326 Kathy
             "seniority": forms.RadioSelect,
             "tools": forms.TextInput(attrs={"class": "form-control"}),
             "industry": forms.Select(attrs={"class": "form-select"}),
@@ -88,18 +84,15 @@ class ResponseForm(forms.ModelForm):
         survey = kwargs.pop("survey")
         super().__init__(*args, **kwargs)
         self.fields['team'].queryset = self.fields['team'].queryset.filter(survey=survey)
-        # Select Organisation Only or Industry Benchmarking - 160326 Kathy
         self.fields['seniority'].choices = [
             c for c in self.fields['seniority'].choices if c[0] != ''
         ]
-        # Make seniority, tasks, and industry mandatory - 160326 Kathy
         self.fields['seniority'].required = True
         self.fields['data_uses'].required = True
         if survey.benchmark_scope == BenchmarkScope.INDUSTRY_WIDE:
             self.fields['industry'].required = True
 
 
-# --- Multi-step response forms - 160326 Kathy ---
 
 class ResponseStep1Form(forms.ModelForm):
     """Step 1: Beliefs questions"""
@@ -155,7 +148,7 @@ class ResponseStep3Form(forms.ModelForm):
         fields = [
             "email", "team", "industry", "seniority",
             "data_uses", "other_data_activity",
-            "tools", "other_tool",
+            "tools",
             "data_used_or_created",
         ]
         widgets = {
@@ -174,7 +167,6 @@ class ResponseStep3Form(forms.ModelForm):
         self.fields['seniority'].choices = [
             c for c in self.fields['seniority'].choices if c[0] != ''
         ]
-        # Make seniority, tasks, and industry mandatory - 160326 Kathy
         self.fields['seniority'].required = True
         self.fields['data_uses'].required = True
         if survey.benchmark_scope == BenchmarkScope.INDUSTRY_WIDE:
