@@ -1,1 +1,1 @@
-web: gunicorn web.wsgi:application -p $PORT
+web: ./manage.py migrate && gunicorn web.wsgi:application -p $PORT
