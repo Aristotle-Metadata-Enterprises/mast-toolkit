@@ -6,6 +6,7 @@ from django.utils.functional import cached_property
 from django.db.models import Case, When, Value, IntegerField, Avg, F
 
 import shortuuid
+import shortuuid.main
 import uuid
 import mast_toolkit.consts
 
@@ -55,9 +56,9 @@ def adjusted_likert(avg_score):
 
 
 class Survey(models.Model):
-    id = models.CharField(primary_key=True, default=shortuuid.uuid, editable=False, max_length=256)
-    share_link = models.CharField(default=shortuuid.uuid, editable=False, max_length=256)
-    # report_link = models.CharField(default=shortuuid.uuid, editable=False, max_length=256)
+    id = models.CharField(primary_key=True, default=shortuuid.main.ShortUUID.uuid, editable=False, max_length=256)
+    share_link = models.CharField(default=shortuuid.main.ShortUUID.uuid, editable=False, max_length=256)
+    # report_link = models.CharField(default=shortuuid.main.ShortUUID.uuid, editable=False, max_length=256)
     title = models.CharField(
         max_length=1024, verbose_name="Survey title",
         help_text="This is name of your maturity assessment and is shown to users when they fill in your assessment survey."
@@ -369,7 +370,7 @@ class ActivityType(models.Model):
 
 
 class Response(models.Model):
-    id = models.CharField(primary_key=True, default=shortuuid.uuid, editable=False, max_length=256)
+    id = models.CharField(primary_key=True, default=shortuuid.main.ShortUUID.uuid, editable=False, max_length=256)
     email = models.EmailField(blank=True)
     team = models.ForeignKey(BusinessUnit, on_delete=models.CASCADE, blank=True, null=True, related_name="responses")
     phase = models.ForeignKey(Wave, null=True, on_delete=models.CASCADE, blank=True, related_name="responses")
@@ -392,35 +393,35 @@ class Response(models.Model):
         verbose_name="What data do you use or create as part of your role in the organisation?"
     )
 
-    beliefs_metadata_1 = models.PositiveIntegerField(max_length=2, blank=False, null=True, default=None,
+    beliefs_metadata_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="My organisation understands how data documentation supports the delivery of core functions and outcomes.",
         choices=Likert
     )
-    beliefs_metadata_2 = models.PositiveIntegerField(max_length=2, blank=False, null=True, default=None,
+    beliefs_metadata_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="It is easy for me to find data I need for my role.",
         choices=Likert
     )
-    beliefs_analysis_1 = models.PositiveIntegerField(max_length=2, blank=False, null=True, default=None,
+    beliefs_analysis_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="My organisation documents why data is collected, along with what is stored.",
         choices=Likert
     )
-    beliefs_analysis_2 = models.PositiveIntegerField(max_length=2, blank=False, null=True, default=None,
+    beliefs_analysis_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="It is easy for me to find documentation that describes what data means.",
         choices=Likert
     )
-    beliefs_standards_1 = models.PositiveIntegerField(max_length=2, blank=False, null=True, default=None,
+    beliefs_standards_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="My organisation has a consistent approach to data documentation.",
         choices=Likert
     )
-    beliefs_standards_2 = models.PositiveIntegerField(max_length=2, blank=False, null=True, default=None,
+    beliefs_standards_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="It is easy for me to find, link and compare related data using common terms.",
         choices=Likert
     )
-    beliefs_teamwork_1 = models.PositiveIntegerField(max_length=2, blank=False, null=True, default=None,
+    beliefs_teamwork_1 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="Teams in my organisation are encouraged to create, review and share documentation for their data assets.",
         choices=Likert
     )
-    beliefs_teamwork_2 = models.PositiveIntegerField(max_length=2, blank=False, null=True, default=None,
+    beliefs_teamwork_2 = models.PositiveIntegerField(blank=False, null=True, default=None,
         verbose_name="It is easy is it for me to talk about data with others across my organisation.",
         choices=Likert
     )
