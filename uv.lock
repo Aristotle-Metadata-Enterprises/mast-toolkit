@@ -531,7 +531,7 @@ wheels = [
 [[package]]
 name = "mast-toolkit"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "dash" },
     { name = "dj-database-url" },
