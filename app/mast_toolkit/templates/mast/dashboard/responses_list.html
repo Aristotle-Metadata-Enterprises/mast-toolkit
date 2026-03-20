@@ -22,7 +22,7 @@
                 <th>User Email</th>
                 <th>Response Date</th>
                 <th>Team Name</th>
-                <th><small class="text-muted">Coming soon</small></th>
+                <th>Qualitative Response</th>
             </tr>
         </thead>
         <tbody>
@@ -33,7 +33,48 @@
             <td>{{ response.response_date }}</td>
             <td>{{ response.team.name }}</td>
             <td>
-                <a href="#">See more...</a><br>
+                <a class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" href="#qual-{{ forloop.counter }}" role="button" aria-expanded="false">
+                    See more...
+                </a>
+            </td>
+        </tr>
+        <tr class="collapse" id="qual-{{ forloop.counter }}">
+            <td colspan="5">
+                <div class="p-3">
+                    {% if response.actions_inventory_qual %}
+                    <div class="mb-2">
+                        <strong>{{ qual_labels.actions_inventory_qual }}</strong>
+                        <p class="mb-1">{{ response.actions_inventory_qual }}</p>
+                    </div>
+                    {% endif %}
+                    {% if response.actions_document_qual %}
+                    <div class="mb-2">
+                        <strong>{{ qual_labels.actions_document_qual }}</strong>
+                        <p class="mb-1">{{ response.actions_document_qual }}</p>
+                    </div>
+                    {% endif %}
+                    {% if response.actions_endorse_qual %}
+                    <div class="mb-2">
+                        <strong>{{ qual_labels.actions_endorse_qual }}</strong>
+                        <p class="mb-1">{{ response.actions_endorse_qual }}</p>
+                    </div>
+                    {% endif %}
+                    {% if response.actions_audit_qual %}
+                    <div class="mb-2">
+                        <strong>{{ qual_labels.actions_audit_qual }}</strong>
+                        <p class="mb-1">{{ response.actions_audit_qual }}</p>
+                    </div>
+                    {% endif %}
+                    {% if response.actions_leadership_qual %}
+                    <div class="mb-2">
+                        <strong>{{ qual_labels.actions_leadership_qual }}</strong>
+                        <p class="mb-1">{{ response.actions_leadership_qual }}</p>
+                    </div>
+                    {% endif %}
+                    {% if not response.actions_inventory_qual and not response.actions_document_qual and not response.actions_endorse_qual and not response.actions_audit_qual and not response.actions_leadership_qual %}
+                    <p class="text-muted mb-0">No qualitative responses provided.</p>
+                    {% endif %}
+                </div>
             </td>
         </tr>
         {% endfor %}

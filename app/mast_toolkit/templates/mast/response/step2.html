@@ -6,6 +6,24 @@
 <h1>{{ survey.title }}</h1>
 <p class="text-muted">Step {{ step }} of 3</p>
 
+<div class="progress-tracker">
+    <div class="progress-step completed">
+        <div class="step-circle">&#10003;</div>
+        <div class="step-label">Beliefs</div>
+        <div class="step-desc">Your beliefs<br>about data</div>
+    </div>
+    <div class="progress-step active">
+        <div class="step-circle"></div>
+        <div class="step-label">Behaviours</div>
+        <div class="step-desc">Actions you take<br>with data</div>
+    </div>
+    <div class="progress-step">
+        <div class="step-circle"></div>
+        <div class="step-label">About you</div>
+        <div class="step-desc">Your role &<br>background</div>
+    </div>
+</div>
+
 <form method="post">
     {% csrf_token %}
     {{ form.errors }}

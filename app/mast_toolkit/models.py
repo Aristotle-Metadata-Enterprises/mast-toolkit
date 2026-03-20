@@ -96,6 +96,11 @@ class Survey(models.Model):
     choices=mast_toolkit.consts.BenchmarkScope,
     default=mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY,
     help_text="Select whether to compare results within your organisation only or across the industry."
+    )
+    use_custom_industries = models.BooleanField(
+        default=False,
+        verbose_name="Use custom industry list",
+        help_text="If enabled, respondents will choose from your custom industry list instead of the default ISIC categories."
     )   
 
     # size = ???
@@ -352,6 +357,18 @@ class BusinessUnit(models.Model):
         return self.name
 
 
+class CustomIndustry(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="custom_industries")
+    name = models.CharField(max_length=256)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "custom industries"
+
+
 class Wave(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=2048)
@@ -378,7 +395,7 @@ class Response(models.Model):
     is_complete = models.BooleanField(default=False)
     seniority = models.CharField(max_length=1, choices=mast_toolkit.consts.SeniorityChoices, blank=True, null=True, verbose_name="Seniority level")
     tools = models.TextField(blank=True, verbose_name="What tools do you use to document and organise data at your organisation?")
-    industry = models.CharField(max_length=1, choices=mast_toolkit.consts.ISICChoices, blank=True, null=True, verbose_name="Industry")
+    industry = models.CharField(max_length=256, blank=True, null=True, verbose_name="Industry")
 
     class Meta:
         ordering = ['-response_date']
