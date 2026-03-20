@@ -394,7 +394,7 @@ class Response(models.Model):
     response_date = models.DateTimeField(auto_now_add=True)
     is_complete = models.BooleanField(default=False)
     seniority = models.CharField(max_length=1, choices=mast_toolkit.consts.SeniorityChoices, blank=True, null=True, verbose_name="Seniority level")
-    tools = models.TextField(blank=True, verbose_name="What tools do you use to document and organise data at your organisation?")
+    tools = models.TextField(blank=True, verbose_name="(Optional) What tools do you use to document and organise data at your organisation?")
     industry = models.CharField(max_length=256, blank=True, null=True, verbose_name="Industry")
 
     class Meta:
@@ -571,4 +571,17 @@ class Response(models.Model):
     actions_leadership_qual = models.TextField(
         verbose_name="(Optional) Please tell us about policies around data use and access that impact you in your role.",
         blank=True
+    )
+
+    self_assess_value = models.PositiveIntegerField(
+        blank=False, null=True, default=None,
+        verbose_name="How valuable is data to your role?",
+    )
+    self_assess_trust = models.PositiveIntegerField(
+        blank=False, null=True, default=None,
+        verbose_name="How much do you trust the accuracy of your data?",
+    )
+    self_assess_secure = models.PositiveIntegerField(
+        blank=False, null=True, default=None,
+        verbose_name="How secure do you believe your organisation's data to be?",
     )
