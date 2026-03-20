@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.views.generic import CreateView, DetailView, ListView, DeleteView, UpdateView, TemplateView
 from django.views import View
+from django.http import HttpResponse
 from mast_toolkit import models as mast
 import mast_toolkit.forms
 import mast_toolkit.consts
 import datetime
+import csv
 from django.db.models import Count
 from django import forms
 from django.urls import reverse, reverse_lazy
@@ -167,6 +169,7 @@ class SurveyCreateMixin:
             'preamble': mast_toolkit.consts.DEFAULT_SURVEY_PREAMBLE,
             'confirmation': mast_toolkit.consts.DEFAULT_SURVEY_CONFIRMATION_HTML,
         }
+        kwargs.setdefault('existing_custom_industries', [])
         return super().get_context_data(**kwargs)
 
 
@@ -174,6 +177,15 @@ class SurveyCreateView(SurveyCreateMixin, CreateView):
     model = mast.Survey
     template_name = "mast/create_survey.html"
     form_class = mast_toolkit.forms.SurveyCreateForm
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        custom_industries = self.request.POST.getlist('custom_industries')
+        for name in custom_industries:
+            name = name.strip()
+            if name:
+                mast.CustomIndustry.objects.create(survey=self.object, name=name)
+        return response
 
 
 class DashboardMixin:
@@ -253,7 +265,18 @@ class SurveyUpdateView(DashboardMixin, SurveyCreateMixin, UpdateView):
     def get_context_data(self, **kwargs):
         kwargs['is_organisation_only'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY
         kwargs['is_industry_wide'] = self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE
+        kwargs['existing_custom_industries'] = self.survey.custom_industries.all()
         return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.custom_industries.all().delete()
+        custom_industries = self.request.POST.getlist('custom_industries')
+        for name in custom_industries:
+            name = name.strip()
+            if name:
+                mast.CustomIndustry.objects.create(survey=self.object, name=name)
+        return response
 
     def get_success_url(self):
         return reverse('survey_manage', args=[self.survey.pk])
@@ -300,6 +323,95 @@ class SurveyDeleteView(DashboardMixin, DeleteView):
     success_url = reverse_lazy('survey_deleted_confirmation')
 
 
+class SurveyCSVExportView(DashboardMixin, View):
+    active_dashboard_tab = "report"
+
+    def get(self, request, *args, **kwargs):
+        survey = self.survey
+        metrics = survey.metrics
+        responses = survey.responses.filter(is_complete=True)
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{survey.title}_report.csv"'
+
+        writer = csv.writer(response)
+
+        questions = {f.name: f.verbose_name for f in mast.Response._meta.fields}
+
+        # === Section 1: Overview ===
+        writer.writerow(['REPORT SUMMARY'])
+        writer.writerow(['Organisation', survey.organisation])
+        writer.writerow(['Survey Title', survey.title])
+            
+        writer.writerow([])
+
+        # === Section 2: MAST Beliefs Scores + Detail ===
+        writer.writerow(['MAST BELIEFS SCORES (1-5)'])
+        writer.writerow(['Dimension', 'Score'])
+        mast_dimensions = ['metadata', 'analysis', 'standards', 'teamwork']
+        for dim in mast_dimensions:
+            dim_score = round(metrics['MAST'][dim], 2)
+            writer.writerow([dim.title(), dim_score])
+
+            q1_key = f'beliefs_{dim}_1'
+            q2_key = f'beliefs_{dim}_2'
+            q1_score = round(metrics['MAST_DEPTH'][q1_key], 2)
+            q2_score = round(metrics['MAST_DEPTH'][q2_key], 2)
+            writer.writerow([questions.get(q1_key, q1_key), q1_score])
+            writer.writerow([questions.get(q2_key, q2_key), q2_score])
+        writer.writerow([])
+
+        # === Section 3: IDEAL Behaviour Scores + Detail ===
+        writer.writerow(['IDEAL BEHAVIOUR SCORES (1-5)'])
+        writer.writerow(['Dimension', 'Score'])
+        ideal_dimensions = ['inventory', 'document', 'endorse', 'audit', 'leadership']
+        for dim in ideal_dimensions:
+            dim_score = round(metrics['IDEAL'][dim], 2)
+            writer.writerow([dim.title(), dim_score])
+
+            q1_key = f'actions_{dim}_1'
+            q2_key = f'actions_{dim}_2'
+            q1_score = round(metrics['IDEAL_DEPTH'][q1_key], 2)
+            q2_score = round(metrics['IDEAL_DEPTH'][q2_key], 2)
+            writer.writerow([questions.get(q1_key, q1_key), q1_score])
+            writer.writerow([questions.get(q2_key, q2_key), q2_score])
+        writer.writerow([])
+
+        # === Section 4: Results by Activity ===
+        writer.writerow(['RESULTS BY ACTIVITY'])
+        mast_dimensions = ['metadata', 'analysis', 'standards', 'teamwork']
+        ideal_dimensions = ['inventory', 'document', 'endorse', 'audit', 'leadership']
+
+        header = ['', 'Response'] + [d.title() for d in mast_dimensions] + [d.title() for d in ideal_dimensions]
+        writer.writerow(header)
+
+        all_activities = list(mast.ActivityType.objects.all()) + [None]
+        # "Total" row first
+        total_metrics = survey.generate_basic_metrics()
+        total_row = ['Total', responses.count()]
+        for dim in mast_dimensions:
+            total_row.append(round(total_metrics['MAST'][dim], 2))
+        for dim in ideal_dimensions:
+            total_row.append(round(total_metrics['IDEAL'][dim], 2))
+        writer.writerow(total_row)
+
+        for activity_type in all_activities:
+            if activity_type is None:
+                activity_name = "No activities selected"
+            else:
+                activity_name = activity_type.activity
+            activity_metrics = survey.generate_basic_metrics(activity_type=activity_type)
+            row = [activity_name, activity_metrics['OVERALL']['total_responses']]
+            for dim in mast_dimensions:
+                row.append(round(activity_metrics['MAST'][dim], 2))
+            for dim in ideal_dimensions:
+                row.append(round(activity_metrics['IDEAL'][dim], 2))
+            writer.writerow(row)
+        writer.writerow([])
+
+        return response
+
+
 class SurveyResponseListView(DashboardMixin, ListView):
     model = mast.Response
     template_name = "mast/dashboard/responses_list.html"
@@ -307,6 +419,21 @@ class SurveyResponseListView(DashboardMixin, ListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(survey=self.kwargs['survey_pk'], is_complete=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qual_fields = [
+            'actions_inventory_qual',
+            'actions_document_qual',
+            'actions_endorse_qual',
+            'actions_audit_qual',
+            'actions_leadership_qual',
+        ]
+        context['qual_labels'] = {
+            f: mast.Response._meta.get_field(f).verbose_name.replace('(Optional) ', '')
+            for f in qual_fields
+        }
+        return context
 
 
 def report_histogram(x, y):
@@ -478,4 +605,28 @@ class SurveyDeleteTeamView(DashboardMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('survey_manage', args=[self.survey.pk]) + "#teams"
+
+
+class SurveyAddIndustryView(DashboardMixin, CreateView):
+    model = mast.CustomIndustry
+    fields = ['name']
+    template_name = "mast/dashboard/teams/create.html"
+    active_dashboard_tab = "edit"
+
+    def form_valid(self, form):
+        form.instance.survey = self.survey
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('survey_manage', args=[self.survey.pk]) + "#industries"
+
+
+class SurveyDeleteIndustryView(DashboardMixin, DeleteView):
+    model = mast.CustomIndustry
+    template_name = "mast/dashboard/teams/delete.html"
+    active_dashboard_tab = "edit"
+    pk_url_kwarg = "industry_pk"
+
+    def get_success_url(self):
+        return reverse('survey_manage', args=[self.survey.pk]) + "#industries"
 

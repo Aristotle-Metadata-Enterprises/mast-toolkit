@@ -731,8 +731,17 @@
     This represents that respondents who are "unaware" data governance programs have a less negative perception of data that those who strongly disagree with these belief statements, but a lack of awareness should be recognised as a less positive impact than users who are aware but dissatisfied with governance programs.
 </p>
 <h3 class="h5 print-hide">Downloading your report</h5>
-<p class="print-hide">
-    To get a sharable copy of your report, you can print this page to PDF with Crtl+P.
+<div class="d-flex gap-3 my-3 print-hide">
+    <button class="btn btn-primary" onclick="window.print()">
+        <i class="bi bi-file-pdf me-1"></i>
+        Save as PDF
+    </button>
+    <a class="btn btn-outline-primary" href="{% url 'survey_dashboard_csv' survey_pk=survey_pk %}">
+        <i class="bi bi-filetype-csv me-1"></i>
+        Export to CSV
+    </a>
+</div>
+<p class="text-muted small print-hide">
     It is recommended to print in landscape to ensure all graphs stay in their correct orientation.
 </p>
 

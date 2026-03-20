@@ -6,6 +6,24 @@
 <h1>{{ survey.title }}</h1>
 <p class="text-muted">Step {{ step }} of 3</p>
 
+<div class="progress-tracker">
+    <div class="progress-step completed">
+        <div class="step-circle">&#10003;</div>
+        <div class="step-label">Beliefs</div>
+        <div class="step-desc">Your beliefs<br>about data</div>
+    </div>
+    <div class="progress-step completed">
+        <div class="step-circle">&#10003;</div>
+        <div class="step-label">Behaviours</div>
+        <div class="step-desc">Actions you take<br>with data</div>
+    </div>
+    <div class="progress-step active">
+        <div class="step-circle"></div>
+        <div class="step-label">About you</div>
+        <div class="step-desc">Your role &<br>background</div>
+    </div>
+</div>
+
 <style>
     .has-error {
         border: 2px solid #dc3545;
@@ -28,6 +46,7 @@
             <label class="col-5" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
             <div class="col">
                 <input type="email" name="{{form.email.name}}" class="form-control" id="{{form.email.id_for_label}}" value="{% if form.email.value %}{{form.email.value}}{% endif %}">
+                <small class="text-muted">By providing your email address, you will receive a comprehensive report of your organisation's collective results.</small>
             </div>
         </div>
         {% if is_organisation_only and has_teams %}
