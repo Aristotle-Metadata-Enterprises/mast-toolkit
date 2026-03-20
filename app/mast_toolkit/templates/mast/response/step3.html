@@ -31,6 +31,31 @@
         padding: 8px;
         background-color: #fff5f5;
     }
+    .range-wrap {
+        position: relative;
+    }
+    .range-bubble {
+        position: absolute;
+        top: -28px;
+        background: #2c3e50;
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        pointer-events: none;
+        transform: translateX(-50%);
+        white-space: nowrap;
+    }
+    .range-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 4px 4px 0;
+        border-style: solid;
+        border-color: #2c3e50 transparent transparent;
+    }
 </style>
 
 <form method="post">
@@ -89,12 +114,31 @@
                 </div>
             </div>
         </div>
+
         {% if is_industry_wide %}
         {% include "mast/response/helpers/textarea.html" with field=form.tools %}
         {% endif %}
         {% if is_organisation_only %}
         {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
         {% endif %}
+
+        <p class="text-muted small mt-3 mb-2">Rate each question on a scale of 0 (lowest) to 5 (highest).</p>
+        {% for field in self_assess_fields %}
+        <div class="row mt-4 mb-3 pt-2">
+            <label class="col-5" for="{{ field.id_for_label }}">{{ field.label }} <span class="text-danger">*</span>:</label>
+            <div class="col">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small">0</span>
+                    <div class="range-wrap flex-grow-1 position-relative">
+                        {{ field }}
+                        <span class="range-bubble" id="val_{{ field.html_name }}">{{ field.value|default:"0" }}</span>
+                    </div>
+                    <span class="text-muted small">5</span>
+                </div>
+                {% if field.errors %}<div class="text-danger small mt-1">{{ field.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
 
     <div class="d-flex justify-content-end mt-4">
@@ -114,6 +158,27 @@
                 otherActivitySection.style.display = this.checked ? "block" : "none";
             });
         }
+
+        function positionBubble(slider, bubble) {
+            var val = (slider.value - slider.min) / (slider.max - slider.min);
+            var thumbWidth = 16;
+            var offset = val * (slider.offsetWidth - thumbWidth) + thumbWidth / 2;
+            bubble.style.left = offset + 'px';
+            bubble.textContent = slider.value;
+        }
+
+        document.querySelectorAll('input[type="range"]').forEach(function (slider) {
+            var bubble = document.getElementById("val_" + slider.name);
+            if (bubble) {
+                positionBubble(slider, bubble);
+                slider.addEventListener("input", function () {
+                    positionBubble(this, bubble);
+                });
+                window.addEventListener("resize", function () {
+                    positionBubble(slider, bubble);
+                });
+            }
+        });
 
     });
 </script>
