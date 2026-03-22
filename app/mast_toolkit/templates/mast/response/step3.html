@@ -71,7 +71,7 @@
             <label class="col-5" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
             <div class="col">
                 <input type="email" name="{{form.email.name}}" class="form-control" id="{{form.email.id_for_label}}" value="{% if form.email.value %}{{form.email.value}}{% endif %}">
-                <small class="text-muted">By providing your email address, you will receive a comprehensive report of your organisation's collective results.</small>
+                <small class="text-muted">Provide your email address to receive a summary of the results once the survey is closed.</small>
             </div>
         </div>
         {% if is_organisation_only and has_teams %}
