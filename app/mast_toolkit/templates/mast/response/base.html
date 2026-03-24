@@ -5,4 +5,63 @@
         max-width: unset !important;
     }
 }
+
+{# Progress bar #}
+.progress-tracker {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+    position: relative;
+}
+.progress-step .step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid teal;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: teal;
+    z-index: 1;
+}
+.progress-step.completed .step-circle {
+    background-color: teal;
+    color: #fff;
+}
+.progress-step.active .step-circle {
+    background-color: teal;
+    color: #fff;
+}
+.progress-step .step-label {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: #333;
+}
+.progress-step .step-desc {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.2rem;
+}
+.progress-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: calc(50% + 20px);
+    width: calc(100% - 40px);
+    height: 2px;
+    background-color: teal;
+    z-index: 0;
+}
 {% endblock %}

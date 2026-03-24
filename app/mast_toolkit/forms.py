@@ -1,6 +1,6 @@
 from django import forms
 from mast_toolkit import models as mast
-from mast_toolkit.consts import BenchmarkScope
+from mast_toolkit.consts import BenchmarkScope, ISICChoices
 
 
 class SurveyCreateForm(forms.ModelForm):
@@ -12,6 +12,7 @@ class SurveyCreateForm(forms.ModelForm):
             "include_data_used_or_created": forms.RadioSelect,
             "industry": forms.Select(attrs={"class": "form-select"}),
             "benchmark_scope": forms.RadioSelect,
+            "use_custom_industries": forms.HiddenInput,
         }
 
 
@@ -24,6 +25,7 @@ class SurveyManageForm(forms.ModelForm):
             "include_data_used_or_created": forms.RadioSelect,
             "industry": forms.Select(attrs={"class": "form-select"}),
             "benchmark_scope": forms.RadioSelect,
+            "use_custom_industries": forms.HiddenInput,
         }
 
     def __init__(self, *args, **kwargs):
@@ -69,9 +71,9 @@ class ResponseForm(forms.ModelForm):
 
             "data_uses": forms.CheckboxSelectMultiple,
 
-            "seniority": forms.RadioSelect,
+            "seniority": forms.RadioSelect(attrs={"required": True}),
             "tools": forms.TextInput(attrs={"class": "form-control"}),
-            "industry": forms.Select(attrs={"class": "form-select"}),
+            "industry": forms.Select(attrs={"class": "form-select", "required": True}),
 
             # "actions_inventory_qual
             # "actions_document_qual
@@ -89,9 +91,14 @@ class ResponseForm(forms.ModelForm):
         ]
         self.fields['seniority'].required = True
         self.fields['data_uses'].required = True
+        if survey.use_custom_industries and survey.custom_industries.exists():
+            choices = [('', '---------')] + [(ci.name, ci.name) for ci in survey.custom_industries.all()]
+        else:
+            choices = [('', '---------')] + [(c.value, c.label) for c in ISICChoices]
+        self.fields['industry'].choices = choices
+        self.fields['industry'].widget.choices = choices
         if survey.benchmark_scope == BenchmarkScope.INDUSTRY_WIDE:
             self.fields['industry'].required = True
-
 
 
 class ResponseStep1Form(forms.ModelForm):
@@ -103,6 +110,7 @@ class ResponseStep1Form(forms.ModelForm):
             "beliefs_analysis_1", "beliefs_analysis_2",
             "beliefs_standards_1", "beliefs_standards_2",
             "beliefs_teamwork_1", "beliefs_teamwork_2",
+            "self_assess_value", "self_assess_trust", "self_assess_secure",
         ]
         widgets = {
             "beliefs_metadata_1": forms.RadioSelect,
@@ -113,6 +121,9 @@ class ResponseStep1Form(forms.ModelForm):
             "beliefs_analysis_2": forms.RadioSelect,
             "beliefs_standards_2": forms.RadioSelect,
             "beliefs_teamwork_2": forms.RadioSelect,
+            "self_assess_value": forms.RadioSelect,
+            "self_assess_trust": forms.RadioSelect,
+            "self_assess_secure": forms.RadioSelect
         }
 
 
@@ -155,9 +166,9 @@ class ResponseStep3Form(forms.ModelForm):
             "team": forms.Select(attrs={"class": "form-select"}),
             "data_used_or_created": forms.Textarea(attrs={"class": "form-control"}),
             "data_uses": forms.CheckboxSelectMultiple,
-            "seniority": forms.RadioSelect,
+            "seniority": forms.RadioSelect(attrs={"required": True}),
             "tools": forms.TextInput(attrs={"class": "form-control"}),
-            "industry": forms.Select(attrs={"class": "form-select"}),
+            "industry": forms.Select(attrs={"class": "form-select", "required": True}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -169,5 +180,11 @@ class ResponseStep3Form(forms.ModelForm):
         ]
         self.fields['seniority'].required = True
         self.fields['data_uses'].required = True
+        if survey.use_custom_industries and survey.custom_industries.exists():
+            choices = [('', '---------')] + [(ci.name, ci.name) for ci in survey.custom_industries.all()]
+        else:
+            choices = [('', '---------')] + [(c.value, c.label) for c in ISICChoices]
+        self.fields['industry'].choices = choices
+        self.fields['industry'].widget.choices = choices
         if survey.benchmark_scope == BenchmarkScope.INDUSTRY_WIDE:
             self.fields['industry'].required = True

@@ -95,7 +95,12 @@ class Survey(models.Model):
     verbose_name="Survey type",
     choices=mast_toolkit.consts.BenchmarkScope,
     default=mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY,
-    help_text="Select whether to compare results within your organisation only or across the industry."
+    help_text="If you are doing a survey of people in your organisation, select 'Single Organisation'. If you are running for a survey across multiple organisations such as for an industry benchmark, select 'Multi-organisation industry-wide survey'."
+    )
+    use_custom_industries = models.BooleanField(
+        default=False,
+        verbose_name="Use custom industry list",
+        help_text="If enabled, respondents will choose from your custom industry list instead of the default ISIC categories."
     )   
 
     # size = ???
@@ -107,7 +112,7 @@ class Survey(models.Model):
 
     @cached_property
     def response_count(self):
-        return self.responses.all().count()
+        return self.responses.all().filter(is_complete=True).count()
 
 
     @cached_property
@@ -266,7 +271,10 @@ class Survey(models.Model):
             # This gets the raw data from the db and annotates it with the response text
             values = dict(qs.values_list(field).annotate(count=Count(field)).order_by(field))
             # Pad max value to ensure histogram looks nice
-            top_value = max(values.values()) * 1.1
+            if values:
+                top_value = max(values.values()) * 1.1
+            else:
+                top_value = 1
             data = {
                 choice[0]: {
                     'code': choice[0],
@@ -352,6 +360,18 @@ class BusinessUnit(models.Model):
         return self.name
 
 
+class CustomIndustry(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="custom_industries")
+    name = models.CharField(max_length=256)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "custom industries"
+
+
 class Wave(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=2048)
@@ -377,8 +397,8 @@ class Response(models.Model):
     response_date = models.DateTimeField(auto_now_add=True)
     is_complete = models.BooleanField(default=False)
     seniority = models.CharField(max_length=1, choices=mast_toolkit.consts.SeniorityChoices, blank=True, null=True, verbose_name="Seniority level")
-    tools = models.TextField(blank=True, verbose_name="What tools do you use to document and organise data at your organisation?")
-    industry = models.CharField(max_length=1, choices=mast_toolkit.consts.ISICChoices, blank=True, null=True, verbose_name="Industry")
+    tools = models.TextField(blank=True, verbose_name="(Optional) What tools do you use to document and organise data at your organisation?")
+    industry = models.CharField(max_length=256, blank=True, null=True, verbose_name="Industry")
 
     class Meta:
         ordering = ['-response_date']
@@ -554,4 +574,23 @@ class Response(models.Model):
     actions_leadership_qual = models.TextField(
         verbose_name="(Optional) Please tell us about policies around data use and access that impact you in your role.",
         blank=True
+    )
+
+    self_assess_value = models.PositiveIntegerField(
+        blank=False, null=True, default=None,
+        choices=Likert,
+        verbose_name="My organisation gets the best value it can from our data",
+        help_text="Value includes things like improving decision making, improving services, or meeting regulatory requirements."
+    )
+    self_assess_trust = models.PositiveIntegerField(
+        blank=False, null=True, default=None,
+        choices=Likert,
+        verbose_name="Data at my organisation is generally trusted.",
+        help_text="Trust includes things like confidence in data quality, or confidence that data is used ethically and in line with regulations."
+    )
+    self_assess_secure = models.PositiveIntegerField(
+        blank=False, null=True, default=None,
+        choices=Likert,
+        verbose_name="Data at my organisation is generally secure.",
+        help_text="Security includes things like protection against unauthorised access, loss, or damage."
     )

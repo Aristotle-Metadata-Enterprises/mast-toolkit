@@ -6,12 +6,55 @@
 <h1>{{ survey.title }}</h1>
 <p class="text-muted">Step {{ step }} of 3</p>
 
+<div class="progress-tracker">
+    <div class="progress-step completed">
+        <div class="step-circle">&#10003;</div>
+        <div class="step-label">Beliefs</div>
+        <div class="step-desc">Your beliefs<br>about data</div>
+    </div>
+    <div class="progress-step completed">
+        <div class="step-circle">&#10003;</div>
+        <div class="step-label">Behaviours</div>
+        <div class="step-desc">Actions you take<br>with data</div>
+    </div>
+    <div class="progress-step active">
+        <div class="step-circle"></div>
+        <div class="step-label">About you</div>
+        <div class="step-desc">Your role &<br>background</div>
+    </div>
+</div>
+
 <style>
     .has-error {
         border: 2px solid #dc3545;
         border-radius: 6px;
         padding: 8px;
         background-color: #fff5f5;
+    }
+    .range-wrap {
+        position: relative;
+    }
+    .range-bubble {
+        position: absolute;
+        top: -28px;
+        background: #2c3e50;
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        pointer-events: none;
+        transform: translateX(-50%);
+        white-space: nowrap;
+    }
+    .range-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 4px 4px 0;
+        border-style: solid;
+        border-color: #2c3e50 transparent transparent;
     }
 </style>
 
@@ -28,6 +71,7 @@
             <label class="col-5" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
             <div class="col">
                 <input type="email" name="{{form.email.name}}" class="form-control" id="{{form.email.id_for_label}}" value="{% if form.email.value %}{{form.email.value}}{% endif %}">
+                <small class="text-muted">Provide your email address to receive a summary of the results once the survey is closed.</small>
             </div>
         </div>
         {% if is_organisation_only and has_teams %}
@@ -70,13 +114,14 @@
                 </div>
             </div>
         </div>
+
         {% if is_industry_wide %}
         {% include "mast/response/helpers/textarea.html" with field=form.tools %}
         {% endif %}
         {% if is_organisation_only %}
         {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
         {% endif %}
-    </div>
+
 
     <div class="d-flex justify-content-end mt-4">
         <button class="btn btn-primary" type="submit">Submit responses</button>
@@ -95,6 +140,27 @@
                 otherActivitySection.style.display = this.checked ? "block" : "none";
             });
         }
+
+        function positionBubble(slider, bubble) {
+            var val = (slider.value - slider.min) / (slider.max - slider.min);
+            var thumbWidth = 16;
+            var offset = val * (slider.offsetWidth - thumbWidth) + thumbWidth / 2;
+            bubble.style.left = offset + 'px';
+            bubble.textContent = slider.value;
+        }
+
+        document.querySelectorAll('input[type="range"]').forEach(function (slider) {
+            var bubble = document.getElementById("val_" + slider.name);
+            if (bubble) {
+                positionBubble(slider, bubble);
+                slider.addEventListener("input", function () {
+                    positionBubble(this, bubble);
+                });
+                window.addEventListener("resize", function () {
+                    positionBubble(slider, bubble);
+                });
+            }
+        });
 
     });
 </script>
