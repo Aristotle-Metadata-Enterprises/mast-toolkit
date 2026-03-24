@@ -4,7 +4,7 @@
 
 {% block content %}
 <h1>{{ survey.title }}</h1>
-<p class="text-muted">Step {{ step }} of 3</p>
+<!-- <p class="text-muted">Step {{ step }} of 3</p> -->
 
 <div class="progress-tracker">
     <div class="progress-step completed">
@@ -79,6 +79,10 @@
         {% include "mast/response/helpers/likert.html" with field=form.beliefs_analysis_1 %}
         {% include "mast/response/helpers/likert.html" with field=form.beliefs_standards_1 %}
         {% include "mast/response/helpers/likert.html" with field=form.beliefs_teamwork_1 %}
+        <hr>
+            {% include "mast/response/helpers/likert.html" with field=form.self_assess_value %}
+            {% include "mast/response/helpers/likert.html" with field=form.self_assess_trust %}
+            {% include "mast/response/helpers/likert.html" with field=form.self_assess_secure %}
     </div>
 
     <div class="d-flex justify-content-end mt-4">

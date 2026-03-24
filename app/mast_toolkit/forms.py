@@ -110,6 +110,7 @@ class ResponseStep1Form(forms.ModelForm):
             "beliefs_analysis_1", "beliefs_analysis_2",
             "beliefs_standards_1", "beliefs_standards_2",
             "beliefs_teamwork_1", "beliefs_teamwork_2",
+            "self_assess_value", "self_assess_trust", "self_assess_secure",
         ]
         widgets = {
             "beliefs_metadata_1": forms.RadioSelect,
@@ -120,6 +121,9 @@ class ResponseStep1Form(forms.ModelForm):
             "beliefs_analysis_2": forms.RadioSelect,
             "beliefs_standards_2": forms.RadioSelect,
             "beliefs_teamwork_2": forms.RadioSelect,
+            "self_assess_value": forms.RadioSelect,
+            "self_assess_trust": forms.RadioSelect,
+            "self_assess_secure": forms.RadioSelect
         }
 
 
@@ -155,7 +159,6 @@ class ResponseStep3Form(forms.ModelForm):
         fields = [
             "email", "team", "industry", "seniority",
             "data_uses", "other_data_activity",
-            "self_assess_value", "self_assess_trust", "self_assess_secure",
             "tools",
             "data_used_or_created",
         ]
@@ -166,9 +169,6 @@ class ResponseStep3Form(forms.ModelForm):
             "seniority": forms.RadioSelect(attrs={"required": True}),
             "tools": forms.TextInput(attrs={"class": "form-control"}),
             "industry": forms.Select(attrs={"class": "form-select", "required": True}),
-            "self_assess_value": forms.NumberInput(attrs={"type": "range", "class": "form-range", "min": "0", "max": "5", "step": "1", "required": True}),
-            "self_assess_trust": forms.NumberInput(attrs={"type": "range", "class": "form-range", "min": "0", "max": "5", "step": "1", "required": True}),
-            "self_assess_secure": forms.NumberInput(attrs={"type": "range", "class": "form-range", "min": "0", "max": "5", "step": "1", "required": True}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -188,6 +188,3 @@ class ResponseStep3Form(forms.ModelForm):
         self.fields['industry'].widget.choices = choices
         if survey.benchmark_scope == BenchmarkScope.INDUSTRY_WIDE:
             self.fields['industry'].required = True
-        self.fields['self_assess_value'].required = True
-        self.fields['self_assess_trust'].required = True
-        self.fields['self_assess_secure'].required = True

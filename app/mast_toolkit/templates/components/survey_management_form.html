@@ -43,31 +43,6 @@
         However, if you include your industry, you will still get access to global comparisons and as new results come in we can update your comparison.
     </div>
 </div>
-<div class="row mt-3">
-    <div class="col-2"></div>
-    <div class="col-5">
-        <div class="form-check form-switch mb-3">
-            <input class="form-check-input" type="checkbox" id="use-custom-industries-toggle"
-                {% if form.use_custom_industries.value %}checked{% endif %}
-                onchange="document.getElementById('custom-industries-section').style.display = this.checked ? 'block' : 'none'; document.getElementById('id_use_custom_industries').value = this.checked ? 'True' : '';">
-            <label class="form-check-label" for="use-custom-industries-toggle">
-                Use custom industry list for respondents
-            </label>
-        </div>
-        {{ form.use_custom_industries }}
-        <div id="custom-industries-section" style="{% if not form.use_custom_industries.value %}display:none{% endif %}">
-            <div class="input-group mb-2">
-                <input type="text" class="form-control" id="custom-industry-input" placeholder="Enter industry name">
-                <button class="btn btn-outline-primary" type="button" onclick="addCustomIndustry()">Add</button>
-            </div>
-            <ul class="list-group" id="custom-industry-list"></ul>
-            <div id="custom-industry-hidden-inputs"></div>
-        </div>
-    </div>
-    <div class="col-5">
-        <p class="text-muted small">Enable this to define your own industry list. Respondents will choose from your custom list instead of the default ISIC categories.</p>
-    </div>
-</div>
 <script>
 let customIndustries = [{% for ind in existing_custom_industries %}"{{ ind.name|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
 function addCustomIndustry() {
@@ -104,9 +79,36 @@ renderCustomIndustries();
     <label class="col-2" for="{{form.benchmark_scope.id_for_label}}">{{ form.benchmark_scope.label }}:</label>
     <div class="col-5">
         {{ form.benchmark_scope }}
+    </div>
+    <div class="col-5">
         <p class="form-text text-muted">
             {{form.benchmark_scope.help_text}}
         </p>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-2"></div>
+    <div class="col-5">
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="use-custom-industries-toggle"
+                {% if form.use_custom_industries.value %}checked{% endif %}
+                onchange="document.getElementById('custom-industries-section').style.display = this.checked ? 'block' : 'none'; document.getElementById('id_use_custom_industries').value = this.checked ? 'True' : '';">
+            <label class="form-check-label" for="use-custom-industries-toggle">
+                Use custom industry list for respondents
+            </label>
+        </div>
+        {{ form.use_custom_industries }}
+        <div id="custom-industries-section" style="{% if not form.use_custom_industries.value %}display:none{% endif %}">
+            <div class="input-group mb-2">
+                <input type="text" class="form-control" id="custom-industry-input" placeholder="Enter industry name">
+                <button class="btn btn-outline-primary" type="button" onclick="addCustomIndustry()">Add</button>
+            </div>
+            <ul class="list-group" id="custom-industry-list"></ul>
+            <div id="custom-industry-hidden-inputs"></div>
+        </div>
+    </div>
+    <div class="col-4">
+        <p class="text-muted small">Enable this to define your own industry list. Respondents will choose from your custom list instead of the default ISIC categories.</p>
     </div>
 </div>
 <div class="row my-5">
