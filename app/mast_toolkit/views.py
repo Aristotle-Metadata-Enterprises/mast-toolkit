@@ -271,12 +271,13 @@ class SurveyUpdateView(DashboardMixin, SurveyCreateMixin, UpdateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        self.object.custom_industries.all().delete()
         custom_industries = self.request.POST.getlist('custom_industries')
-        for name in custom_industries:
-            name = name.strip()
-            if name:
-                mast.CustomIndustry.objects.create(survey=self.object, name=name)
+        custom_entries = [name.strip() for name in custom_industries if name.strip()]
+
+        for name in custom_entries:
+            mast.CustomIndustry.objects.get_or_create(survey=self.object, name=name)
+
+        mast.CustomIndustry.objects.filter(survey=self.object).exclude(name__in=custom_entries).delete()
         return response
 
     def get_success_url(self):
