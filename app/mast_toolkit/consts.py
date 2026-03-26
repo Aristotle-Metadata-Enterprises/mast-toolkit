@@ -87,8 +87,8 @@ NO_TEAM_SELECTED = 9999
 NO_ACTIVITY_SELECTED = 9998
 
 class BenchmarkScope(models.IntegerChoices):
-    ORGANISATION_ONLY = 1, _("Organisation-Only")
-    INDUSTRY_WIDE = 2, _("Industry-Wide")
+    ORGANISATION_ONLY = 1, _("Single organisation survey")
+    INDUSTRY_WIDE = 2, _("Multi-organisation/industry-wide survey")
 
 class SeniorityChoices(models.TextChoices):
     CXO = 'C', _("CXO / Executive (15+ years)")

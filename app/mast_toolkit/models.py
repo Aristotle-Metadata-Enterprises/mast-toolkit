@@ -95,7 +95,7 @@ class Survey(models.Model):
     verbose_name="Survey type",
     choices=mast_toolkit.consts.BenchmarkScope,
     default=mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY,
-    help_text="Select whether to compare results within your organisation only or across the industry."
+    help_text="If you are doing a survey of people in your organisation, select 'Single Organisation'. If you are running for a survey across multiple organisations such as for an industry benchmark, select 'Multi-organisation industry-wide survey'."
     )
     use_custom_industries = models.BooleanField(
         default=False,
@@ -112,7 +112,7 @@ class Survey(models.Model):
 
     @cached_property
     def response_count(self):
-        return self.responses.all().count()
+        return self.responses.all().filter(is_complete=True).count()
 
 
     @cached_property
@@ -271,7 +271,10 @@ class Survey(models.Model):
             # This gets the raw data from the db and annotates it with the response text
             values = dict(qs.values_list(field).annotate(count=Count(field)).order_by(field))
             # Pad max value to ensure histogram looks nice
-            top_value = max(values.values()) * 1.1
+            if values:
+                top_value = max(values.values()) * 1.1
+            else:
+                top_value = 1
             data = {
                 choice[0]: {
                     'code': choice[0],
@@ -575,13 +578,19 @@ class Response(models.Model):
 
     self_assess_value = models.PositiveIntegerField(
         blank=False, null=True, default=None,
-        verbose_name="How valuable is data to your role?",
+        choices=Likert,
+        verbose_name="My organisation gets the best value it can from our data",
+        help_text="Value includes things like improving decision making, improving services, or meeting regulatory requirements."
     )
     self_assess_trust = models.PositiveIntegerField(
         blank=False, null=True, default=None,
-        verbose_name="How much do you trust the accuracy of your data?",
+        choices=Likert,
+        verbose_name="Data at my organisation is generally trusted.",
+        help_text="Trust includes things like confidence in data quality, or confidence that data is used ethically and in line with regulations."
     )
     self_assess_secure = models.PositiveIntegerField(
         blank=False, null=True, default=None,
-        verbose_name="How secure do you believe your organisation's data to be?",
+        choices=Likert,
+        verbose_name="Data at my organisation is generally secure.",
+        help_text="Security includes things like protection against unauthorised access, loss, or damage."
     )
