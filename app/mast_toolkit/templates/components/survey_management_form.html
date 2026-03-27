@@ -86,7 +86,11 @@ renderCustomIndustries();
         </p>
     </div>
 </div>
-<div class="row mt-3">
+{% if is_industry_wide %}
+<div class="row mt-3" id="custom-industries-row">
+{% else %}
+<div class="row mt-3" id="custom-industries-row" style="display:none">
+{% endif %}
     <div class="col-2"></div>
     <div class="col-5">
         <div class="form-check form-switch mb-3">
@@ -111,6 +115,23 @@ renderCustomIndustries();
         <p class="text-muted small">Enable this to define your own industry list. Respondents will choose from your custom list instead of the default ISIC categories.</p>
     </div>
 </div>
+<script>
+(function() {
+    const benchmarkRadios = document.querySelectorAll('input[name="benchmark_scope"]');
+    const customRow = document.getElementById('custom-industries-row');
+    function toggleCustomIndustries() {
+        const selected = document.querySelector('input[name="benchmark_scope"]:checked');
+        if (selected && selected.value === '2') {
+            customRow.style.display = '';
+        } else {
+            customRow.style.display = 'none';
+        }
+    }
+    benchmarkRadios.forEach(function(radio) {
+        radio.addEventListener('change', toggleCustomIndustries);
+    });
+})();
+</script>
 <div class="row my-5">
     <label class="col-2" for="{{form.qualitative.id_for_label}}">{{ form.qualitative.label }}:</label>
     <div class="col-5">
