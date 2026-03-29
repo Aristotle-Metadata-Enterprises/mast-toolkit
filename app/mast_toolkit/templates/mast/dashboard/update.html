@@ -5,7 +5,7 @@
 {% block dashboard_content %}
 <h1>Survey - {{ object.title }}</h1>
 
-<form method="POST">
+<form method="POST" id="survey-edit-form">
     {% csrf_token %}
     <div class="container py-3">
         {% include "components/survey_management_form.html" %}
@@ -19,6 +19,7 @@
     </div>
 </form>
 
+{% if is_organisation_only %}
 <hr class="">
 <div class="container py-3">
     <h2 id="teams">Teams</h2>
@@ -82,4 +83,6 @@
         </div>
     </div>
 </div>
+{% endif %}
+
 {% endblock %}

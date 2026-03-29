@@ -1,0 +1,168 @@
+{% extends "mast/response/base.html" %}
+
+{% block title %}Complete MAST Maturity survey - {{ survey.title }} (Step 3 of 3){% endblock %}
+
+{% block content %}
+<h1>{{ survey.title }}</h1>
+<p class="text-muted">Step {{ step }} of 3</p>
+
+<div class="progress-tracker">
+    <div class="progress-step completed">
+        <div class="step-circle">&#10003;</div>
+        <div class="step-label">Beliefs</div>
+        <div class="step-desc">Your beliefs<br>about data</div>
+    </div>
+    <div class="progress-step completed">
+        <div class="step-circle">&#10003;</div>
+        <div class="step-label">Behaviours</div>
+        <div class="step-desc">Actions you take<br>with data</div>
+    </div>
+    <div class="progress-step active">
+        <div class="step-circle"></div>
+        <div class="step-label">About you</div>
+        <div class="step-desc">Your role &<br>background</div>
+    </div>
+</div>
+
+<style>
+    .has-error {
+        border: 2px solid #dc3545;
+        border-radius: 6px;
+        padding: 8px;
+        background-color: #fff5f5;
+    }
+    .range-wrap {
+        position: relative;
+    }
+    .range-bubble {
+        position: absolute;
+        top: -28px;
+        background: #2c3e50;
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 4px;
+        pointer-events: none;
+        transform: translateX(-50%);
+        white-space: nowrap;
+    }
+    .range-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 4px 4px 0;
+        border-style: solid;
+        border-color: #2c3e50 transparent transparent;
+    }
+</style>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="h4 border-top border-info pt-3 mt-1">
+        Lastly, we are going to ask about your role and specific activities you perform in the organisation.
+    </div>
+    <p class="text-muted small mb-3"><span class="text-danger">*</span> indicates a required field</p>
+
+    <div class="container">
+        <div class="row my-2">
+            <label class="col-5" for="{{form.email.id_for_label}}">{{ form.email.label }}:</label>
+            <div class="col">
+                <input type="email" name="{{form.email.name}}" class="form-control" id="{{form.email.id_for_label}}" value="{% if form.email.value %}{{form.email.value}}{% endif %}">
+                <small class="text-muted">Provide your email address to receive a summary of the results once the survey is closed.</small>
+            </div>
+        </div>
+        {% if is_organisation_only and has_teams %}
+        <div class="row my-2">
+            <label class="col-5" for="{{form.team.id_for_label}}">{{ form.team.label }}:</label>
+            <div class="col">
+              {{ form.team }}
+            </div>
+        </div>
+        {% endif %}
+        {% if is_industry_wide %}
+        <div id="row-industry" class="row my-2 {% if form.industry.errors %}has-error{% endif %}">
+            <label class="col-5" for="{{form.industry.id_for_label}}">{{ form.industry.label }} <span class="text-danger">*</span>:</label>
+            <div class="col">
+                {{ form.industry }}
+                {% if form.industry.errors %}<div class="text-danger small mt-1">{{ form.industry.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+        <div id="row-seniority" class="row my-2 {% if form.seniority.errors %}has-error{% endif %}">
+            <label class="col-5" for="{{form.seniority.id_for_label}}">{{ form.seniority.label }} <span class="text-danger">*</span>:</label>
+            <div class="col seniority-choices">
+                {{ form.seniority }}
+                {% if form.seniority.errors %}<div class="text-danger small mt-1">{{ form.seniority.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        <div id="row-data-uses" class="row my-2 {% if form.data_uses.errors %}has-error{% endif %}">
+            <label class="col-5" for="{{form.data_uses.id_for_label}}">{{ form.data_uses.label }} <span class="text-danger">*</span>:</label>
+            <div class="col data_uses_checkboxes">
+                {{ form.data_uses }}
+                {% if form.data_uses.errors %}<div class="text-danger small mt-1">{{ form.data_uses.errors.0 }}</div>{% endif %}
+
+                <div id="other_activity_section">
+                <label for="{{form.other_data_activity.id_for_label}}">List other activities you perform with data in your role below:</label>
+                <input type="text" 
+                   name="{{ form.other_data_activity.name }}" 
+                   id="{{ form.other_data_activity.id_for_label }}" 
+                   class="form-control" 
+                   {% if form.other_data_activity.value %}value="{{ form.other_data_activity.value }}"{% endif %}>
+                </div>
+            </div>
+        </div>
+
+        {% if is_industry_wide %}
+        {% include "mast/response/helpers/textarea.html" with field=form.tools %}
+        {% endif %}
+        {% if is_organisation_only %}
+        {% include "mast/response/helpers/textarea.html" with field=form.data_used_or_created %}
+        {% endif %}
+
+
+    <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-primary" type="submit">Submit responses</button>
+    </div>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const otherActivitySection = document.getElementById("other_activity_section");
+        const otherActivityCheckbox = document.querySelector('input[name="data_uses"][value="Z"]');
+
+        otherActivitySection.style.display = "none";
+
+        if (otherActivityCheckbox) {
+            otherActivityCheckbox.addEventListener("change", function () {
+                otherActivitySection.style.display = this.checked ? "block" : "none";
+            });
+        }
+
+        function positionBubble(slider, bubble) {
+            var val = (slider.value - slider.min) / (slider.max - slider.min);
+            var thumbWidth = 16;
+            var offset = val * (slider.offsetWidth - thumbWidth) + thumbWidth / 2;
+            bubble.style.left = offset + 'px';
+            bubble.textContent = slider.value;
+        }
+
+        document.querySelectorAll('input[type="range"]').forEach(function (slider) {
+            var bubble = document.getElementById("val_" + slider.name);
+            if (bubble) {
+                positionBubble(slider, bubble);
+                slider.addEventListener("input", function () {
+                    positionBubble(this, bubble);
+                });
+                window.addEventListener("resize", function () {
+                    positionBubble(slider, bubble);
+                });
+            }
+        });
+
+    });
+</script>
+
+{% endblock %}

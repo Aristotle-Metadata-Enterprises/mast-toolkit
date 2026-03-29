@@ -43,8 +43,95 @@
         However, if you include your industry, you will still get access to global comparisons and as new results come in we can update your comparison.
     </div>
 </div>
+<script>
+let customIndustries = [{% for ind in existing_custom_industries %}"{{ ind.name|escapejs }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+function addCustomIndustry() {
+    const input = document.getElementById('custom-industry-input');
+    const name = input.value.trim();
+    if (!name) return;
+    customIndustries.push(name);
+    input.value = '';
+    renderCustomIndustries();
+}
+document.getElementById('custom-industry-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); addCustomIndustry(); }
+});
+function removeCustomIndustry(idx) {
+    customIndustries.splice(idx, 1);
+    renderCustomIndustries();
+}
+function renderCustomIndustries() {
+    const list = document.getElementById('custom-industry-list');
+    const hiddens = document.getElementById('custom-industry-hidden-inputs');
+    list.innerHTML = '';
+    hiddens.innerHTML = '';
+    customIndustries.forEach(function(name, idx) {
+        list.innerHTML += '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+            name + '<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeCustomIndustry(' + idx + ')">&times;</button></li>';
+        hiddens.innerHTML += '<input type="hidden" name="custom_industries" value="' + name.replace(/"/g, '&quot;') + '">';
+    });
+}
+renderCustomIndustries();
+</script>
 <hr class="">
 <h2>Survey customisation</h2>
+<div class="row my-5">
+    <label class="col-2" for="{{form.benchmark_scope.id_for_label}}">{{ form.benchmark_scope.label }}:</label>
+    <div class="col-5">
+        {{ form.benchmark_scope }}
+    </div>
+    <div class="col-5">
+        <p class="form-text text-muted">
+            {{form.benchmark_scope.help_text}}
+        </p>
+    </div>
+</div>
+{% if is_industry_wide %}
+<div class="row mt-3" id="custom-industries-row">
+{% else %}
+<div class="row mt-3" id="custom-industries-row" style="display:none">
+{% endif %}
+    <div class="col-2"></div>
+    <div class="col-5">
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="use-custom-industries-toggle"
+                {% if form.use_custom_industries.value %}checked{% endif %}
+                onchange="document.getElementById('custom-industries-section').style.display = this.checked ? 'block' : 'none'; document.getElementById('id_use_custom_industries').value = this.checked ? 'True' : '';">
+            <label class="form-check-label" for="use-custom-industries-toggle">
+                Use custom industry list for respondents
+            </label>
+        </div>
+        {{ form.use_custom_industries }}
+        <div id="custom-industries-section" style="{% if not form.use_custom_industries.value %}display:none{% endif %}">
+            <div class="input-group mb-2">
+                <input type="text" class="form-control" id="custom-industry-input" placeholder="Enter industry name">
+                <button class="btn btn-outline-primary" type="button" onclick="addCustomIndustry()">Add</button>
+            </div>
+            <ul class="list-group" id="custom-industry-list"></ul>
+            <div id="custom-industry-hidden-inputs"></div>
+        </div>
+    </div>
+    <div class="col-4">
+        <p class="text-muted small">Enable this to define your own industry list. Respondents will choose from your custom list instead of the default ISIC categories.</p>
+    </div>
+</div>
+<script>
+(function() {
+    const benchmarkRadios = document.querySelectorAll('input[name="benchmark_scope"]');
+    const customRow = document.getElementById('custom-industries-row');
+    function toggleCustomIndustries() {
+        const selected = document.querySelector('input[name="benchmark_scope"]:checked');
+        if (selected && selected.value === '2') {
+            customRow.style.display = '';
+        } else {
+            customRow.style.display = 'none';
+        }
+    }
+    benchmarkRadios.forEach(function(radio) {
+        radio.addEventListener('change', toggleCustomIndustries);
+    });
+})();
+</script>
 <div class="row my-5">
     <label class="col-2" for="{{form.qualitative.id_for_label}}">{{ form.qualitative.label }}:</label>
     <div class="col-5">
@@ -83,6 +170,7 @@
         </div>
     </div>
 </div>
+
 <div class="row  my-5">
     <label class="col-2" for="{{form.preamble.id_for_label}}">{{ form.preamble.label }}:</label>
     <div class="col-5">
