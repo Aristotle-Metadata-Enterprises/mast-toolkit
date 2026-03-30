@@ -7,7 +7,7 @@
 
 <div class="card card-body m-2 p-3">
 {% if survey.confirmation_message %}
-    {{ survey.confirmation_message }}
+    {{ survey.confirmation_message | linebreaksbr }}
 {% else %}
     {{ default_texts.confirmation | safe }}
 {% endif %}
