@@ -150,7 +150,6 @@ class ResponseStep3View(ResponseBase, View):
             'is_organisation_only': self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY,
             'is_industry_wide': self.survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE,
             'show_data_used_field': self.survey.include_data_used_or_created == mast_toolkit.consts.DataUsed.SHOW,
-            'self_assess_fields': [form['self_assess_value'], form['self_assess_trust'], form['self_assess_secure']],
         }
 
 
