@@ -16,7 +16,7 @@
     <div class="col-6 px-2">
         <div class="alert alert-primary">
             <div class="alert-heading">You have {{ survey.response_count }} responses so far.</div>
-            Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}">{{object.share_link}}</a>.
+            Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}" target="_blank" rel="noopener noreferrer">{{object.share_link}}</a>.
             This link will allow users to respond to your survey.
         </div>
     </div>    
@@ -34,7 +34,7 @@
                     You haven't recieved any responses yet.
                 </p>
                 <p>
-                    Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}">{{object.share_link}}</a>.
+                    Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}" target="_blank" rel="noopener noreferrer">{{object.share_link}}</a>.
                     This link will allow users to respond to your survey.     
                 </p>
             {% else %}
