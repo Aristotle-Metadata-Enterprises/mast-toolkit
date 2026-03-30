@@ -159,7 +159,6 @@ class ResponseStep3Form(forms.ModelForm):
         fields = [
             "email", "team", "industry", "seniority",
             "data_uses", "other_data_activity",
-            "self_assess_value", "self_assess_trust", "self_assess_secure",
             "tools",
             "data_used_or_created",
         ]
@@ -190,6 +189,3 @@ class ResponseStep3Form(forms.ModelForm):
         self.fields['industry'].widget.choices = choices
         if survey.benchmark_scope == BenchmarkScope.INDUSTRY_WIDE:
             self.fields['industry'].required = True
-        self.fields['self_assess_value'].required = True
-        self.fields['self_assess_trust'].required = True
-        self.fields['self_assess_secure'].required = True
