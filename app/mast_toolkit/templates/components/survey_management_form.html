@@ -53,9 +53,6 @@ function addCustomIndustry() {
     input.value = '';
     renderCustomIndustries();
 }
-document.getElementById('custom-industry-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') { e.preventDefault(); addCustomIndustry(); }
-});
 function removeCustomIndustry(idx) {
     customIndustries.splice(idx, 1);
     renderCustomIndustries();
@@ -71,7 +68,6 @@ function renderCustomIndustries() {
         hiddens.innerHTML += '<input type="hidden" name="custom_industries" value="' + name.replace(/"/g, '&quot;') + '">';
     });
 }
-renderCustomIndustries();
 </script>
 <hr class="">
 <h2>Survey customisation</h2>
@@ -111,6 +107,12 @@ renderCustomIndustries();
             <div id="custom-industry-hidden-inputs"></div>
         </div>
     </div>
+    <script>
+    document.getElementById('custom-industry-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); addCustomIndustry(); }
+    });
+    renderCustomIndustries();
+    </script>
     <div class="col-4">
         <p class="text-muted small">Enable this to define your own industry list. Respondents will choose from your custom list instead of the default ISIC categories.</p>
     </div>
