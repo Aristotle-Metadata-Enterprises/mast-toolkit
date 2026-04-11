@@ -45,6 +45,16 @@
       .tool-choices label {
         font-weight: normal;
       }
+      .data_uses_checkboxes label {
+        display: flex;
+      }
+      .data_uses_checkboxes label input {
+        flex-grow: 0;
+        min-width: 20px
+      }
+      .data_uses_checkboxes label * {
+        flex-grow: 1;
+      }
       textarea {
         box-shadow: 0 0 0 1px gray;
       }
@@ -93,7 +103,7 @@
   </head>
   <body>
     <div class="container survey-outer">
-      <div class="card card-body p-lg-5 m-lg-5 m-md-2 p-md-3">
+      <div class="card card-body p-xl-5 m-xl-5 m-md-2 p-md-3">
       {% block content %}
       {% endblock %}
       </div>

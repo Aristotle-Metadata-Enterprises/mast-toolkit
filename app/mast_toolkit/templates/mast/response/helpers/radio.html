@@ -1,13 +1,23 @@
-<div class="row pb-5">
-    <div class="col-5">
-        <label for="{{field.id_for_label}}">{{ field.label }}</label>
+<div class="row pt-5 pt-sm-3">
+    <div class="col-md-4 col-xl-5">
+        <label for="{{field.id_for_label}}">
+            <span class="my-5">{{ field.label }}</span>
+        </label>
         <p class="form-text">{{ field.help_text }}</p>
     </div>    
     <div class="col">
     {% for choice in field %}
-    <div class="row action-option">
-        {{choice}}
+
+    <div class="col-sm d-flex flex-row pt-1 {% cycle 'bg-light' 'bg-white' %} py-2">
+        <div class="ps-2 pe-4 d-flex align-items-center">
+        {{ choice.tag }}
+        </div>
+        <label class="flex-grow-1 fw-light d-flex align-items-center" for="{{ choice.id_for_label }}">
+            {{ choice.choice_label }}
+        </label>
     </div>
+
+
     {% endfor %}
     </div>
 </div>

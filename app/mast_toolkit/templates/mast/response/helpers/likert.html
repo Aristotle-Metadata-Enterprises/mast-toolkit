@@ -1,8 +1,15 @@
-<div class="row likert pt-1">
-    <label class="col-6" for="{{field.id_for_label}}"><span class="my-5">{{ field.label }}</span></label>
+<div class="row likert pt-5 pt-sm-3 pt-md-1">
+    <label class="col-md-4 col-xl-5" for="{{field.id_for_label}}">
+        <span class="my-5">{{ field.label }}</span>
+    </label>
     {% for choice in field %}
-    <div class="col-1 bolded-radio-cell">
+    <div class="{% cycle 'bg-light' 'bg-white' %} col-sm bolded-radio-cell d-flex flex-row flex-sm-column">
+        <div class="ps-2 pe-4 p-sm-0">
         {{ choice.tag }}
+        </div>
+        <label class="d-block d-sm-block d-md-none text-sm-center flex-grow-1 fw-light d-flex align-items-center" for="{{ choice.id_for_label }}">
+            {{ choice.choice_label }}
+        </label>
     </div>
     {% endfor %}
 </div>
