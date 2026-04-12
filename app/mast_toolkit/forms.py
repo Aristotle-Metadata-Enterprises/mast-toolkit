@@ -169,6 +169,7 @@ class ResponseStep3Form(forms.ModelForm):
             "seniority": forms.RadioSelect(attrs={"required": True}),
             "tools": forms.TextInput(attrs={"class": "form-control"}),
             "industry": forms.Select(attrs={"class": "form-select", "required": True}),
+            
         }
 
     def __init__(self, *args, **kwargs):
