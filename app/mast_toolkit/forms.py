@@ -169,7 +169,6 @@ class ResponseStep3Form(forms.ModelForm):
             "seniority": forms.RadioSelect(attrs={"required": True}),
             "tools": forms.TextInput(attrs={"class": "form-control"}),
             "industry": forms.Select(attrs={"class": "form-select", "required": True}),
-            
         }
 
     def __init__(self, *args, **kwargs):
@@ -182,10 +181,19 @@ class ResponseStep3Form(forms.ModelForm):
         self.fields['seniority'].required = True
         self.fields['data_uses'].required = True
         if survey.use_custom_industries and survey.custom_industries.exists():
-            choices = [('', '---------')] + [(ci.name, ci.name) for ci in survey.custom_industries.all()]
+            choices =  [(ci.name, ci.name) for ci in survey.custom_industries.all()]
         else:
-            choices = [('', '---------')] + [(c.value, c.label) for c in ISICChoices]
+            choices = [(c.value, c.label) for c in ISICChoices]
+        if len(choices) <= 5:
+            self.fields['industry'].widget = forms.RadioSelect(attrs={"required": True})
+            self.fields['industry'].is_radio = True
+        else:
+            choices = [('', '---------')] + choices
+            self.fields['industry'].is_radio = False
+
         self.fields['industry'].choices = choices
         self.fields['industry'].widget.choices = choices
+        
+
         if survey.benchmark_scope == BenchmarkScope.INDUSTRY_WIDE:
             self.fields['industry'].required = True

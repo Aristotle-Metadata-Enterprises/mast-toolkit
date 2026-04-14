@@ -83,20 +83,20 @@
         </div>
         {% endif %}
         {% if is_industry_wide %}
-        <div id="row-industry" class="row my-4 {% if form.industry.errors %}has-error{% endif %}">
-            <label class="col-sm-5" for="{{form.industry.id_for_label}}">{{ form.industry.label }} <span class="text-danger">*</span>:</label>
-            <div class="col-sm>
-                {{ form.industry }}
-                {% if form.industry.errors %}<div class="text-danger small mt-1">{{ form.industry.errors.0 }}</div>{% endif %}
-            </div>
-        </div>
+            {% if form.industry.field.is_radio %}
+                {% include "mast/response/helpers/radio.html" with field=form.industry %}
+            {% else %}
+                <div id="row-industry" class="row my-4 {% if form.industry.errors %}has-error{% endif %}">
+                    <label class="col-sm-5" for="{{form.industry.id_for_label}}">{{ form.industry.label }} <span class="text-danger">*</span>:</label>
+                    <div class="col-sm">
+                        {{ form.industry }}
+                        {% if form.industry.errors %}<div class="text-danger small mt-1">{{ form.industry.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+            {% endif %}
         {% endif %}
-        <div id="row-seniority" class="row my-4 {% if form.seniority.errors %}has-error{% endif %}">
-            <label class="col-sm-5" for="{{form.seniority.id_for_label}}">{{ form.seniority.label }} <span class="text-danger">*</span>:</label>
-            <div class="col seniority-choices">
-                {{ form.seniority }}
-                {% if form.seniority.errors %}<div class="text-danger small mt-1">{{ form.seniority.errors.0 }}</div>{% endif %}
-            </div>
+        <div id="row-seniority">
+            {% include "mast/response/helpers/radio.html" with field=form.seniority %}
         </div>
         <div id="row-data-uses" class="row my-4 {% if form.data_uses.errors %}has-error{% endif %}">
             <label class="col-sm-5" for="{{form.data_uses.id_for_label}}">{{ form.data_uses.label }} <span class="text-danger">*</span>:</label>
