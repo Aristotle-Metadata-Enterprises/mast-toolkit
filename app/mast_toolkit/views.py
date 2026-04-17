@@ -468,6 +468,24 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
             mast.Response._meta.fields
         }
         context['graphics'] = {
+            'outcomes_value': {
+                "histogram": report_histogram(
+                    mast.Likert.display_labels_dk_first(),
+                    [x['count'] for x in report_metrics['outcomes_value']['histogram']]
+                )
+            },
+            'outcomes_security': {
+                "histogram": report_histogram(
+                    mast.Likert.display_labels_dk_first(),
+                    [x['count'] for x in report_metrics['outcomes_security']['histogram']]
+                )
+            },
+            'outcomes_trust': {
+                "histogram": report_histogram(
+                    mast.Likert.display_labels_dk_first(),
+                    [x['count'] for x in report_metrics['outcomes_trust']['histogram']]
+                )
+            },
             'beliefs_metadata_1': {
                 "histogram": report_histogram(
                     mast.Likert.display_labels_dk_first(),

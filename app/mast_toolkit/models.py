@@ -135,6 +135,9 @@ class Survey(models.Model):
         total_responses = qs.count()
 
         responses = qs.aggregate(
+            Avg('self_assess_value', default=0),
+            Avg('self_assess_secure', default=0),
+            Avg('self_assess_trust', default=0),
 
             Avg('beliefs_metadata_1', default=0),
             Avg('beliefs_analysis_1', default=0),
@@ -192,6 +195,44 @@ class Survey(models.Model):
 
         )
 
+        def percent_agree(field_name):
+            kwargs = {
+                f"{field_name}__in": [Likert.AGREE, Likert.AGREESTRONGLY],
+                "then": 1
+            }
+            return 100 * Count(
+                Case(
+                    When(**kwargs),
+                    default=None,
+                    output_field=models.IntegerField()
+                )
+            ) / Count('id')
+
+        percent_agree = self.responses.filter(is_complete=True).aggregate(
+            self_assess_secure_percent=percent_agree('self_assess_secure'),
+            self_assess_trust_percent=percent_agree('self_assess_trust'),
+            self_assess_value_percent=percent_agree('self_assess_value'),
+            beliefs_metadata_1_percent=percent_agree('beliefs_metadata_1'),
+            beliefs_analysis_1_percent=percent_agree('beliefs_analysis_1'),
+            beliefs_standards_1_percent=percent_agree('beliefs_standards_1'),
+            beliefs_teamwork_1_percent=percent_agree('beliefs_teamwork_1'),
+            beliefs_metadata_2_percent=percent_agree('beliefs_metadata_2'),
+            beliefs_analysis_2_percent=percent_agree('beliefs_analysis_2'),
+            beliefs_standards_2_percent=percent_agree('beliefs_standards_2'),
+            beliefs_teamwork_2_percent=percent_agree('beliefs_teamwork_2'),
+            actions_inventory_1_percent=percent_agree('actions_inventory_1'),
+            actions_inventory_2_percent=percent_agree('actions_inventory_2'),
+            actions_document_1_percent=percent_agree('actions_document_1'),
+            actions_document_2_percent=percent_agree('actions_document_2'),
+            actions_endorse_1_percent=percent_agree('actions_endorse_1'),
+            actions_endorse_2_percent=percent_agree('actions_endorse_2'),
+            actions_audit_1_percent=percent_agree('actions_audit_1'),
+            actions_audit_2_percent=percent_agree('actions_audit_2'),
+            actions_leadership_1_percent=percent_agree('actions_leadership_1'),
+            actions_leadership_2_percent=percent_agree('actions_leadership_2'),
+        )
+
+
         response_dates = self.responses.filter(is_complete=True).annotate(
             date=TruncDate('response_date')
         ).values('date').annotate(count=Count('date')).order_by('date')
@@ -199,6 +240,11 @@ class Survey(models.Model):
         _metrics = {
             "OVERALL": {
                 "total_responses": total_responses,
+            },
+            "OUTCOMES": {
+                "value": adjusted_likert((responses['self_assess_value__avg'])),
+                "security": adjusted_likert((responses['self_assess_secure__avg'])),
+                "trust": adjusted_likert((responses['self_assess_trust__avg'])),
             },
             "MAST": {
                 # TODO: Investigate spreading
@@ -239,7 +285,8 @@ class Survey(models.Model):
                 "actions_leadership_1": adjusted_likert(responses['actions_leadership_1__avg']),
                 "actions_leadership_2": adjusted_likert(responses['actions_leadership_2__avg']),
             },
-            "RECENT_RESPONSES": response_dates.filter(response_date__gt = datetime.datetime.now() - datetime.timedelta(days=14))
+            "RECENT_RESPONSES": response_dates.filter(response_date__gt = datetime.datetime.now() - datetime.timedelta(days=14)),
+            'PERCENT_AGREE': percent_agree,
         }
 
         return _metrics
@@ -289,6 +336,16 @@ class Survey(models.Model):
             return data
 
         _metrics = {}
+        _metrics['outcomes_value'] = {
+            "histogram": likert_histogram_results('self_assess_value'),
+        }
+        _metrics['outcomes_security'] = {
+            "histogram": likert_histogram_results('self_assess_secure'),
+        }
+        _metrics['outcomes_trust'] = {
+            "histogram": likert_histogram_results('self_assess_trust'),
+        }
+
         _metrics['beliefs_metadata_1'] = {
             "histogram": likert_histogram_results('beliefs_metadata_1'),
         }

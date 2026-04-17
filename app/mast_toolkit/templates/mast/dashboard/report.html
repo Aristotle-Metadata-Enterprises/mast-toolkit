@@ -70,6 +70,107 @@
 
 <h2 id="organisation" class="page-break-before">Organisation results</h2>
 <hr>
+<h3>Outcomes</h3>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            Question:
+            <strong>
+                {{ questions.self_assess_value }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.OUTCOMES.value | floatformat:1 }} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question are more likely to consistently translate data into meaningful outcomes, such as better decision-making, improved efficiency, and measurable business impact. When people see data being used effectively, it reinforces its importance and encourages broader participation in data-related activities.
+        </p>
+        <p>
+            Organisations scoring well in this area are typically aligning their data efforts with business goals, enabling teams to confidently use data in their day-to-day work, and creating a culture where data is treated as a strategic asset rather than a by-product.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Clarifying what “value” from data means in practical, business terms</li>
+                <li>Linking data initiatives directly to business outcomes and priorities</li>
+                <li>Improving visibility of how data is used to drive decisions and results</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.self_assess_value_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
+        {{ graphics.outcomes_value.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            Question:
+            <strong>
+                {{ questions.self_assess_secure }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.OUTCOMES.security | floatformat:1 }} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question are more likely to have clear, trusted practices in place to protect data from misuse, loss, or unauthorised access. When users feel confident that data is secure, they are more willing to use, share, and rely on it in their work, reinforcing good data behaviours across the organisation.
+        </p>
+        <p>
+            Organisations performing well in this area typically balance strong security controls with usability, ensuring that data is protected without becoming inaccessible. They also tend to have clear accountability, consistent standards, and ongoing awareness of data risks.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Documenting data classification levels and how they apply to different data assets</li>
+                <li>Recording who has access to data and the justification for that access</li>
+                <li>Capturing data handling procedures, including storage, sharing, and disposal practices</li>
+                <li>Establishing regular review processes to keep security-related documentation up to date</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.self_assess_security_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
+        {{ graphics.outcomes_security.histogram|safe }}
+    </div>    
+</div>
+<hr>
+<div class="row">
+    <div class="col-6 px-3">
+        <div class="card card-body">
+            Question:
+            <strong>
+                {{ questions.self_assess_trust }}
+            </strong>
+        </div>
+        <div class="my-3"><strong>Your score is {{metrics.OUTCOMES.trust | floatformat:1 }} out of 5.</strong></div>
+        <p>
+            Organisations scoring higher on this question are more likely to have confidence in the accuracy, consistency, and reliability of their data. When users trust data, they are more willing to rely on it for decision-making, reducing duplication of effort and avoiding workarounds such as maintaining personal datasets.
+        </p>
+        <p>
+            Organisations performing well in this area typically have clear ownership, consistent definitions, and transparent processes for maintaining data quality. Trust is reinforced when users can understand where data comes from, how it is maintained, and whether it is fit for purpose.
+        </p>
+        <p>If your organisation scores low on this, consider:
+            <ul>
+                <li>Documenting data definitions to ensure consistent understanding across teams</li>
+                <li>Recording data lineage so users can see where data originates and how it changes</li>
+                <li>Capturing data quality rules and how they are applied</li>
+                <li>Establishing regular review processes to keep trust-related documentation current</li>
+            </ul>
+        </p>
+    </div>    
+    <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.self_assess_trust_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
+        {{ graphics.outcomes_trust.histogram|safe }}
+    </div>    
+</div>
+<hr>
+
+
 <h3>Beliefs</h3>
 <h4>Metadata</h4>
 <div class="row">
@@ -98,6 +199,10 @@
         </p>
     </div>    
     <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.beliefs_metadata_1_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
         {{ graphics.beliefs_metadata_1.histogram|safe }}
     </div>    
 </div>
@@ -127,6 +232,10 @@
         </p>
     </div>    
     <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.beliefs_metadata_2_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
         {{ graphics.beliefs_metadata_2.histogram|safe }}
     </div>    
 </div>
@@ -158,6 +267,10 @@
         </p>
     </div>    
     <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.beliefs_analysis_1_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
         {{ graphics.beliefs_analysis_1.histogram|safe }}
     </div>    
 </div>
@@ -187,6 +300,10 @@
         </p>
     </div>    
     <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.beliefs_analysis_2_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
         {{ graphics.beliefs_analysis_2.histogram|safe }}
     </div>    
 </div>
@@ -218,6 +335,10 @@
         </p>
     </div>    
     <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.beliefs_standards_1_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
         {{ graphics.beliefs_standards_1.histogram|safe }}
     </div>    
 </div>
@@ -248,6 +369,10 @@
         </p>
     </div>    
     <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.beliefs_standards_2_percent }}% of responses agree or strongly agree.</strong>
+        </div>
+        <hr>
         {{ graphics.beliefs_standards_2.histogram|safe }}
     </div>    
 </div>
@@ -280,6 +405,9 @@
         </p>
     </div>    
     <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.beliefs_teamwork_1_percent }}% of responses agree or strongly agree.</strong>
+        </div>
         {{ graphics.beliefs_teamwork_1.histogram|safe }}
     </div>    
 </div>
@@ -309,6 +437,9 @@
         </p>
     </div>    
     <div class="col-6 px-3">
+        <div class="text-center">
+            <strong>{{ metrics.PERCENT_AGREE.beliefs_teamwork_2_percent }}% of responses agree or strongly agree.</strong>
+        </div>
         {{ graphics.beliefs_teamwork_2.histogram|safe }}
     </div>    
 </div>
