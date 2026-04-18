@@ -199,6 +199,16 @@ class DashboardMixin:
     def survey(self):
         return get_object_or_404(mast.Survey, pk=self.kwargs['survey_pk'])
 
+    def get_object(self):
+        object = super().get_object()
+        show_incomplete = self.request.GET.get('show_incomplete', 'false')
+        print(f"{show_incomplete=}")
+        show_incomplete = self.request.GET.get('show_incomplete', 'false') == 'true'
+        show_only_completed = not show_incomplete
+        object.show_only_completed = show_only_completed
+        print(f"{show_incomplete=}, {show_only_completed=}")
+        return object
+
 
 IDEAL_LABELS = [
             'Investigate & Inventory<br>',
@@ -311,6 +321,7 @@ class SurveyDetailView(DashboardMixin, DetailView):
         context['recent_responses'] = plot(recent_responses, output_type="div", include_plotlyjs=False)
         context['recent_responses_data'] = agg_dates
         context['metrics'] = survey.metrics
+        context['count'] = survey.response_count
 
         return context
 
@@ -329,7 +340,7 @@ class SurveyCSVExportView(DashboardMixin, View):
     def get(self, request, *args, **kwargs):
         survey = self.survey
         metrics = survey.metrics
-        responses = survey.responses.filter(is_complete=True)
+        responses = survey.responses_for_report.filter(is_complete=True)
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = f'attachment; filename="{survey.title}_report.csv"'
@@ -616,7 +627,7 @@ class SurveyReportCrossTabView(DashboardMixin, DetailView):
         }
         
         if field1 in valid_questions and field2 in valid_questions:
-            responses = survey.responses.all()
+            responses = survey.responses_for_report.all()
             crosstab_data = list(responses.values(field1, field2).annotate(count=Count('id')).order_by(field1, field2))
             
             # Get all unique values for both fields

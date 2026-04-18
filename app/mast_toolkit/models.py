@@ -101,7 +101,10 @@ class Survey(models.Model):
         default=False,
         verbose_name="Use custom industry list",
         help_text="If enabled, respondents will choose from your custom industry list instead of the default ISIC categories."
-    )   
+    )
+
+    # We use this when generating statistics
+    show_only_completed = True
 
     # size = ???
     # tools = ???
@@ -110,23 +113,23 @@ class Survey(models.Model):
     def get_absolute_url(self):
         return reverse("survey_dashboard", args=[self.id])
 
-    @cached_property
+    @property
+    def responses_for_report(self):
+        print("Getting responses for report, show_only_completed=", self.show_only_completed    )
+        if self.show_only_completed:
+            return self.responses.filter(is_complete=True)
+        return self.responses.all()
+
+    @property
     def response_count(self):
-        return self.responses.all().filter(is_complete=True).count()
+        return self.responses_for_report.count()
 
-
-    @cached_property
+    @property
     def metrics(self):
         return self.generate_basic_metrics()
 
-    def crosstab_questions(self):
-        return [
-            field for field in self._meta.fields
-            if field.choices == Likert.choices
-        ]
-
     def generate_basic_metrics(self, team=mast_toolkit.consts.NO_TEAM_SELECTED, activity_type=mast_toolkit.consts.NO_ACTIVITY_SELECTED):
-        qs = self.responses.filter(is_complete=True)
+        qs = self.responses_for_report
 
         if team != mast_toolkit.consts.NO_TEAM_SELECTED:
             # We check for False, as "None" as a team is a valid filter to find users who didn't select a team.
@@ -214,7 +217,7 @@ class Survey(models.Model):
                 )
             ) / Count('id')
 
-        percent_agree = self.responses.filter(is_complete=True).aggregate(
+        percent_agree = self.responses_for_report.aggregate(
             self_assess_secure_percent=percent_agree('self_assess_secure'),
             self_assess_trust_percent=percent_agree('self_assess_trust'),
             self_assess_value_percent=percent_agree('self_assess_value'),
@@ -239,7 +242,7 @@ class Survey(models.Model):
         )
 
 
-        response_dates = self.responses.filter(is_complete=True).annotate(
+        response_dates = self.responses_for_report.annotate(
             date=TruncDate('response_date')
         ).values('date').annotate(count=Count('date')).order_by('date')
 
@@ -302,7 +305,7 @@ class Survey(models.Model):
         return self.generate_report_metrics()
 
     def generate_report_metrics(self, team=False):
-        qs = self.responses.filter(is_complete=True)
+        qs = self.responses_for_report
         total_count_of_responses = qs.count() or 1
 
         def likert_histogram_results(field):
