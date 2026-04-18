@@ -1,0 +1,74 @@
+{% extends "mast/dashboard/base.html" %}
+{% load static %}
+
+{% block title %}Cross-tabulations - {{ object.title }}{% endblock %}
+
+{% block dashboard_content %}
+<h1>Cross-tabulations - {{ object.title }}</h1>
+
+{% if survey.response_count == 0 %}
+<div class="alert alert-primary">
+        <p>
+            You haven't recieved any responses yet.
+            Once you start recieving responses, your report will automatically show.
+        </p>
+        <p>
+            Get more responses by sharing your share link: <a href="{% url 'survey_respond' object.share_link %}" target="_blank" rel="noopener noreferrer">{{object.share_link}}</a>.
+            This link will allow users to respond to your survey.     
+        </p>
+        <hr>
+        <p>
+            Below is a preview of the report that will be available once you begin recieving repsonses to the assessment.
+        </p>
+</div>
+{% else %}
+<form method="get" id="crosstabForm">
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label for="rowQuestion" class="form-label">Row Question</label>
+            <select class="form-select" id="rowQuestion" name="field1">
+                <option value="">Select a question...</option>
+                {% for question in questions.values %}
+                <option value="{{ question.name }}"
+                {% if question.name == field1 %}selected{% endif %}
+                >{{ question.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="columnQuestion" class="form-label">Column Question</label>
+            <select class="form-select" id="columnQuestion" name="field2">
+                <option value="">Select a question...</option>
+                {% for question in questions.values %}
+                <option value="{{ question.name }}"
+                {% if question.name == field2 %}selected{% endif %}
+                >{{ question.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Generate Crosstab</button>
+</form>
+
+<table class="table">
+    <tbody>
+        {% for key, row in crosstab.items %}
+        <tr>
+            <th>{{ row.label }}</th>
+            {% for cell, value in row.data.items %}
+            <td style="background-color: {{ value.color }}; width:10%">{{ value.count }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            {% for col in field2_choices %}
+            <th>{{ col.1 }}</th>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
+
+{% endif %}
+
+{% endblock %}

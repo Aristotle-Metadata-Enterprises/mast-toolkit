@@ -593,6 +593,69 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
 
         return context
 
+class SurveyReportCrossTabView(DashboardMixin, DetailView):
+    model = mast.Survey
+    template_name = "mast/dashboard/crosstab.html"
+    active_dashboard_tab = "crosstab"
+    pk_url_kwarg = 'survey_pk'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        survey = self.object
+        
+        # Field 1 is rows
+        # Field 2 is columns
+        field1 = self.request.GET.get('field1')
+        field2 = self.request.GET.get('field2')
+
+        valid_questions = {
+            field.name: {'label': field.verbose_name, 'name': field.name, 'choices': field.choices}
+            for field in 
+            mast.Response._meta.fields
+            if field.choices == mast.Likert.choices
+        }
+        
+        if field1 in valid_questions and field2 in valid_questions:
+            responses = survey.responses.all()
+            crosstab_data = list(responses.values(field1, field2).annotate(count=Count('id')).order_by(field1, field2))
+            
+            # Get all unique values for both fields
+            all_field1_values = list(reversed(mast.Likert.choices))
+            all_field1_values = all_field1_values[1:] + [all_field1_values[0]]
+
+            all_field2_values = mast.Likert.choices
+            
+            crosstab_dict = {}
+            default_val = {'count': 0, 'percent': 0}
+            for f1 in all_field1_values:
+                crosstab_dict[f1[0]] = {
+                    'label': f1[1],
+                    'data': {f2[0]: default_val for f2 in all_field2_values}
+                }
+
+            max_val = max(row['count'] for row in crosstab_data) or 0
+
+            for row in crosstab_data:
+                f1_val = row[field1]
+                f2_val = row[field2]
+                crosstab_dict[f1_val]['data'][f2_val] = {
+                    'count': row['count'],
+                    'percent': row['count'] / max_val,
+                    'color': f"rgba(0, 123, 255, {row['count'] / max_val})" if max_val > 0 else "rgba(0, 123, 255, 0)"
+                }
+            
+            context['crosstab'] = crosstab_dict
+
+            context['field1'] = field1
+            context['field2'] = field2
+            context['field1_choices'] = valid_questions.get(field1, {}).get('choices', [])
+            context['field2_choices'] = valid_questions.get(field2, {}).get('choices', [])
+
+            
+        context['questions'] = valid_questions
+        return context
+        
+
 
 class SurveyAddTeamView(DashboardMixin, CreateView):
     model = mast.BusinessUnit

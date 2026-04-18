@@ -119,6 +119,12 @@ class Survey(models.Model):
     def metrics(self):
         return self.generate_basic_metrics()
 
+    def crosstab_questions(self):
+        return [
+            field for field in self._meta.fields
+            if field.choices == Likert.choices
+        ]
+
     def generate_basic_metrics(self, team=mast_toolkit.consts.NO_TEAM_SELECTED, activity_type=mast_toolkit.consts.NO_ACTIVITY_SELECTED):
         qs = self.responses.filter(is_complete=True)
 

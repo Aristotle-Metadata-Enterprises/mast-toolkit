@@ -125,6 +125,12 @@
           </a>
         </li>
         <li>
+          <a href="{% url 'survey_dashboard_crosstab' survey_pk %}" class="nav-link {% if active_dashboard_tab == 'crosstab' %}active{% else %}link-dark{% endif %}">
+            <i class="bi bi-table pe-3"></i>
+            Cross tabulations
+          </a>
+        </li>
+        <li>
           <a href="{% url 'survey_dashboard_delete' survey_pk %}" class="nav-link {% if active_dashboard_tab == 'delete' %}active{% else %}link-dark{% endif %}">
             <i class="bi-trash3 pe-3"></i>
             Delete
