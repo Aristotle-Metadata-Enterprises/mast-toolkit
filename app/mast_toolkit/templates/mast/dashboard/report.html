@@ -776,6 +776,35 @@
         </tbody>
     </table>
 
+    <details>
+        <summary>
+            Show results by individual question
+        </summary>
+        <table class="table">
+            {% include 'mast/dashboard/helpers/mi_header.html' %}
+            <tbody>
+                <tr>
+                    <td><strong>{{ survey.organisation }}</strong></td>
+                    {% include 'mast/dashboard/helpers/mi_row.html' with metrics=metrics %}
+                </tr>
+            </tbody>
+            <tbody>
+                {% for industry in industry_data %}
+                <tr>
+                    <td>{% if industry.name %}
+                            {{ industry.name }}
+                        {% else %}
+                            <i>No industry provided</i>
+                        {% endif %}
+                    </td>
+                    {% include 'mast/dashboard/helpers/mi_row.html' with metrics=industry.metrics %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </details>
+
+
     {% for industry in industry_data %}
     <h3 class="page-break-before">
         Industry: {% if industry.name %}
@@ -803,7 +832,7 @@
     Note: Users may select more than 1 activity, so total responses within the the table may total to more than total responses for the organisation.
 </p>
 <p>
-    Hover over any table header to see the name for that metric
+    Hover over any table header to see the name for that metric.
 </p>
 
 <table class="table">
@@ -828,6 +857,36 @@
         {% endfor %}
     </tbody>
 </table>
+
+<details>
+    <summary>
+        Show results by individual question
+    </summary>
+    <table class="table">
+        {% include 'mast/dashboard/helpers/mi_header.html' %}
+        <tbody>
+            <tr>
+                <td><strong>{{ survey.organisation }}</strong></td>
+                {% include 'mast/dashboard/helpers/mi_row.html' with metrics=metrics %}
+            </tr>
+        </tbody>
+        <tbody>
+            {% for activity in activity_data %}
+            <tr>
+                <td>{% if activity.activity %}
+                        {{ activity.activity.activity }}
+                    {% else %}
+                        <i>{{ activity.activity_type_name }}</i>
+                    {% endif %}
+                </td>
+                {% include 'mast/dashboard/helpers/mi_row.html' with metrics=activity.metrics %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</details>
+
+
 
 <h2 id="methodology">Methodology</h2>
 <hr>
