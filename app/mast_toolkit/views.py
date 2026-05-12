@@ -202,11 +202,11 @@ class DashboardMixin:
     def get_object(self):
         object = super().get_object()
         show_incomplete = self.request.GET.get('show_incomplete', 'false')
-        print(f"{show_incomplete=}")
+
         show_incomplete = self.request.GET.get('show_incomplete', 'false') == 'true'
         show_only_completed = not show_incomplete
         object.show_only_completed = show_only_completed
-        print(f"{show_incomplete=}, {show_only_completed=}")
+
         return object
 
 
@@ -473,6 +473,7 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
         report_metrics = survey.report_metrics
         context['metrics'] = survey.metrics
         context['report_metrics'] = report_metrics
+        context['industry_wide'] = survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE
         context['questions'] = {
             field.name: field.verbose_name
             for field in 
@@ -588,18 +589,60 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
         if teams:
             context['team_data'] = team_data
 
+        if survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE:
+            industry_data = []
+            industries = list(set(survey.responses_for_report.values_list('industry', flat=True)))
+
+            for industry in industries:
+                if industry:
+                    industry_metrics = survey.generate_basic_metrics(industry=industry)
+
+                    data = list(industry_metrics['IDEAL'].values())
+                    data.append(data[0])  # Close the plot, otherwise there is a gap
+                    ideal_radar = ideal_polar_plot(survey.metrics)
+                    ideal_radar.add_trace(go.Scatterpolar(
+                        r=data,
+                        theta=IDEAL_LABELS+IDEAL_LABELS[0:1],
+                        # fill='toself',
+                        name=industry
+                    ))
+
+                    mast_bar = mast_bar_plot(survey.metrics, name=survey.organisation)
+                    mast_bar.add_trace(go.Bar(
+                            x = list(industry_metrics['MAST'].keys()), 
+                            y = list(industry_metrics['MAST'].values()),
+                            textposition = 'auto',
+                            name=industry
+                        )  
+                    )
+
+                    industry_data.append({
+                        "name": industry,
+                        "ideal_plot": plot(ideal_radar, output_type="div", include_plotlyjs=False),
+                        "mast_plot": plot(mast_bar, output_type="div", include_plotlyjs=False),
+                        "metrics": industry_metrics
+                    })
+            context['industry_data'] = industry_data
+
+
         activity_data = []
+        no_activities_option = {}
         for activity_type in list(mast.ActivityType.objects.all()) + [None]:
-            if activity_type is None:
-                activity_type_name = "No activities selected"
-            else:
-                activity_type_name = activity_type.activity
-            activity_type_metrics = survey.generate_basic_metrics(activity_type=activity_type)
-            activity_data.append({
+            activity_type_metrics = survey.generate_basic_metrics(activity_type=activity_type)         
+            data = {
                 "activity": activity_type,
-                "activity_type_name": activity_type_name,
                 "metrics": activity_type_metrics
-            })
+            }
+
+            if activity_type is None:
+                data['activity_type_name'] = "No activities selected"
+                no_activities_option = data
+            else:
+                data['activity_type_name'] = activity_type.activity
+                activity_data.append(data)
+
+        activity_data = sorted(activity_data, key=lambda x: x['metrics']['OVERALL']['total_responses'], reverse=True)
+        activity_data.append(activity_data)
         context['activity_data'] = activity_data
 
         return context

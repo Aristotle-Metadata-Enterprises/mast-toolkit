@@ -691,45 +691,16 @@
 <hr>
 
 <h2 class="page-break-before" id="teams">Results by Team</h2>
-{% if team_data %}
+{% if team_data or not industry_wide %}
     <p>Below is a breakdown of all teams who have provided data, along with their scores across the MAST/IDEAL dimensions.</p>
     <p>Teams with metrics <span class="text-danger">below 2 are marked in red</span>, those <span class="text-warning">between 2 and 3 are marked in yellow</span>
         and those with <span class="text-success">scores greater than 4 are marked in green</span>.</p>
     <table class="table">
-        <thead>
-            <tr>
-                <th>Team</th>
-                <th>Responses</th>
-                <th class="team-table-border" colspan="4">Beliefs</th>
-                <th class="team-table-border" colspan="4">Behaviours</th>
-            </tr>
-            <tr>
-                <th></th>
-                <th></th>
-                <th class="team-table-border">M</th>
-                <th>A</th>
-                <th>S</th>
-                <th>T</th>
-                <th class="team-table-border">I</th>
-                <th>D</th>
-                <th>E</th>
-                <th>A</th>
-                <th>L</th>
-            </tr>
-        </thead>
+        {% include 'mast/dashboard/helpers/obb_header.html' %}
         <tbody>
             <tr>
                 <td><strong>{{ survey.organisation }}</strong></td>
-                <td>{{ metrics.OVERALL.total_responses }}</td>
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.metadata border=True %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.analysis %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.standards %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.teamwork %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.inventory border=True %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.document %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.endorse %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.audit %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.leadership %}
+                {% include 'mast/dashboard/helpers/obb_row.html' with metrics=metrics %}
             </tr>
         </tbody>
         <tbody>
@@ -741,16 +712,7 @@
                         <i>No team provided</i>
                     {% endif %}
                 </td>
-                <td>{{ team.metrics.OVERALL.total_responses }}</td>
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.MAST.metadata border=True %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.MAST.analysis %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.MAST.standards %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.MAST.teamwork %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.inventory border=True %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.document %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.endorse %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.audit %}
-                {% include 'mast/dashboard/helpers/teamcell.html' with metric=team.metrics.IDEAL.leadership %}
+                {% include 'mast/dashboard/helpers/obb_row.html' with metrics=team.metrics %}
             </tr>
             {% endfor %}
         </tbody>
@@ -764,8 +726,12 @@
             <i>No team provided</i>
         {% endif %}
     </h3>
+    <p>
+        Total responses: {{ team.metrics.OVERALL.total_responses }}
+    </p>
+
     {% if not team.team %}
-        <p>Note: This section includes results for all users who did not select a tea mwhen responding to the survey.</p>
+        <p>Note: This section includes results for all users who did not select a team when responding to the survey.</p>
     {% endif %}
     <div class="row">
         <div class="col-6 px-3">
@@ -782,45 +748,71 @@
     </div>
 {% endif %}
 
+<h2 class="page-break-before" id="teams">Results by Industry</h2>
+{% if industry_data and industry_wide %}
+    <p>Below is a breakdown of all industries who have provided data, along with their scores across the MAST/IDEAL dimensions.</p>
+    <p>Teams with metrics <span class="text-danger">below 2 are marked in red</span>, those <span class="text-warning">between 2 and 3 are marked in yellow</span>
+        and those with <span class="text-success">scores greater than 4 are marked in green</span>.</p>
+    <table class="table">
+        {% include 'mast/dashboard/helpers/obb_header.html' %}
+        <tbody>
+            <tr>
+                <td><strong>{{ survey.organisation }}</strong></td>
+                {% include 'mast/dashboard/helpers/obb_row.html' with metrics=metrics %}
+            </tr>
+        </tbody>
+        <tbody>
+            {% for industry in industry_data %}
+            <tr>
+                <td>{% if industry.name %}
+                        {{ industry.name }}
+                    {% else %}
+                    <pre>{{ industry.name }}</pre>  
+                        <i>No industry provided</i>
+                    {% endif %}
+                </td>
+                {% include 'mast/dashboard/helpers/obb_row.html' with metrics=industry.metrics %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% for industry in industry_data %}
+    <h3 class="page-break-before">
+        Industry: {% if industry.name %}
+            {{ industry.name }}
+        {% else %}
+            <i>No industry provided</i>
+        {% endif %}
+    </h3>
+    <p>
+        Total responses: {{ industry.metrics.OVERALL.total_responses }}
+    </p>
+    <div class="row">
+        <div class="col-6 px-3">
+            {{industry.mast_plot|safe}}
+        </div>
+        <div class="col-6 px-3">
+            {{industry.ideal_plot|safe}}
+        </div>
+    </div>
+    {% endfor %}
+{% endif %}
+
 <h2 id="roles" class="page-break-before">Results by Activity</h2>
 <p>
     Note: Users may select more than 1 activity, so total responses within the the table may total to more than total responses for the organisation.
 </p>
+<p>
+    Hover over any table header to see the name for that metric
+</p>
+
 <table class="table">
-    <thead>
-        <tr>
-            <th>Activity Type</th>
-            <th>Responses</th>
-            <th  class="team-table-border" colspan="4">Beliefs</th>
-            <th  class="team-table-border" colspan="4">Behaviours</th>
-        </tr>
-        <tr>
-            <th></th>
-            <th></th>
-            <th class="team-table-border">M</th>
-            <th>A</th>
-            <th>S</th>
-            <th>T</th>
-            <th class="team-table-border">I</th>
-            <th>D</th>
-            <th>E</th>
-            <th>A</th>
-            <th>L</th>
-        </tr>
-    </thead>
+    {% include 'mast/dashboard/helpers/obb_header.html' %}
     <tbody>
         <tr>
             <td><strong>{{ survey.organisation }}</strong></td>
-            <td>{{ metrics.OVERALL.total_responses }}</td>
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.metadata border=True %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.analysis %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.standards %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.teamwork %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.inventory border=True %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.document %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.endorse %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.audit %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.leadership %}
+            {% include 'mast/dashboard/helpers/obb_row.html' with metrics=metrics %}
         </tr>
     </tbody>
     <tbody>
@@ -832,16 +824,7 @@
                     <i>{{ activity.activity_type_name }}</i>
                 {% endif %}
             </td>
-            <td>{{ activity.metrics.OVERALL.total_responses }}</td>
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.MAST.metadata border=True %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.MAST.analysis %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.MAST.standards %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.MAST.teamwork %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.inventory border=True %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.document %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.endorse %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.audit %}
-            {% include 'mast/dashboard/helpers/teamcell.html' with metric=activity.metrics.IDEAL.leadership %}
+            {% include 'mast/dashboard/helpers/obb_row.html' with metrics=activity.metrics %}
         </tr>
         {% endfor %}
     </tbody>

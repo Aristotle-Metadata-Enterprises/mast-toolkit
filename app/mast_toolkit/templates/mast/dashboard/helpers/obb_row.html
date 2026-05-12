@@ -1,0 +1,13 @@
+<td>{{ metrics.OVERALL.total_responses }}</td>
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.OUTCOMES.value border=True %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.OUTCOMES.trust %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.OUTCOMES.security %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.metadata border=True %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.analysis %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.standards %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.MAST.teamwork %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.inventory border=True %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.document %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.endorse %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.audit %}
+{% include 'mast/dashboard/helpers/teamcell.html' with metric=metrics.IDEAL.leadership %}

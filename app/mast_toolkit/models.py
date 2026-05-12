@@ -92,10 +92,10 @@ class Survey(models.Model):
         help_text="If selected, we will ask additional questions for each of the 'I-D-E-A-L' behaviours that can be downloaded and analysed."
     )
     benchmark_scope = models.PositiveIntegerField(
-    verbose_name="Survey type",
-    choices=mast_toolkit.consts.BenchmarkScope,
-    default=mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY,
-    help_text="If you are doing a survey of people in your organisation, select 'Single Organisation'. If you are running for a survey across multiple organisations such as for an industry benchmark, select 'Multi-organisation industry-wide survey'."
+        verbose_name="Survey type",
+        choices=mast_toolkit.consts.BenchmarkScope,
+        default=mast_toolkit.consts.BenchmarkScope.ORGANISATION_ONLY,
+        help_text="If you are doing a survey of people in your organisation, select 'Single Organisation'. If you are running for a survey across multiple organisations such as for an industry benchmark, select 'Multi-organisation industry-wide survey'."
     )
     use_custom_industries = models.BooleanField(
         default=False,
@@ -103,19 +103,18 @@ class Survey(models.Model):
         help_text="If enabled, respondents will choose from your custom industry list instead of the default ISIC categories."
     )
 
-    # We use this when generating statistics
-    show_only_completed = True
-
     # size = ???
     # tools = ???
     # purpose = ???
+
+    # We use this when generating statistics
+    show_only_completed = True
 
     def get_absolute_url(self):
         return reverse("survey_dashboard", args=[self.id])
 
     @property
     def responses_for_report(self):
-        print("Getting responses for report, show_only_completed=", self.show_only_completed    )
         if self.show_only_completed:
             return self.responses.filter(is_complete=True)
         return self.responses.all()
@@ -128,7 +127,7 @@ class Survey(models.Model):
     def metrics(self):
         return self.generate_basic_metrics()
 
-    def generate_basic_metrics(self, team=mast_toolkit.consts.NO_TEAM_SELECTED, activity_type=mast_toolkit.consts.NO_ACTIVITY_SELECTED):
+    def generate_basic_metrics(self, team=mast_toolkit.consts.NO_TEAM_SELECTED, activity_type=mast_toolkit.consts.NO_ACTIVITY_SELECTED, industry=None):
         qs = self.responses_for_report
 
         if team != mast_toolkit.consts.NO_TEAM_SELECTED:
@@ -140,7 +139,10 @@ class Survey(models.Model):
         elif activity_type != mast_toolkit.consts.NO_ACTIVITY_SELECTED:
             # We check for False, as "None" as a team is a valid filter to find users who didn't select a team.
             qs = qs.filter(data_uses=activity_type)
-        
+
+        if industry is not None:
+            qs = qs.filter(industry=industry)
+
         total_responses = qs.count()
 
         responses = qs.aggregate(
@@ -313,7 +315,6 @@ class Survey(models.Model):
             data = {opt.value: 0 for opt in Likert}
             for v in values:
                 data[v[field]] = v['count']
-            print(data)
             values = [
                 {field: value, 'count': count}
                 for value, count in data.items()
