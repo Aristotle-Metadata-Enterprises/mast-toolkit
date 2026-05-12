@@ -83,6 +83,7 @@ class ISICChoices(models.TextChoices):
     # T = "T", _("Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use")
     # U = "U", _("Activities of extraterritorial organizations and bodies")
 
+NO_INDUSTRY_SELECTED = 9997
 NO_TEAM_SELECTED = 9999
 NO_ACTIVITY_SELECTED = 9998
 

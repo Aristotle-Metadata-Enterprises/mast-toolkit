@@ -591,10 +591,11 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
 
         if survey.benchmark_scope == mast_toolkit.consts.BenchmarkScope.INDUSTRY_WIDE:
             industry_data = []
+            no_industry_selected_option = {}
             industries = list(set(survey.responses_for_report.values_list('industry', flat=True)))
 
             for industry in industries:
-                if industry:
+                if industry or industry is None:
                     industry_metrics = survey.generate_basic_metrics(industry=industry)
 
                     data = list(industry_metrics['IDEAL'].values())
@@ -615,13 +616,23 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
                             name=industry
                         )  
                     )
-
-                    industry_data.append({
-                        "name": industry,
+                    data = {
                         "ideal_plot": plot(ideal_radar, output_type="div", include_plotlyjs=False),
                         "mast_plot": plot(mast_bar, output_type="div", include_plotlyjs=False),
                         "metrics": industry_metrics
-                    })
+                    }
+
+                    # We do this to remove blank text values, but still allow "None" as a category for those who did not provide an industry
+                    if industry:
+                        data['name'] = industry
+                        industry_data.append(data)
+                    else:
+                        data['name'] = ""
+                        no_industry_selected_option = data
+
+                    
+            industry_data = sorted(industry_data, key=lambda x: x['metrics']['OVERALL']['total_responses'], reverse=True)
+            industry_data.append(no_industry_selected_option)
             context['industry_data'] = industry_data
 
 
@@ -642,7 +653,7 @@ class SurveyReportDetailView(DashboardMixin, DetailView):
                 activity_data.append(data)
 
         activity_data = sorted(activity_data, key=lambda x: x['metrics']['OVERALL']['total_responses'], reverse=True)
-        activity_data.append(activity_data)
+        activity_data.append(no_activities_option)
         context['activity_data'] = activity_data
 
         return context

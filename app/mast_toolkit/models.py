@@ -127,7 +127,7 @@ class Survey(models.Model):
     def metrics(self):
         return self.generate_basic_metrics()
 
-    def generate_basic_metrics(self, team=mast_toolkit.consts.NO_TEAM_SELECTED, activity_type=mast_toolkit.consts.NO_ACTIVITY_SELECTED, industry=None):
+    def generate_basic_metrics(self, team=mast_toolkit.consts.NO_TEAM_SELECTED, activity_type=mast_toolkit.consts.NO_ACTIVITY_SELECTED, industry=mast_toolkit.consts.NO_INDUSTRY_SELECTED):
         qs = self.responses_for_report
 
         if team != mast_toolkit.consts.NO_TEAM_SELECTED:
@@ -140,7 +140,9 @@ class Survey(models.Model):
             # We check for False, as "None" as a team is a valid filter to find users who didn't select a team.
             qs = qs.filter(data_uses=activity_type)
 
-        if industry is not None:
+        if industry is None:
+            qs = qs.filter(data_uses__isnull=True)
+        elif industry != mast_toolkit.consts.NO_INDUSTRY_SELECTED:
             qs = qs.filter(industry=industry)
 
         total_responses = qs.count()
