@@ -208,7 +208,7 @@ class Survey(models.Model):
 
         )
 
-        def percent_agree(field_name):
+        def calc_percent_agree(field_name):
             kwargs = {
                 f"{field_name}__in": [Likert.AGREE, Likert.AGREESTRONGLY],
                 "then": 1
@@ -221,29 +221,32 @@ class Survey(models.Model):
                 )
             ) / Count('id')
 
-        percent_agree = self.responses_for_report.aggregate(
-            self_assess_secure_percent=percent_agree('self_assess_secure'),
-            self_assess_trust_percent=percent_agree('self_assess_trust'),
-            self_assess_value_percent=percent_agree('self_assess_value'),
-            beliefs_metadata_1_percent=percent_agree('beliefs_metadata_1'),
-            beliefs_analysis_1_percent=percent_agree('beliefs_analysis_1'),
-            beliefs_standards_1_percent=percent_agree('beliefs_standards_1'),
-            beliefs_teamwork_1_percent=percent_agree('beliefs_teamwork_1'),
-            beliefs_metadata_2_percent=percent_agree('beliefs_metadata_2'),
-            beliefs_analysis_2_percent=percent_agree('beliefs_analysis_2'),
-            beliefs_standards_2_percent=percent_agree('beliefs_standards_2'),
-            beliefs_teamwork_2_percent=percent_agree('beliefs_teamwork_2'),
-            actions_inventory_1_percent=percent_agree('actions_inventory_1'),
-            actions_inventory_2_percent=percent_agree('actions_inventory_2'),
-            actions_document_1_percent=percent_agree('actions_document_1'),
-            actions_document_2_percent=percent_agree('actions_document_2'),
-            actions_endorse_1_percent=percent_agree('actions_endorse_1'),
-            actions_endorse_2_percent=percent_agree('actions_endorse_2'),
-            actions_audit_1_percent=percent_agree('actions_audit_1'),
-            actions_audit_2_percent=percent_agree('actions_audit_2'),
-            actions_leadership_1_percent=percent_agree('actions_leadership_1'),
-            actions_leadership_2_percent=percent_agree('actions_leadership_2'),
-        )
+        if total_responses > 0:
+            percent_agree = self.responses_for_report.aggregate(
+                self_assess_secure_percent=calc_percent_agree('self_assess_secure'),
+                self_assess_trust_percent=calc_percent_agree('self_assess_trust'),
+                self_assess_value_percent=calc_percent_agree('self_assess_value'),
+                beliefs_metadata_1_percent=calc_percent_agree('beliefs_metadata_1'),
+                beliefs_analysis_1_percent=calc_percent_agree('beliefs_analysis_1'),
+                beliefs_standards_1_percent=calc_percent_agree('beliefs_standards_1'),
+                beliefs_teamwork_1_percent=calc_percent_agree('beliefs_teamwork_1'),
+                beliefs_metadata_2_percent=calc_percent_agree('beliefs_metadata_2'),
+                beliefs_analysis_2_percent=calc_percent_agree('beliefs_analysis_2'),
+                beliefs_standards_2_percent=calc_percent_agree('beliefs_standards_2'),
+                beliefs_teamwork_2_percent=calc_percent_agree('beliefs_teamwork_2'),
+                actions_inventory_1_percent=calc_percent_agree('actions_inventory_1'),
+                actions_inventory_2_percent=calc_percent_agree('actions_inventory_2'),
+                actions_document_1_percent=calc_percent_agree('actions_document_1'),
+                actions_document_2_percent=calc_percent_agree('actions_document_2'),
+                actions_endorse_1_percent=calc_percent_agree('actions_endorse_1'),
+                actions_endorse_2_percent=calc_percent_agree('actions_endorse_2'),
+                actions_audit_1_percent=calc_percent_agree('actions_audit_1'),
+                actions_audit_2_percent=calc_percent_agree('actions_audit_2'),
+                actions_leadership_1_percent=calc_percent_agree('actions_leadership_1'),
+                actions_leadership_2_percent=calc_percent_agree('actions_leadership_2'),
+            )
+        else:
+            percent_agree = {}
 
 
         response_dates = self.responses_for_report.annotate(
