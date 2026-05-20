@@ -269,7 +269,13 @@ class SurveyResponseDownloadView(DashboardMixin, DetailView):
             return ''
         if isinstance(value, datetime.date):
             return value.isoformat()
-        return str(value)
+
+        value = str(value)
+
+        value = value.replace('"', "''")
+        value = value.replace('\n', '\\n')
+        value = value.replace('\r', '\\r')
+        return value
 
     def responses_to_csv(self, web_response):
         survey = self.survey
@@ -279,7 +285,7 @@ class SurveyResponseDownloadView(DashboardMixin, DetailView):
             if field.name not in ['survey', 'email']
         ]
 
-        writer = csv.writer(web_response)
+        writer = csv.writer(web_response, quoting=csv.QUOTE_ALL)
         writer.writerow(field_names)
         for row in responses.values_list(*field_names):
             writer.writerow([self._format_csv_value(value) for value in row])
