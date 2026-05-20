@@ -274,7 +274,10 @@ class SurveyResponseDownloadView(DashboardMixin, DetailView):
     def responses_to_csv(self, web_response):
         survey = self.survey
         responses = survey.responses.all()
-        field_names = [field.name for field in mast.Response._meta.fields]
+        field_names = [
+            field.name for field in mast.Response._meta.fields
+            if field.name not in ['survey', 'email']
+        ]
 
         writer = csv.writer(web_response)
         writer.writerow(field_names)
