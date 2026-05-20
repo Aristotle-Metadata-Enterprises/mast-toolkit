@@ -462,15 +462,21 @@ class ActivityType(models.Model):
 
 class Response(models.Model):
     id = models.CharField(primary_key=True, default=shortuuid.uuid, editable=False, max_length=256)
+    id.metadata_description = "An automatically generated unique identifier (UUID) for this response."
     email = models.EmailField(blank=True)
+    email.metadata_description = "The email address of the respondent. This is optional and can be left blank"
     team = models.ForeignKey(BusinessUnit, on_delete=models.CASCADE, blank=True, null=True, related_name="responses")
+    team.metadata_description = "The team or business unit that the respondent belongs to within the organisation. This is optional and can be left blank if you don't want to collect this information or if it isn't relevant for your survey. You can use this to break down your results by team in your reporting dashboard."
     phase = models.ForeignKey(Wave, null=True, on_delete=models.CASCADE, blank=True, related_name="responses")
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="responses")
     response_date = models.DateTimeField(auto_now_add=True)
+    response_date.metadata_description = "The date and time that this response was submitted. This is automatically generated when a response is created."
     is_complete = models.BooleanField(default=False)
     seniority = models.CharField(max_length=1, choices=mast_toolkit.consts.SeniorityChoices, blank=True, null=True, verbose_name="Seniority level")
+    seniority.metadata_description = "The level of experience in years of a respondent."
     tools = models.TextField(blank=True, verbose_name="(Optional) What tools do you use to document and organise data at your organisation?")
     industry = models.CharField(max_length=256, blank=True, null=True, verbose_name="Industry")
+    industry.metadata_description = "The industry to which the respondent belongs."
 
     class Meta:
         ordering = ['-response_date']

@@ -263,6 +263,59 @@ def mast_bar_plot(metrics, name="Organisation"):
     return bar_plot
 
 
+class SurveyResponseMetadataDownloadView(DashboardMixin, DetailView):
+    def responses_to_csv(self, web_response):
+        survey = self.survey
+        responses = survey.responses.all()
+        fields = [
+            field for field in mast.Response._meta.fields
+            if field.name not in ['survey', 'email', 'phase']
+        ]
+
+        writer = csv.writer(web_response)
+        writer.writerow([
+            'field_name',
+            'question text',
+            'help text shown to user',
+            'extra_metadata',
+            'choices (if applicable)',
+        ])
+
+        for field in fields:
+            if field.name == 'team':
+                field.choices = [(team.pk, team.name) for team in survey.teams.all()]
+            
+            if field.name == 'industry':
+                field.choices = [(industry.pk, industry.name) for industry in survey.custom_industries.all()]
+
+            writer.writerow([
+                field.name,
+                field.verbose_name,
+                field.help_text,
+                getattr(field, 'metadata_description', ''),
+                field.choices if field.choices else '',
+            ])
+
+        return writer
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='text/txt')
+
+        self.responses_to_csv(response)
+
+        return response
+
+    def post(self, request, *args, **kwargs):
+        survey = self.survey
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="survey_{survey.share_link}_responses.csv"'
+
+        self.responses_to_csv(response)
+
+        return response
+
+
 class SurveyResponseDownloadView(DashboardMixin, DetailView):
     def _format_csv_value(self, value):
         if value is None:
@@ -282,7 +335,7 @@ class SurveyResponseDownloadView(DashboardMixin, DetailView):
         responses = survey.responses.all()
         field_names = [
             field.name for field in mast.Response._meta.fields
-            if field.name not in ['survey', 'email']
+            if field.name not in ['survey', 'email', 'phase']
         ]
 
         writer = csv.writer(web_response, quoting=csv.QUOTE_ALL)

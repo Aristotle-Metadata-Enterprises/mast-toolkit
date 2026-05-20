@@ -27,6 +27,7 @@ urlpatterns = [
     path("survey/manage/<survey_pk>", views.SurveyDetailView.as_view(), name="survey_dashboard"),
     path("survey/manage/<survey_pk>/responses", views.SurveyResponseListView.as_view(), name="survey_dashboard_responses"),
     path("survey/manage/<survey_pk>/responses/download", views.SurveyResponseDownloadView.as_view(), name="survey_download_responses"),
+    path("survey/manage/<survey_pk>/responses/metadata/csv", views.SurveyResponseMetadataDownloadView.as_view(), name="survey_download_response_metadata"),
     path("survey/manage/<survey_pk>/report", views.SurveyReportDetailView.as_view(), name="survey_dashboard_report"),
     path("survey/manage/<survey_pk>/crosstab", views.SurveyReportCrossTabView.as_view(), name="survey_dashboard_crosstab"),
     path("survey/manage/<survey_pk>/report/csv", views.SurveyCSVExportView.as_view(), name="survey_dashboard_csv"),

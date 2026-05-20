@@ -93,9 +93,9 @@ class BenchmarkScope(models.IntegerChoices):
 
 class SeniorityChoices(models.TextChoices):
     CXO = 'C', _("CXO / Executive (15+ years)")
-    SENIOR = 'S', _("Senior (8–15 years)")
-    MID_LEVEL = 'M', _("Mid-Level (3–7 years)")
-    JUNIOR = 'J', _("Junior (0–2 years)")
+    SENIOR = 'S', _("Senior (8-15 years)")
+    MID_LEVEL = 'M', _("Mid-Level (3-7 years)")
+    JUNIOR = 'J', _("Junior (0-2 years)")
 
 class ToolChoices(models.TextChoices):
     SHAREPOINT = 'SP', _("SharePoint")
