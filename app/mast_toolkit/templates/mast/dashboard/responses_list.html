@@ -11,9 +11,19 @@
     This link will bring you back to this page, and allow you to manage this manage this maturity survey.
     Only share this link with people you trust.
 </div>
-<p>
-    Below are all responses collected so far.
-</p>
+<div>
+    <form method="post" action="{% url 'survey_download_responses' survey.id %}">
+        {% csrf_token %}
+    <p>
+        Below are all responses collected so far.
+
+    </p>
+    <button type="submit" class="btn btn-primary float-end">
+        <i class="bi bi-download"></i>
+        Download as csv
+    </button>
+</form>
+
 <div>
     <table class="table table-striped">
         <thead>

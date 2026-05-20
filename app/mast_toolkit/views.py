@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView, DetailView, ListView, DeleteView, UpdateView, TemplateView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, RedirectView, TemplateView, UpdateView
 from django.views import View
 from django.http import HttpResponse
 from mast_toolkit import models as mast
@@ -263,6 +263,42 @@ def mast_bar_plot(metrics, name="Organisation"):
     return bar_plot
 
 
+class SurveyResponseDownloadView(DashboardMixin, DetailView):
+    def _format_csv_value(self, value):
+        if value is None:
+            return ''
+        if isinstance(value, datetime.date):
+            return value.isoformat()
+        return str(value)
+
+    def responses_to_csv(self, web_response):
+        survey = self.survey
+        responses = survey.responses.all()
+        field_names = [field.name for field in mast.Response._meta.fields]
+
+        writer = csv.writer(web_response)
+        writer.writerow(field_names)
+        for row in responses.values_list(*field_names):
+            writer.writerow([self._format_csv_value(value) for value in row])
+
+        return writer
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='text/txt')
+
+        self.responses_to_csv(response)
+
+        return response
+
+    def post(self, request, *args, **kwargs):
+        survey = self.survey
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="survey_{survey.share_link}_responses.csv"'
+
+        self.responses_to_csv(response)
+
+        return response
 
 
 class SurveyUpdateView(DashboardMixin, SurveyCreateMixin, UpdateView):
