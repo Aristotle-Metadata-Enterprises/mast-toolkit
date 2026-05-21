@@ -157,6 +157,31 @@ class ResponseThanksView(ResponseBase, TemplateView):
     template_name = "mast/response/thanks.html"
 
 
+class PreviewStep1View(ResponseStep1View):
+    def post(self, request, *args, **kwargs):
+        return redirect('survey_manage_preview_2', survey_pk=self.survey.share_link)
+
+
+class PreviewStep2View(ResponseStep2View):
+
+    def get_response_obj(self):
+        # note: do not save response as this is for preview
+        return mast.Response(survey=self.survey, is_complete=False)
+
+    def post(self, request, *args, **kwargs):
+        return redirect('survey_manage_preview_3', survey_pk=self.survey.share_link)
+
+
+class PreviewStep3View(ResponseStep3View):
+    def get_response_obj(self):
+        # note: do not save response as this is for preview
+        return mast.Response(survey=self.survey, is_complete=False)
+
+    def post(self, request, *args, **kwargs):
+        return redirect('survey_dashboard', survey_pk=self.survey.id)
+
+
+
 class SurveyCreateMixin:
     def get_context_data(self, **kwargs):
         kwargs['qualitative_questions'] = [
