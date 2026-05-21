@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeBook xmlns="ddi:codebook:2_5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="ddi:codebook:2_5 http://www.ddialliance.org/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd">
+    <stdyDscr>
+        <citation>
+            <titlStmt>
+                <titl>{{survey.title}}</titl>
+            </titlStmt>
+            <rspStmt>
+                <AuthEnty>{{ survey.organisation }}</AuthEnty>
+            </rspStmt>
+        </citation>
+        <method>
+            <dataColl>
+                <dataCollector source="producer">{{ survey.organisation }}</dataCollector>
+                <collMode>online</collMode>
+            </dataColl>
+        </method>
+    </stdyDscr>
+    <dataDscr>
+        <!-- Variable descriptions would go here -->
+        <!-- {% for field in fields %} -->
+        <var ID="{{ field.name }}" ID="{{ field.name }}">
+            <labl>{{ field.verbose_name }}</labl>
+            <qstn>
+                <qstnLit>{{ field.help_text }}</qstnLit>
+                <!-- {% if field.choices %} -->
+                <!-- {% for choice in field.choices %} -->
+                <catgry>
+                    <catValu>{{ choice.0 }}</catValu>
+                    <labl level="catgry">{{ choice.1 }}</labl>
+                </catgry>
+                <!-- {% endfor %} -->
+                <!-- {% endif %} -->
+            </qstn>
+        </var>
+        <!-- {% endfor %} -->
+    </dataDscr>
+</codeBook>

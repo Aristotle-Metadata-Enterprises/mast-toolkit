@@ -236,12 +236,12 @@ class DashboardMixin:
 
 
 IDEAL_LABELS = [
-            'Investigate & Inventory<br>',
-            'Document <br>Data & Metadata',
-            'Endorse & Publish',
-            'Audit & Harmonise',
-            'Leadership & <br> Long-term strategy '
-        ]
+    'Investigate & Inventory<br>',
+    'Document <br>Data & Metadata',
+    'Endorse & Publish',
+    'Audit & Harmonise',
+    'Leadership & <br> Long-term strategy '
+]
 
 
 def ideal_polar_plot(metrics):
@@ -340,6 +340,29 @@ class SurveyResponseMetadataDownloadView(DashboardMixin, DetailView):
 
         return response
 
+
+class SurveyResponseMetadataDDIDownloadView(DashboardMixin, TemplateView):
+    template_name = "mast/dashboard/metadata/ddi-codebook.xml"
+    content_type='text/xml'
+    active_dashboard_tab = 'responses'
+
+    def render_to_response(self, context, **response_kwargs):
+        response = super().render_to_response(context, **response_kwargs)
+        # Set Content-Disposition to force a download
+        # response['Content-Disposition'] = f'attachment; filename="survey_{survey.share_link}_metadata.ddi.xml"'
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        survey = self.survey
+        fields = [
+            field for field in mast.Response._meta.fields
+            if field.name not in ['survey', 'email', 'phase']
+        ]
+        context['fields'] = fields
+        context['survey'] = survey
+        return context
+        
 
 class SurveyResponseDownloadView(DashboardMixin, DetailView):
     def _format_csv_value(self, value):
