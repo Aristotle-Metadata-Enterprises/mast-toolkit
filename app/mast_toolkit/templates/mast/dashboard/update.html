@@ -7,10 +7,10 @@
 
 <div>
     Preview survey:
-    <a href="{% url 'survey_manage_preview_1' survey.pk %}" class="btn btn-sm btn-secondary">Step 1</a>
-    <a href="{% url 'survey_manage_preview_2' survey.pk %}" class="btn btn-sm btn-secondary">Step 2</a>
-    <a href="{% url 'survey_manage_preview_3' survey.pk %}" class="btn btn-sm btn-secondary">Step 3</a>
-    <a href="{% url 'survey_respond_thanks' survey.pk %}" class="btn btn-sm btn-secondary">Confirmation</a>
+    <a href="{% url 'survey_manage_preview_1' survey.share_link %}" class="btn btn-sm btn-secondary">Step 1</a>
+    <a href="{% url 'survey_manage_preview_2' survey.share_link %}" class="btn btn-sm btn-secondary">Step 2</a>
+    <a href="{% url 'survey_manage_preview_3' survey.share_link %}" class="btn btn-sm btn-secondary">Step 3</a>
+    <a href="{% url 'survey_respond_thanks' survey.share_link %}" class="btn btn-sm btn-secondary">Confirmation</a>
 </div>
 <hr>
 
