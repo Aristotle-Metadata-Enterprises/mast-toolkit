@@ -41,6 +41,7 @@ urlpatterns = [
     path("survey/manage/<survey_pk>/preview/1", views.PreviewStep1View.as_view(), name="survey_manage_preview_1"),
     path("survey/manage/<survey_pk>/preview/2", views.PreviewStep2View.as_view(), name="survey_manage_preview_2"),
     path("survey/manage/<survey_pk>/preview/3", views.PreviewStep3View.as_view(), name="survey_manage_preview_3"),
+    path("survey/manage/<survey_pk>/preview/all", views.PreviewAllStep3View.as_view(), name="survey_manage_preview_all"),
     # path("survey/dashboard/<survey_share_uuid>/", views.SurveyDeleteView.as_view(), name="survey_shared_dashboard"),
     # path("survey/dashboard/<survey_share_uuid>/report", views.SurveyDeleteView.as_view(), name="survey_shared_dashboard"),
     path("survey/response/<survey_pk>", views.ResponseStep1View.as_view(), name="survey_respond"),

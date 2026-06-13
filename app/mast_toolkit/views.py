@@ -157,29 +157,40 @@ class ResponseThanksView(ResponseBase, TemplateView):
     template_name = "mast/response/thanks.html"
 
 
-class PreviewStep1View(ResponseStep1View):
+class ResponsePreviewBase(ResponseBase):
+    def get_response_obj(self):
+        # note: do not save response as this is for preview
+        return mast.Response(survey=self.survey, is_complete=False)
+
+
+class PreviewStep1View(ResponsePreviewBase, ResponseStep1View):
     def post(self, request, *args, **kwargs):
         return redirect('survey_manage_preview_2', survey_pk=self.survey.share_link)
 
 
-class PreviewStep2View(ResponseStep2View):
-
-    def get_response_obj(self):
-        # note: do not save response as this is for preview
-        return mast.Response(survey=self.survey, is_complete=False)
-
+class PreviewStep2View(ResponsePreviewBase, ResponseStep2View):
     def post(self, request, *args, **kwargs):
         return redirect('survey_manage_preview_3', survey_pk=self.survey.share_link)
 
 
-class PreviewStep3View(ResponseStep3View):
+class PreviewStep3View(ResponsePreviewBase, ResponseStep3View):
+    def post(self, request, *args, **kwargs):
+        return redirect('survey_dashboard', survey_pk=self.survey.id)
+
+
+class PreviewAllStep3View(ResponsePreviewBase, TemplateView):
+    template_name = "mast/dashboard/preview_all.html"
     def get_response_obj(self):
         # note: do not save response as this is for preview
         return mast.Response(survey=self.survey, is_complete=False)
 
-    def post(self, request, *args, **kwargs):
-        return redirect('survey_dashboard', survey_pk=self.survey.id)
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        response_obj = self.get_response_obj()
+        context['form_step_1'] = mast_toolkit.forms.ResponseStep1Form()
+        context['form_step_2'] = mast_toolkit.forms.ResponseStep2Form(instance=response_obj)
+        context['form_step_3'] = mast_toolkit.forms.ResponseStep3Form(instance=response_obj, survey=self.survey)
+        return context
 
 
 class SurveyCreateMixin:
