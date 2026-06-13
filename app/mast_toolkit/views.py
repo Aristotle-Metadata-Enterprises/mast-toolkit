@@ -575,7 +575,11 @@ class SurveyResponseListView(DashboardMixin, ListView):
     active_dashboard_tab = "responses"
 
     def get_queryset(self):
-        return super().get_queryset().filter(survey=self.kwargs['survey_pk'], is_complete=True)
+        qs = super().get_queryset().filter(survey=self.kwargs['survey_pk'])
+        if self.request.GET.get('show_incomplete', 'false') == 'true':
+            return qs
+        else:
+            return qs.filter(is_complete=True)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
